@@ -80,7 +80,7 @@ class FrequencyAnalysisFrame extends JFrame {
 	private void doCalculation(AnalysisType type, double[] input, double fs) {
 				
 		//new Thread(() -> {
-	        double[] fft = Analysis.fft(input);        
+	        double[] fft = Analysis.INSTANCE.fft(input);
 	        
 	        switch (type) {
 
@@ -115,9 +115,9 @@ class FrequencyAnalysisFrame extends JFrame {
 		double resolution = fs / N;
         double[] spectrum = new double[N/2 -1];
         double[] xData = new double[N/2 -1];
-        Arrays.setAll(xData, i -> AppUtils.roundDouble(i * resolution, 2));
+        Arrays.setAll(xData, i -> AppUtils.INSTANCE.roundDouble(i * resolution, 2));
         for (int k = 2; k < N/2 - 1; k++) {
-	        spectrum[k] = AppUtils.roundDouble(Math.sqrt(Math.pow(fft[2*k],2) + Math.pow(fft[2*k+1],2)), 2);
+	        spectrum[k] = AppUtils.INSTANCE.roundDouble(Math.sqrt(Math.pow(fft[2*k],2) + Math.pow(fft[2*k+1],2)), 2);
         }
         
         //setFrequency(xData);

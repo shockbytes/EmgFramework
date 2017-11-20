@@ -86,7 +86,7 @@ public class MainWindow extends JFrame implements ActionListener, ClientDataCall
 
 	private void initializeController() {
         controller = new EmgController<>(new XChartVisual());
-        controller.addCallbackListener(this);
+        controller.addClientDataCallbackListener(this);
         controller.setOnSimulationSourcesChangedListener(this);
     }
 
@@ -190,7 +190,7 @@ public class MainWindow extends JFrame implements ActionListener, ClientDataCall
 		JMenu mnSimulation = new JMenu("Simulation");
 		menuBar.add(mnSimulation);
 
-		mnSimulationData = new JMenu("Data source");
+		mnSimulationData = new JMenu("Data simulationSource");
 		mnSimulation.add(mnSimulationData);
 
 		cbMenuItemPlaybackLoop = new JCheckBoxMenuItem("Playback loop");
@@ -298,7 +298,7 @@ public class MainWindow extends JFrame implements ActionListener, ClientDataCall
 	}
 
 	private void setupDataRateMenu() {
-        Arrays.stream(SerialClient.SUPPORTED_DATA_RATES).forEach((dataRate) -> {
+        Arrays.stream(SerialClient.Companion.getSUPPORTED_DATA_RATES()).forEach((dataRate) -> {
 
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(String.valueOf(dataRate));
             item.addActionListener(e -> {
@@ -316,7 +316,7 @@ public class MainWindow extends JFrame implements ActionListener, ClientDataCall
                 updateStatus(true);
             });
 
-            if (dataRate == SerialClient.DEFAULT_DATA_RATE) {
+            if (dataRate == SerialClient.Companion.getDEFAULT_DATA_RATE()) {
                 item.setSelected(true);
             }
             mnDataRate.add(item);

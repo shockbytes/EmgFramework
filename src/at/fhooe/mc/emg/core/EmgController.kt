@@ -20,13 +20,14 @@ import java.util.*
  * Date:    07.07.2017
  */
 // TODO Find a better solution
-class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
+class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
 
     lateinit var client: EmgClient
     private lateinit var serialClient: SerialClient
     private lateinit var simulationClient: SimulationClient
 
     lateinit var config: Configuration
+    // TODO Replace with RxJava PublishSubject
     var simulationListener: OnSimulationSourcesChangedListener? = null
         private set
 
@@ -39,7 +40,8 @@ class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
 
     lateinit var simulationSources: List<SimulationSource>
         private set
-    lateinit var clientCallbacks: MutableList<ClientDataCallback>
+    // TODO Replace with RxJava PublishSubject
+    private lateinit var clientCallbacks: MutableList<ClientDataCallback>
 
     val currentDataPointer: Int
         get() = client.currentDataPointer
@@ -61,7 +63,7 @@ class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
         clientCallbacks = ArrayList()
 
         // Load configuration
-        config = Configuration.getInstance()
+        config = Configuration
 
         initializeClients()
 
@@ -85,13 +87,13 @@ class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
         serialClient = SerialClient(MAX_AMOUNT)
 
         // Initialize simulation client
-        // TODO Do not hard code it and read it from data source
+        // TODO Do not hard code it and read it from data simulationSource
         simulationClient = SimulationClient(100.0, MAX_AMOUNT,
                 config.isSimulationEndlessLoopEnabled)
         simulationSources = simulationClient.loadSimulationSources()
 
-        // Serial client as default client
-        client = serialClient
+        // SimulationClient as default client
+        client = simulationClient
 
         clients = Arrays.asList<EmgClient>(serialClient, simulationClient)
     }
@@ -114,19 +116,17 @@ class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
 
     fun exportData(filename: String, dataStorage: DataStorage) {
 
-        val success = dataStorage.store(filename, client.channelData)
         // Only copy to folder if copy to simulation is enabled and the client isn't the simulation client
-        // because then the source is already stored in the directory
+        // because then the simulationSource is already stored in the directory
+        val success = dataStorage.store(filename, client.channelData)
         if (success && config.isCopyToSimulationEnabled && client !== simulationClient) {
             simulationClient.addFileAsSimulationSource(filename)
             simulationSources = simulationClient.loadSimulationSources()
-            if (simulationListener != null) {
-                simulationListener?.onSourcesChanged()
-            }
+            simulationListener?.onSourcesChanged()
         }
     }
 
-    fun addCallbackListener(callback: ClientDataCallback) {
+    fun addClientDataCallbackListener(callback: ClientDataCallback) {
         if (!clientCallbacks.contains(callback)) {
             clientCallbacks.add(callback)
         }
@@ -146,7 +146,7 @@ class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
     }
 
     fun setSelectedSimulationSource(src: SimulationSource) {
-        simulationClient.setSimulationSource(src)
+        simulationClient.simulationSource = src
     }
 
     fun saveConfig() {
@@ -171,7 +171,7 @@ class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
 
     fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
         config.isSimulationEndlessLoopEnabled = isEnabled
-        simulationClient.setEndlessLoopPlayback(isEnabled)
+        simulationClient.isEndlessLoopEnabled = isEnabled
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -185,7 +185,6 @@ class EmgController<T>(val visual: Visual<T>) : ClientDataCallback {
     }
 
     companion object {
-
         private val MAX_AMOUNT = 512
     }
 }

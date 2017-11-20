@@ -81,8 +81,8 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
     public void onRoundDataAvailable(ChannelData data, int round) {
 
         double speed = ConconiTool.SPEEDS[round];
-        int peaks = PeakDetector.detectSimpleThresholdPeaks(data.getYSeries(0), 200);
-        double avg = AppUtils.roundDouble(Arrays.stream(data.getYSeries(0))
+        int peaks = PeakDetector.INSTANCE.detectSimpleThresholdPeaks(data.getYSeries(0), 200);
+        double avg = AppUtils.INSTANCE.roundDouble(Arrays.stream(data.getYSeries(0))
                 .average().orElse(-1), 2);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();

@@ -75,7 +75,7 @@ public class ConconiTool implements Tool, ConconiViewListener {
     private void playCountdownSound() {
 
         File file = new File(System.getProperty("user.dir") + "/data/sound/conconi_countdown.wav");
-        AppUtils.playSound(file);
+        AppUtils.INSTANCE.playSound(file);
     }
 
     @Override
@@ -163,8 +163,9 @@ public class ConconiTool implements Tool, ConconiViewListener {
     private void saveData() {
 
         try {
+            // TODO Detach UiUtils from ConconiTool
             String filename = UiUtils.showConconiSaveDialog();
-            AppUtils.serializeToFile(data, filename);
+            AppUtils.INSTANCE.serializeToFile(data, filename);
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Cannot store data to file!");
@@ -176,7 +177,7 @@ public class ConconiTool implements Tool, ConconiViewListener {
         try {
 
             String filename = UiUtils.showConconiLoadDialog();
-            data = AppUtils.deserializeFromFile(filename);
+            data = AppUtils.INSTANCE.deserializeFromFile(filename);
 
             // Set the data to the form (simulate set)
             for (int i = 0; i < data.getRoundCount(); i++) {
