@@ -5,6 +5,7 @@ package at.fhooe.mc.emg.tools.conconi
  * Date:    20.11.2017
  */
 
+// TODO
 interface ConconiView {
 
 

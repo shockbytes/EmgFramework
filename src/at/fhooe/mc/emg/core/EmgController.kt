@@ -10,6 +10,7 @@ import at.fhooe.mc.emg.filter.*
 import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.tools.Tool
+import at.fhooe.mc.emg.tools.conconi.ConconiTool
 import at.fhooe.mc.emg.tools.peak.PeakDetectionTool
 import at.fhooe.mc.emg.util.Configuration
 import at.fhooe.mc.emg.visual.Visual
@@ -76,7 +77,7 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
                 SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
 
         tools = Arrays.asList<Tool>(
-                // TODO new ConconiTool(),
+                ConconiTool(),
                 PeakDetectionTool())
 
     }

@@ -35,7 +35,7 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
     private XYChart chartAverage;
     private XChartPanel<XYChart> chartAverageWrapper;
 
-    private ConconiViewListener formListener;
+    private ConconiFormListener formListener;
 
     private List<Double> xVals;
     private List<Double> yAvg;
@@ -51,7 +51,7 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
         setupCharts();
     }
 
-    void setFormListener(ConconiViewListener formListener) {
+    void setFormListener(ConconiFormListener formListener) {
         this.formListener = formListener;
     }
 
@@ -80,7 +80,7 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
     @Override
     public void onRoundDataAvailable(ChannelData data, int round) {
 
-        double speed = ConconiTool.SPEEDS[round];
+        double speed = ConconiTool.Companion.getSPEEDS()[round];
         int peaks = PeakDetector.INSTANCE.detectSimpleThresholdPeaks(data.getYSeries(0), 200);
         double avg = AppUtils.INSTANCE.roundDouble(Arrays.stream(data.getYSeries(0))
                 .average().orElse(-1), 2);
