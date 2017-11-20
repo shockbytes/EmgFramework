@@ -10,8 +10,6 @@ import at.fhooe.mc.emg.filter.*
 import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.tools.Tool
-import at.fhooe.mc.emg.tools.conconi.ConconiTool
-import at.fhooe.mc.emg.tools.peak.PeakDetectionTool
 import at.fhooe.mc.emg.util.Configuration
 import at.fhooe.mc.emg.visual.Visual
 import java.util.*
@@ -32,8 +30,8 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
     var simulationListener: OnSimulationSourcesChangedListener? = null
         private set
 
-    lateinit var tools: List<Tool>
-        private set
+    var tools: List<Tool>? = arrayListOf()
+
     lateinit var filters: List<Filter>
         private set
     lateinit var clients: List<EmgClient>
@@ -76,9 +74,11 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
                 RunningAverageFilter(config.runningAverageWindowSize),
                 SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
 
+        // Tools will be initialized by the calling platform
+        /*
         tools = Arrays.asList<Tool>(
                 ConconiTool(),
-                PeakDetectionTool())
+                PeakDetectionTool()) */
 
     }
 

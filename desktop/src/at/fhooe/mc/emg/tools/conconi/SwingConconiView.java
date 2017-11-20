@@ -1,8 +1,10 @@
 package at.fhooe.mc.emg.tools.conconi;
 
 import at.fhooe.mc.emg.client.ChannelData;
+import at.fhooe.mc.emg.ui.UiUtils;
 import at.fhooe.mc.emg.util.AppUtils;
 import at.fhooe.mc.emg.util.PeakDetector;
+import org.jetbrains.annotations.NotNull;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -13,6 +15,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +25,7 @@ import java.util.List;
  * Author:  Mescht
  * Date:    08.07.2017
  */
-public class ConconiForm implements ConconiToolListener, ActionListener {
+public class SwingConconiView implements ActionListener, ConconiView {
 
     private JPanel panelMain;
     private JButton btnStart;
@@ -35,12 +39,12 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
     private XYChart chartAverage;
     private XChartPanel<XYChart> chartAverageWrapper;
 
-    private ConconiFormListener formListener;
+    private ConconiViewCallback viewCallback;
 
     private List<Double> xVals;
     private List<Double> yAvg;
 
-    ConconiForm() {
+    public SwingConconiView() {
         btnStart.addActionListener(this);
         btnStop.addActionListener(this);
         btnSave.addActionListener(this);
@@ -51,15 +55,11 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
         setupCharts();
     }
 
-    void setFormListener(ConconiFormListener formListener) {
-        this.formListener = formListener;
-    }
-
-    JFrame wrap(String name) {
+    private JFrame wrap() {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setTitle(name);
-        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_tool_conconi.png"));
+        frame.setTitle("Conconi Test");
+        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "../icons/ic_tool_conconi.png"));
         frame.setContentPane(panelMain);
         frame.setBounds(650, 100, 450, 500);
         return frame;
@@ -78,9 +78,9 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
     }
 
     @Override
-    public void onRoundDataAvailable(ChannelData data, int round) {
+    public void onRoundDataAvailable(@NotNull ChannelData data, int round) {
 
-        double speed = ConconiTool.Companion.getSPEEDS()[round];
+        double speed = ConconiTool.Companion.getSpeeds()[round];
         int peaks = PeakDetector.INSTANCE.detectSimpleThresholdPeaks(data.getYSeries(0), 200);
         double avg = AppUtils.INSTANCE.roundDouble(Arrays.stream(data.getYSeries(0))
                 .average().orElse(-1), 2);
@@ -95,15 +95,19 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == btnStart) {
-            formListener.onStartClicked();
+            viewCallback.onStartClicked();
             setButtonsEnabled(false);
         } else if (e.getSource() == btnStop) {
-            formListener.onStopClicked();
+            viewCallback.onStopClicked();
             labelTime.setText("Test finished!");
         } else if (e.getSource() == btnSave) {
-            formListener.onSaveClicked();
+            if (!viewCallback.onSaveClicked(UiUtils.showConconiSaveDialog())) {
+                JOptionPane.showMessageDialog(panelMain, "Cannot save Conconi data!");
+            }
         } else if (e.getSource() == btnLoad) {
-            formListener.onLoadClicked();
+           if (!viewCallback.onLoadClicked(UiUtils.showConconiLoadDialog())) {
+               JOptionPane.showMessageDialog(panelMain, "Cannot load file!");
+           }
         }
     }
 
@@ -148,5 +152,20 @@ public class ConconiForm implements ConconiToolListener, ActionListener {
 
     private void createUIComponents() {
         table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "Average", "Peaks"}));
+    }
+
+    @Override
+    public void setup(@NotNull ConconiViewCallback viewCallback) {
+        this.viewCallback = viewCallback;
+
+        JFrame frame = wrap();
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                viewCallback.onViewClosed();
+            }
+        });
+        frame.setVisible(true);
     }
 }

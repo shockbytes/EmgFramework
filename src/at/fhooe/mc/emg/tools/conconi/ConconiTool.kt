@@ -4,19 +4,18 @@ import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.AppUtils
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 /**
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  */
-class ConconiTool : Tool, ConconiFormListener {
+class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
 
     private var timer: Timer? = null
-    // TODO Replace with ConconiView?
-    private val form: ConconiToolListener? = null
 
-    private var controller: EmgController<*>? = null
+    private lateinit var controller: EmgController<*>
     private var data: ConconiData? = null
 
     private var dataStartPointer: Int = 0
@@ -28,24 +27,7 @@ class ConconiTool : Tool, ConconiFormListener {
     override fun start(controller: EmgController<*>) {
         this.controller = controller
 
-        // TODO Use ConconiView instead
-        /*
-        ConconiForm conconiForm = new ConconiForm();
-        conconiForm.setFormListener(this);
-        JFrame frame = conconiForm.wrap(getName());
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
-                if (timer != null) {
-                    timer.cancel();
-                }
-            }
-        });
-        frame.setVisible(true);
-
-        form = conconiForm;
-        */
+        view.setup(this)
 
         data = ConconiData()
         dataStartPointer = 0
@@ -69,13 +51,13 @@ class ConconiTool : Tool, ConconiFormListener {
             override fun run() {
 
                 i++
-                form!!.onTick(i, TIMES[idx])
+                view.onTick(i, times[idx])
 
-                if (i + 5 == TIMES[idx]) {
+                if (i + 5 == times[idx]) {
                     playCountdownSound()
                 }
 
-                if (i == TIMES[idx]) {
+                if (i == times[idx]) {
                     storeRoundData(idx)
 
                     i = 0
@@ -92,16 +74,16 @@ class ConconiTool : Tool, ConconiFormListener {
             override fun run() {
 
                 countdown--
-                form!!.onCountdownTick(countdown)
+                view.onCountdownTick(countdown)
 
                 if (countdown == 0) {
-                    controller!!.connect()
-                    timer!!.schedule(timerTask, 0, 1000)
+                    controller.connect()
+                    timer?.schedule(timerTask, 0, 1000)
                     cancel()
                 }
             }
         }
-        timer!!.schedule(countdownTask, 0, 1000)
+        timer?.schedule(countdownTask, 0, 1000)
         playCountdownSound()
 
     }
@@ -109,68 +91,67 @@ class ConconiTool : Tool, ConconiFormListener {
     override fun onStopClicked() {
 
         if (timer != null) {
-            timer!!.cancel()
-            controller!!.disconnect()
+            timer?.cancel()
+            controller.disconnect()
         }
     }
 
-    override fun onSaveClicked() {
-        saveData()
+    override fun onSaveClicked(filename: String): Boolean {
+        return saveData(filename)
     }
 
-    override fun onLoadClicked() {
-        loadData()
+    override fun onLoadClicked(filename: String): Boolean{
+        return loadData(filename)
+    }
+
+    override fun onViewClosed() {
+        timer?.cancel()
     }
 
     private fun storeRoundData(index: Int) {
 
-        dataStopPointer = controller!!.currentDataPointer
-        // System.out.println("Start: " + dataStartPointer + " / Stop: " + dataStopPointer);
+        dataStopPointer = controller.currentDataPointer
+        val roundData = controller.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
-        val roundData = controller!!.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
-        data!!.addRoundData(roundData)
-        form!!.onRoundDataAvailable(roundData, index)
+        data?.addRoundData(roundData)
+        view.onRoundDataAvailable(roundData, index)
 
         dataStartPointer = dataStopPointer
     }
 
-    private fun saveData() {
+    private fun saveData(filename: String): Boolean {
 
-        /*
-        try {
-            // TODO Detach UiUtils from ConconiTool
-            String filename = UiUtils.showConconiSaveDialog();
-            AppUtils.INSTANCE.serializeToFile(data, filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Cannot store data to file!");
-        } */
+        return try {
+
+            if (data != null) {
+                AppUtils.serializeToFile(data!!, filename)
+            }
+            true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
+        }
     }
 
-    private fun loadData() {
+    private fun loadData(filename: String): Boolean {
 
-        /*
-        try {
-            // TODO Detach UiUtils from ConconiTool
-            String filename = UiUtils.showConconiLoadDialog();
-            data = AppUtils.INSTANCE.deserializeFromFile(filename);
-
-            // Set the data to the form (simulate set)
-            for (int i = 0; i < data.getRoundCount(); i++) {
-                form.onRoundDataAvailable(data.getRoundData(i), i);
+        return try {
+            data = AppUtils.deserializeFromFile(filename)
+            for (i in 0..data!!.roundCount) {
+                view.onRoundDataAvailable(data!!.getRoundData(i), i)
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Cannot load data from file!");
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
-        */
     }
 
     companion object {
 
-        private val TIMES = intArrayOf(72, 69, 65, 63, 60, 58, 55, 53, 51, 50, 48, 46, 45, 44, 42, 41, 40, 39, 38, 37, 36)
+        val times = intArrayOf(72, 69, 65, 63, 60, 58, 55, 53, 51, 50, 48, 46, 45, 44, 42, 41, 40, 39, 38, 37, 36)
 
-        internal var SPEEDS = doubleArrayOf(10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0, 16.5, 17.0, 17.5, 18.0, 18.5, 19.0, 19.5, 20.0)
+        val speeds = doubleArrayOf(10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0, 16.5, 17.0, 17.5, 18.0, 18.5, 19.0, 19.5, 20.0)
     }
 
 }

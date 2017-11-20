@@ -5,6 +5,9 @@ import at.fhooe.mc.emg.client.ClientDataCallback;
 import at.fhooe.mc.emg.client.serial.SerialClient;
 import at.fhooe.mc.emg.core.EmgController;
 import at.fhooe.mc.emg.storage.CsvDataStorage;
+import at.fhooe.mc.emg.tools.conconi.ConconiTool;
+import at.fhooe.mc.emg.tools.conconi.SwingConconiView;
+import at.fhooe.mc.emg.tools.peak.PeakDetectionTool;
 import at.fhooe.mc.emg.ui.dialog.FilterConfigDialog;
 import at.fhooe.mc.emg.ui.dialog.SamplingFrequencyDialog;
 import at.fhooe.mc.emg.ui.dialog.VisualYMaxDialog;
@@ -88,6 +91,7 @@ public class MainWindow extends JFrame implements ActionListener, ClientDataCall
         controller = new EmgController<>(new XChartVisual());
         controller.addClientDataCallbackListener(this);
         controller.setOnSimulationSourcesChangedListener(this);
+        controller.setTools(Arrays.asList(new ConconiTool(new SwingConconiView()), new PeakDetectionTool()));
     }
 
 	private void initializeViews() {
