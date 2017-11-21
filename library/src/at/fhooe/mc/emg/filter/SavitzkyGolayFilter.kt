@@ -1,6 +1,5 @@
 package at.fhooe.mc.emg.filter
 
-import flanagan.analysis.CurveSmooth
 import java.util.*
 
 class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {
@@ -24,8 +23,11 @@ class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {
         buffer.addLast(x)
 
         return if (buffer.size > sgFilterWidth / 2) {
-            CurveSmooth(buffer.stream().mapToDouble { d1 -> d1 }.toArray())
+            0.0
+            // TODO
+            /*CurveSmooth(buffer.stream().mapToDouble { d1 -> d1 }.toArray())
                     .savitzkyGolay(sgFilterWidth)[sgFilterWidth / 2]
+                    */
         } else {
             0.0
         }
