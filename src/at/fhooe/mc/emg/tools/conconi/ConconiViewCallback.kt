@@ -1,12 +1,12 @@
 package at.fhooe.mc.emg.tools.conconi
 
-import at.fhooe.mc.emg.tools.ViewCallback
+import at.fhooe.mc.emg.tools.ToolViewCallback
 
 /**
  * Author:  Mescht
  * Date:    08.07.2017
  */
-interface ConconiViewCallback : ViewCallback {
+interface ConconiViewCallback : ToolViewCallback {
 
     fun onStartClicked()
 

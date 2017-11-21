@@ -1,15 +1,14 @@
 package at.fhooe.mc.emg.tools.conconi
 
 import at.fhooe.mc.emg.client.ChannelData
+import at.fhooe.mc.emg.tools.ToolView
 
 /**
  * Author:  Mescht
  * Date:    20.11.2017
  */
 
-interface ConconiView {
-
-    fun setup(viewCallback: ConconiViewCallback)
+interface ConconiView : ToolView<ConconiViewCallback> {
 
     fun onCountdownTick(seconds: Int)
 

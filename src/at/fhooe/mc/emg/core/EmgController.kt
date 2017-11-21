@@ -3,6 +3,7 @@ package at.fhooe.mc.emg.core
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
+import at.fhooe.mc.emg.client.network.NetworkClient
 import at.fhooe.mc.emg.client.serial.SerialClient
 import at.fhooe.mc.emg.client.simulation.SimulationClient
 import at.fhooe.mc.emg.client.simulation.SimulationSource
@@ -24,6 +25,7 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
     lateinit var client: EmgClient
     private lateinit var serialClient: SerialClient
     private lateinit var simulationClient: SimulationClient
+    private lateinit var networkClient: NetworkClient
 
     lateinit var config: Configuration
     // TODO Replace with RxJava PublishSubject
@@ -73,13 +75,6 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
                 LowpassFilter(),
                 RunningAverageFilter(config.runningAverageWindowSize),
                 SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
-
-        // Tools will be initialized by the calling platform
-        /*
-        tools = Arrays.asList<Tool>(
-                ConconiTool(),
-                PeakDetectionTool()) */
-
     }
 
     private fun initializeClients() {
@@ -93,10 +88,13 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
                 config.isSimulationEndlessLoopEnabled)
         simulationSources = simulationClient.loadSimulationSources()
 
+        // Initialize network client
+        networkClient = NetworkClient()
+
         // SimulationClient as default client
         client = simulationClient
 
-        clients = Arrays.asList<EmgClient>(serialClient, simulationClient)
+        clients = Arrays.asList<EmgClient>(serialClient, simulationClient, networkClient)
     }
 
     private fun storeData() {

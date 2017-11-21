@@ -5,7 +5,7 @@ package at.fhooe.mc.emg.tools
  * Date:    20.11.2017
  */
 
-interface ViewCallback {
+interface ToolViewCallback {
 
     fun onViewClosed()
 

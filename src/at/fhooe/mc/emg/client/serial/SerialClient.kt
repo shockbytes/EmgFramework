@@ -27,7 +27,7 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         get() = if (portName == null) shortName else "Serial device @ " + portName!!
 
     override val shortName: String
-        get() = "Serial device"
+        get() = "Serial"
 
     override val isDataStorageEnabled: Boolean
         get() = true
