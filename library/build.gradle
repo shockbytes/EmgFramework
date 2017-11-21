@@ -43,6 +43,14 @@ dependencies {
     // implementation name: 'flanagan'
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/']
+        }
+    }
+}
+
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
