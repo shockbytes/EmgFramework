@@ -1,2 +1,4 @@
 rootProject.name = 'framework'
 include ':desktop'
+include ':library'
+
