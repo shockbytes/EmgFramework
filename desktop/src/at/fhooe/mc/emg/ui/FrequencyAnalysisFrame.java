@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.ui;
 
 import at.fhooe.mc.emg.util.Analysis;
-import at.fhooe.mc.emg.util.AppUtils;
+import kotlin.Pair;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
@@ -42,21 +42,8 @@ class FrequencyAnalysisFrame extends JFrame {
 	}
 	
 	private void setBoundsRelativeToParent(JFrame parent, AnalysisType type) {
-		
 		Rectangle b = parent.getBounds();
-		
-		switch(type) {
-		
-		case FFT:
-			
-			setBounds(b.x + b.width + 10, b.y - b.height/2 + 30, 450, 300);
-			break;
-			
-		case SPECTRUM:
-			
-			setBounds(b.x + b.width + 10, b.y + b.height/2 + 30, 450, 300);
-			break;
-		}
+        setBounds(b.x + b.width + 10, b.y - b.height/2 + 30, 450, 300);
 	}
 	
 	private void initializeChart() {
@@ -110,28 +97,12 @@ class FrequencyAnalysisFrame extends JFrame {
 	}
 	
 	private void showPowerSpectrumPlot(double[] fft, double fs) {
-		
-		int N = fft.length;
-		double resolution = fs / N;
-        double[] spectrum = new double[N/2 -1];
-        double[] xData = new double[N/2 -1];
-        Arrays.setAll(xData, i -> AppUtils.INSTANCE.roundDouble(i * resolution, 2));
-        for (int k = 2; k < N/2 - 1; k++) {
-	        spectrum[k] = AppUtils.INSTANCE.roundDouble(Math.sqrt(Math.pow(fft[2*k],2) + Math.pow(fft[2*k+1],2)), 2);
-        }
-        
-        //setFrequency(xData);
-        
+
+	    Pair<double[], double[]> data = Analysis.INSTANCE.powerSpectrum(fft, fs);
         Color c = Color. decode("#8BC34A");
-        chart.addSeries("Power spectrum", xData, spectrum)
+        chart.addSeries("Power spectrum", data.getFirst(), data.getSecond())
 					.setMarkerColor(c)
 					.setLineColor(c);
 	}
-	
-	/*
-	private void setFrequency(double[] xData) {
-		OptionalDouble max = Arrays.stream(xData).max();		
-	    chart.setTitle("Frequency: " + max.orElse(-1) + "Hz");
-	} */
 
 }

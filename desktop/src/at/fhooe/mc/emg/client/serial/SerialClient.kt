@@ -1,22 +1,25 @@
 package at.fhooe.mc.emg.client.serial
 
 import at.fhooe.mc.emg.client.ChannelData
+import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
-import gnu.io.*
+import gnu.io.CommPortIdentifier
+import gnu.io.SerialPortEventListener
 import java.io.*
 import java.util.*
 import java.util.stream.IntStream
 import kotlin.streams.toList
 
-
 class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
+
+    override val category: ClientCategory = ClientCategory.SERIAL
 
     private var ports: List<CommPortIdentifier>? = null
 
     private var inputReader: BufferedReader? = null
     private var outputWriter: BufferedWriter? = null
-    private var connectionPort: SerialPort? = null
+    private var connectionPort: gnu.io.SerialPort? = null
 
     private var portName: String? = null
 
@@ -46,7 +49,7 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
     }
 
     private fun initializePorts() {
-        ports = Collections.list<CommPortIdentifier>(CommPortIdentifier.getPortIdentifiers() as? Enumeration<CommPortIdentifier>?)
+        ports = Collections.list<gnu.io.CommPortIdentifier>(gnu.io.CommPortIdentifier.getPortIdentifiers() as? Enumeration<gnu.io.CommPortIdentifier>?)
     }
 
     fun getAvailablePortNames(forceUpdate: Boolean): List<String> {
@@ -60,16 +63,20 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         return arrayListOf()
     }
 
-    @Throws(NoSuchPortException::class)
-    private fun getPortByName(name: String?): CommPortIdentifier {
-        return CommPortIdentifier.getPortIdentifier(name)
+    fun setSerialPortSelected(port: String) {
+        setPortName(port)
+    }
+
+    @Throws(gnu.io.NoSuchPortException::class)
+    private fun getPortByName(name: String?): gnu.io.CommPortIdentifier {
+        return gnu.io.CommPortIdentifier.getPortIdentifier(name)
     }
 
     @Throws(Exception::class)
     override fun connect(callback: ClientDataCallback) {
-        setClientCallback(callback)
+        this.callback = callback
 
-        connectionPort = getPortByName(portName).open(javaClass.name, TIMEOUT) as SerialPort
+        connectionPort = getPortByName(portName).open(javaClass.name, TIMEOUT) as gnu.io.SerialPort
         dataRate = DEFAULT_DATA_RATE
         setupConnectionParams()
 
@@ -79,9 +86,9 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         connectionPort?.notifyOnDataAvailable(true)
     }
 
-    @Throws(UnsupportedCommOperationException::class)
+    @Throws(gnu.io.UnsupportedCommOperationException::class)
     private fun setupConnectionParams() {
-        connectionPort?.setSerialPortParams(dataRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE)
+        connectionPort?.setSerialPortParams(dataRate, gnu.io.SerialPort.DATABITS_8, gnu.io.SerialPort.STOPBITS_1, gnu.io.SerialPort.PARITY_NONE)
     }
 
     override fun disconnect() {
@@ -98,9 +105,9 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         }
     }
 
-    override fun serialEvent(event: SerialPortEvent) {
+    override fun serialEvent(event: gnu.io.SerialPortEvent) {
 
-        if (event.eventType == SerialPortEvent.DATA_AVAILABLE) {
+        if (event.eventType == gnu.io.SerialPortEvent.DATA_AVAILABLE) {
 
             try {
 
@@ -129,8 +136,7 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         // Okay, there are more than 1 channel
         if (inputLine.contains(",")) {
 
-            val values = Arrays
-                    .stream(inputLine.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+            val values = Arrays.stream(inputLine.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
                     .map<Float> { s -> if (s.trim { it <= ' ' }.isEmpty()) 0.toFloat() else java.lang.Float.parseFloat(s.trim { it <= ' ' }) }.toList()
 
             if (values.size <= 1) {

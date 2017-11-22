@@ -10,5 +10,5 @@ interface Tool {
 
     val name: String
 
-    fun start(controller: EmgController<*>)
+    fun start(controller: EmgController)
 }

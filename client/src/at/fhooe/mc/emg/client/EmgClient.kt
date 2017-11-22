@@ -21,13 +21,11 @@ abstract class EmgClient {
 
     abstract val isDataStorageEnabled: Boolean
 
+    abstract val category: ClientCategory
+
     @Throws(Exception::class)
     abstract fun connect(callback: ClientDataCallback)
 
     abstract fun disconnect()
-
-    fun setClientCallback(callback: ClientDataCallback) {
-        this.callback = callback
-    }
 
 }

@@ -1,28 +1,38 @@
 package at.fhooe.mc.emg.client.simulation
 
 import at.fhooe.mc.emg.client.ChannelData
+import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.util.AppUtils
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
-class SimulationClient(sampleFrequency: Double, maxAmount: Int, var isEndlessLoopEnabled: Boolean) : EmgClient() {
+class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simulationFolder: String) : EmgClient() {
 
-    private val SIMULATION_FOLDER = System.getProperty("user.dir") + "/data/simulation"
+    override val category: ClientCategory = ClientCategory.SIMULATION
 
-    private var millis: Int = 0
+    private var millis: Long = 0
+
+    private var isEndlessLoopEnabled = false
 
     var simulationSource: SimulationSource? = null
 
-    private var t: Timer? = null
-    private var thread: Thread? = null
     private var simulationData: List<Double>? = null
+
+    private var intervalDisposable: Disposable? = null
+
+    var simulationSources: List<SimulationSource>
+        private set
 
     override var currentDataPointer: Int = 0
         private set
@@ -40,32 +50,28 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, var isEndlessLoo
         get() = super.samplingFrequency
         set(sampleFrequency) {
             super.samplingFrequency = sampleFrequency
-            millis = (1.0 / sampleFrequency * 1000).toInt()
+            millis = (1.0 / sampleFrequency * 1000).toLong()
         }
 
     init {
         samplingFrequency = sampleFrequency
         channelData = ChannelData(maxAmount)
+        simulationSources = loadSimulationSources()
     }
 
     @Throws(Exception::class)
     override fun connect(callback: ClientDataCallback) {
-        setClientCallback(callback)
+        this.callback = callback
+
         if (simulationSource == null) {
             throw IllegalStateException("Source or listener cannot be null for simulation!")
         }
         disconnect() // Reset connection first
         simulationData = prepareSimulationData()
 
-        // TODO Replace with RxJava
-        thread = Thread {
-
-            t = Timer()
-            val tt = object : TimerTask() {
-
-                internal var index = 0
-
-                override fun run() {
+        var index = 0
+        intervalDisposable = Observable.interval(millis, TimeUnit.MILLISECONDS, Schedulers.io())
+                .subscribe {
 
                     val data = simulationData!![index]
                     callback.onRawDataAvailable(data.toString())
@@ -73,8 +79,7 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, var isEndlessLoo
                     channelData.updateXYSeries(0, currentDataPointer.toDouble(), data)
                     callback.onChanneledDataAvailable(channelData)
 
-                    currentDataPointer++
-                    index++
+                    currentDataPointer++; index++
 
                     if (index >= simulationData!!.size) {
                         if (isEndlessLoopEnabled) {
@@ -84,47 +89,40 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, var isEndlessLoo
                         }
                     }
                 }
-            }
-            t?.schedule(tt, 0, millis.toLong())
-        }
-        thread?.start()
     }
 
     override fun disconnect() {
 
-        synchronized(this) {
-
-            t?.cancel()
-            t?.purge()
-            t = null
-
-            thread?.join()
-            thread = null
+        if (intervalDisposable?.isDisposed == false) {
+            intervalDisposable?.dispose()
         }
-
     }
 
     fun addFileAsSimulationSource(srcPath: String) {
 
         val srcFile = File(srcPath)
-        val destFile = File(SIMULATION_FOLDER + "/" + srcFile.name)
+        val destinationFile = File(simulationFolder + "/" + srcFile.name)
 
         try {
 
-            FileUtils.copyFile(srcFile, destFile)
-            val modified = Files.readAllLines(Paths.get(destFile.absolutePath))
+            FileUtils.copyFile(srcFile, destinationFile)
+            val modified = Files.readAllLines(Paths.get(destinationFile.absolutePath))
                     .filter { s -> !s.isEmpty() && Character.isDigit(s[0]) }
                     .toList().joinToString("\n")
-            AppUtils.writeFile(destFile, modified)
+            AppUtils.writeFile(destinationFile, modified)
 
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
-    fun loadSimulationSources(): List<SimulationSource> {
+    fun reloadSources() {
+        loadSimulationSources()
+    }
 
-        val simulationFiles = File(SIMULATION_FOLDER).listFiles()
+    private fun loadSimulationSources(): List<SimulationSource> {
+
+        val simulationFiles = File(simulationFolder).listFiles()
         return Arrays.stream(Optional.ofNullable(simulationFiles).orElse(arrayOf()))
                 .map { f -> SimulationSource(f.name.substring(0, f.name.lastIndexOf(".")), f.absolutePath) }
                 .toList()

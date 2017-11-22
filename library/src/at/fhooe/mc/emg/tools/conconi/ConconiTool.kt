@@ -15,7 +15,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
 
     private var timer: Timer? = null
 
-    private lateinit var controller: EmgController<*>
+    private lateinit var controller: EmgController
     private var data: ConconiData? = null
 
     private var dataStartPointer: Int = 0
@@ -24,7 +24,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
     override val name: String
         get() = "Conconi Test"
 
-    override fun start(controller: EmgController<*>) {
+    override fun start(controller: EmgController) {
         this.controller = controller
 
         view.setup(this)
@@ -92,7 +92,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
 
         if (timer != null) {
             timer?.cancel()
-            controller.disconnect()
+            controller.disconnect(null)
         }
     }
 

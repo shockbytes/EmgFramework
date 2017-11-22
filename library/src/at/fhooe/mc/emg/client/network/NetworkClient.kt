@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.client.network
 
+import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
 
@@ -8,6 +9,8 @@ import at.fhooe.mc.emg.client.EmgClient
  * Date:    20.11.2017
  */
 class NetworkClient : EmgClient() {
+
+    override val category: ClientCategory = ClientCategory.NETWORK
 
     override val name: String
         get() = if (ip == null) shortName else "Network device @ " + ip!!

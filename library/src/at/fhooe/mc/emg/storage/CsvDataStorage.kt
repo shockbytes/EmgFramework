@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.storage
 
 import at.fhooe.mc.emg.client.ChannelData
-
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException

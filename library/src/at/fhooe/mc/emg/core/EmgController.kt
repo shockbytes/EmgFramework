@@ -1,56 +1,40 @@
 package at.fhooe.mc.emg.core
 
 import at.fhooe.mc.emg.client.ChannelData
+import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.network.NetworkClient
-import at.fhooe.mc.emg.client.serial.SerialClient
 import at.fhooe.mc.emg.client.simulation.SimulationClient
-import at.fhooe.mc.emg.client.simulation.SimulationSource
 import at.fhooe.mc.emg.filter.*
 import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
 import at.fhooe.mc.emg.visual.Visual
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 
 /**
  * Author:  Mescht
  * Date:    07.07.2017
  */
-// TODO Find a better solution
-class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
+abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>) : ClientDataCallback {
 
     lateinit var client: EmgClient
-    private lateinit var serialClient: SerialClient
-    private lateinit var simulationClient: SimulationClient
-    private lateinit var networkClient: NetworkClient
 
     lateinit var config: Configuration
-    // TODO Replace with RxJava PublishSubject
-    var simulationListener: OnSimulationSourcesChangedListener? = null
-        private set
-
-    var tools: List<Tool>? = arrayListOf()
+    val simulationSourcesSubject: PublishSubject<Int> = PublishSubject.create()
 
     lateinit var filters: List<Filter>
         private set
-    lateinit var clients: List<EmgClient>
-        private set
 
-    lateinit var simulationSources: List<SimulationSource>
-        private set
-    // TODO Replace with RxJava PublishSubject
-    private lateinit var clientCallbacks: MutableList<ClientDataCallback>
+    abstract val visual: Visual<*>
+
+    val channeledClientCallbackSubject: PublishSubject<ChannelData> = PublishSubject.create<ChannelData>()
+    val rawClientCallbackSubject: PublishSubject<String> = PublishSubject.create<String>()
 
     val currentDataPointer: Int
         get() = client.currentDataPointer
-
-    interface OnSimulationSourcesChangedListener {
-
-        fun onSourcesChanged()
-    }
 
     init {
         initialize()
@@ -60,13 +44,11 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
 
     private fun initialize() {
 
-        // All the listeners will have to subscribe here
-        clientCallbacks = ArrayList()
-
         // Load configuration
         config = Configuration
 
-        initializeClients()
+        // Set default client
+        client = clients[clients.size / 2]
 
         // Initialize filter
         filters = Arrays.asList(
@@ -74,61 +56,48 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
                 BandstopFilter(),
                 LowpassFilter(),
                 RunningAverageFilter(config.runningAverageWindowSize),
-                SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
+                SavitzkyGolayFilter(config.savitzkyGolayFilterWidth, 9))
     }
 
-    private fun initializeClients() {
+    private fun storeData(writeOnDisconnectFileName: String?) {
 
-        // Initialize serial client
-        serialClient = SerialClient(MAX_AMOUNT)
-
-        // Initialize simulation client
-        // TODO Do not hard code it and read it from data simulationSource
-        simulationClient = SimulationClient(100.0, MAX_AMOUNT,
-                config.isSimulationEndlessLoopEnabled)
-        simulationSources = simulationClient.loadSimulationSources()
-
-        // Initialize network client
-        networkClient = NetworkClient()
-
-        // SimulationClient as default client
-        client = simulationClient
-
-        clients = Arrays.asList<EmgClient>(serialClient, simulationClient, networkClient)
-    }
-
-    private fun storeData() {
-
-        // TODO Ask for Filepath
-        if (config.isWriteToLogEnabled && client.isDataStorageEnabled) {
-            exportData("/data/test.csv", CsvDataStorage())
+        if (config.isWriteToLogEnabled && client.isDataStorageEnabled && writeOnDisconnectFileName != null) {
+            exportData(writeOnDisconnectFileName, CsvDataStorage())
         }
     }
+    // ----------------------------------------- Abstract methods ------------------------------------------
+
 
     // ----------------------------------------------------------------------------------------------------
 
     // ------------------------------------------ Public methods ------------------------------------------
-
-    fun setOnSimulationSourcesChangedListener(listener: OnSimulationSourcesChangedListener) {
-        this.simulationListener = listener
-    }
 
     fun exportData(filename: String, dataStorage: DataStorage) {
 
         // Only copy to folder if copy to simulation is enabled and the client isn't the simulation client
         // because then the simulationSource is already stored in the directory
         val success = dataStorage.store(filename, client.channelData)
-        if (success && config.isCopyToSimulationEnabled && client !== simulationClient) {
-            simulationClient.addFileAsSimulationSource(filename)
-            simulationSources = simulationClient.loadSimulationSources()
-            simulationListener?.onSourcesChanged()
+        if (success) {
+            tryCopySimulationData(filename)
         }
     }
 
-    fun addClientDataCallbackListener(callback: ClientDataCallback) {
-        if (!clientCallbacks.contains(callback)) {
-            clientCallbacks.add(callback)
+    fun getClient(category: ClientCategory): EmgClient? {
+        clients.forEach {
+            if (it.category === category) {
+                return it
+            }
         }
+        return null
+    }
+
+    fun hasClient(category: ClientCategory): Boolean {
+        clients.forEach {
+            if (it.category === category) {
+                return true
+            }
+        }
+        return false
     }
 
     fun connect() {
@@ -139,25 +108,13 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
         }
     }
 
-    fun disconnect() {
+    fun disconnect(writeFileOnDisconnectFileName: String?) {
         client.disconnect()
-        storeData()
-    }
-
-    fun setSelectedSimulationSource(src: SimulationSource) {
-        simulationClient.simulationSource = src
+        storeData(writeFileOnDisconnectFileName)
     }
 
     fun saveConfig() {
         config.save()
-    }
-
-    fun getAvailableSerialPorts(forceUpdate: Boolean): List<String> {
-        return serialClient.getAvailablePortNames(forceUpdate)
-    }
-
-    fun setSerialPortSelected(port: String) {
-        serialClient.setPortName(port)
     }
 
     fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): ChannelData {
@@ -170,20 +127,32 @@ class EmgController<out T>(val visual: Visual<T>) : ClientDataCallback {
 
     fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
         config.isSimulationEndlessLoopEnabled = isEnabled
-        simulationClient.isEndlessLoopEnabled = isEnabled
+        // simulationClient.isEndlessLoopEnabled = isEnabled
+    }
+
+    private fun tryCopySimulationData(filename: String) {
+
+        if (hasClient(ClientCategory.SIMULATION)
+                && config.isCopyToSimulationEnabled
+                && client.category !== ClientCategory.SIMULATION) {
+            val simulationClient: SimulationClient? = getClient(ClientCategory.SIMULATION) as SimulationClient
+            simulationClient?.addFileAsSimulationSource(filename)
+            simulationClient?.reloadSources()
+            simulationSourcesSubject.onNext(0)
+        }
     }
 
     // ----------------------------------------------------------------------------------------------------
 
     override fun onChanneledDataAvailable(channelData: ChannelData) {
-        clientCallbacks.forEach { c -> c.onChanneledDataAvailable(channelData) }
+        channeledClientCallbackSubject.onNext(channelData)
     }
 
     override fun onRawDataAvailable(line: String) {
-        clientCallbacks.forEach { c -> c.onRawDataAvailable(line) }
+        rawClientCallbackSubject.onNext(line)
     }
 
     companion object {
-        private val MAX_AMOUNT = 512
+        val maxAmount = 512
     }
 }

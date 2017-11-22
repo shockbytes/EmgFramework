@@ -15,7 +15,7 @@ class PeakDetectionTool : Tool {
     override val name: String
         get() = "Peak detection"
 
-    override fun start(controller: EmgController<*>) {
+    override fun start(controller: EmgController) {
 
         val frame = JFrame()
         frame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
