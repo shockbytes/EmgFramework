@@ -28,7 +28,7 @@ class FrequencyAnalysisFrame extends JFrame {
 						   double sampleFrequency, JFrame parent) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_analysis.png"));
-		setTitle("Frequency analysis");
+		setTitle("Frequency sgfilter");
 		setBoundsRelativeToParent(parent, type);
 		
 		contentPane = new JPanel();

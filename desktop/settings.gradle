@@ -1,4 +1,3 @@
 rootProject.name = 'desktop'
 include ':library'
 include ':client'
-include ':serialclient'

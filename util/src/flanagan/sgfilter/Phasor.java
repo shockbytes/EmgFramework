@@ -36,11 +36,11 @@
 *
 ***************************************************************************************/
 
-package flanagan.circuits;
+package flanagan.sgfilter;
 
-import flanagan.complex.Complex;
-import flanagan.math.Fmath;
-import flanagan.math.VectorMaths;
+/*
+import flanagan.circuits.Impedance;
+import flanagan.math.VectorMaths; */
 
 public class Phasor{
 
@@ -52,8 +52,6 @@ public class Phasor{
         // frequency - static to prevent inappropriate combination of phasors
         private static double frequency = Double.NaN;   // frequency in Hz
         private static double omega = Double.NaN;       // radial frequency
-
-
 
         // CONSTRUCTORS
         // default constructor
@@ -195,22 +193,6 @@ public class Phasor{
                 Complex cc = new Complex();
                 cc.polar(ph.magnitude, ph.phaseInRad);
                 return cc;
-        }
-        
-        // converts the phasor to VectorMaths vector = instance method
-        public VectorMaths toVectorMaths(){
-            double x = this.magnitude*Math.sin(this.phaseInRad); 
-            double y = this.magnitude*Math.cos(this.phaseInRad); 
-            VectorMaths vec = new VectorMaths(x, y);
-            return vec;
-        }
-        
-        // converts the phasor to VectorMaths vector = instance method
-        public static VectorMaths toVectorMaths(Phasor ph){
-            double x = ph.magnitude*Math.sin(ph.phaseInRad); 
-            double y = ph.magnitude*Math.cos(ph.phaseInRad); 
-            VectorMaths vec = new VectorMaths(x, y);
-            return vec;
         }
 
         // Format a phasor number as a string, 'magnitude''<''phase''deg' - phase in degrees
@@ -1694,101 +1676,4 @@ public class Phasor{
                 return ph;
         }
 
-        // infinity
-        // magnitude = plus infinity, phase = 0
-        public static Phasor plusInfinity(){
-                Phasor ph = new Phasor();
-                ph.magnitude = Double.POSITIVE_INFINITY;
-                ph.phaseInDeg = 0.0D;
-                ph.phaseInRad = 0.0D;
-                ph.rectangular = new Complex(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-                return ph;
-        }
-
-        // -infinity
-        // magnitude = minus infinity, phase = 0
-        public static Phasor minusInfinity(){
-                Phasor ph = new Phasor();
-                ph.magnitude = Double.NEGATIVE_INFINITY;
-                ph.phaseInDeg = 0.0D;
-                ph.phaseInRad = 0.0D;
-                ph.rectangular = new Complex(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-                return ph;
-        }
-
-        // Resistance as a phasor
-        public static Phasor resistancePhasor(double resistance){
-                Phasor ph = new Phasor(resistance);
-                return ph;
-        }
-
-        // inductance as a phasor
-        public static Phasor inductancePhasor(double inductance, double frequency){
-                if(Fmath.isNaN(Phasor.frequency)){
-                    Phasor.frequency = frequency;
-                    Phasor.omega = Phasor.frequency*2.0D*Math.PI;
-                }
-                else{
-                    throw new IllegalArgumentException("You have already entered a value for the frequency, " + Phasor.frequency + ", that differs from the one you are now attempting to enter, " + frequency);
-                }
-                Complex com = Impedance.inductanceImpedance(inductance, Phasor.omega);
-                Phasor ph = new Phasor();
-                return ph.toPhasor(com);
-        }
-
-        // capacitance as a phasor
-        public static Phasor capacitancePhasor(double capacitance, double frequency){
-                if(Fmath.isNaN(Phasor.frequency)){
-                    Phasor.frequency = frequency;
-                    Phasor.omega = Phasor.frequency*2.0D*Math.PI;
-                }
-                else{
-                    throw new IllegalArgumentException("You have already entered a value for the frequency, " + Phasor.frequency + ", that differs from the one you are now attempting to enter, " + frequency);
-                }
-                Complex com = Impedance.capacitanceImpedance(capacitance, Phasor.omega);
-                Phasor ph = new Phasor();
-                return ph.toPhasor(com);
-        }
-
-        // infinite warburg impedance as a phasor
-        public static Phasor infiniteWarburgPhasor(double sigma, double frequency){
-                if(Fmath.isNaN(Phasor.frequency)){
-                    Phasor.frequency = frequency;
-                    Phasor.omega = Phasor.frequency*2.0D*Math.PI;
-                }
-                else{
-                    throw new IllegalArgumentException("You have already entered a value for the frequency, " + Phasor.frequency + ", that differs from the one you are now attempting to enter, " + frequency);
-                }
-                Complex com = Impedance.infiniteWarburgImpedance(sigma, Phasor.omega);
-                Phasor ph = new Phasor();
-                return ph.toPhasor(com);
-        }
-
-        // finite warburg impedance as a phasor
-        public static Phasor finiteWarburgPhasor(double sigma, double delta, double frequency){
-                if(Fmath.isNaN(Phasor.frequency)){
-                    Phasor.frequency = frequency;
-                    Phasor.omega = Phasor.frequency*2.0D*Math.PI;
-                }
-                else{
-                    throw new IllegalArgumentException("You have already entered a value for the frequency, " + Phasor.frequency + ", that differs from the one you are now attempting to enter, " + frequency);
-                }
-                Complex com = Impedance.finiteWarburgImpedance(sigma, delta, Phasor.omega);
-                Phasor ph = new Phasor();
-                return ph.toPhasor(com);
-        }
-
-        // constant phase elelemnt a phasor
-        public static Phasor constantPhaseElementPhasor(double sigma, double alpha, double frequency){
-                if(Fmath.isNaN(Phasor.frequency)){
-                    Phasor.frequency = frequency;
-                    Phasor.omega = Phasor.frequency*2.0D*Math.PI;
-                }
-                else{
-                    throw new IllegalArgumentException("You have already entered a value for the frequency, " + Phasor.frequency + ", that differs from the one you are now attempting to enter, " + frequency);
-                }
-                Complex com = Impedance.constantPhaseElementImpedance(sigma, alpha, Phasor.omega);
-                Phasor ph = new Phasor();
-                return ph.toPhasor(com);
-        }
 }

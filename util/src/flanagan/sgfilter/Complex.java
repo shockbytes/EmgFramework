@@ -6,7 +6,6 @@
 *
 *   See class ComplexMatrix for complex matrix manipulations
 *   See class ComplexPoly for complex polynomial manipulations
-*   See class ComplexErrorProp for the error propogation in complex arithmetic
 *
 *   WRITTEN BY: Dr Michael Thomas Flanagan
 *
@@ -40,9 +39,7 @@
 ***************************************************************************************/
 
 
-package flanagan.complex;
-
-import flanagan.math.Fmath;
+package flanagan.sgfilter;
 
 public class Complex{
 
