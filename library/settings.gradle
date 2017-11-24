@@ -1,2 +1,3 @@
 rootProject.name = 'library'
 include ':client'
+include ':util'

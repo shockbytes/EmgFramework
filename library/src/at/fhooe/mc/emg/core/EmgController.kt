@@ -56,7 +56,7 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
                 BandstopFilter(),
                 LowpassFilter(),
                 RunningAverageFilter(config.runningAverageWindowSize),
-                SavitzkyGolayFilter(config.savitzkyGolayFilterWidth, 9))
+                SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
     }
 
     private fun storeData(writeOnDisconnectFileName: String?) {

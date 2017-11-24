@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.tools.conconi;
 
 import at.fhooe.mc.emg.client.ChannelData;
-import at.fhooe.mc.emg.ui.UiUtils;
+import at.fhooe.mc.emg.desktop.ui.UiUtils;
 import at.fhooe.mc.emg.util.AppUtils;
 import at.fhooe.mc.emg.util.PeakDetector;
 import org.jetbrains.annotations.NotNull;

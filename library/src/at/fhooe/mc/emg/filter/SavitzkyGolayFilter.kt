@@ -1,10 +1,9 @@
 package at.fhooe.mc.emg.filter
 
-import at.fhooe.mc.emg.filter.sg.SgFilterImplementation
+import flanagan.analysis.CurveSmooth
 import java.util.*
 
-// TODO Find working implementation
-class SavitzkyGolayFilter(private val sgFilterWidth: Int, private val degree: Int) : Filter() {
+class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {
 
     private val buffer: LinkedList<Double> = LinkedList()
 
@@ -14,15 +13,6 @@ class SavitzkyGolayFilter(private val sgFilterWidth: Int, private val degree: In
     override val shortName: String
         get() = "SG"
 
-
-    private val coeffs: DoubleArray
-    private val filter: SgFilterImplementation
-
-    init {
-        filter = SgFilterImplementation(sgFilterWidth/2, sgFilterWidth/2)
-        coeffs = SgFilterImplementation.computeSGCoefficients(sgFilterWidth/2, sgFilterWidth, degree)
-    }
-
     override fun step(x: Double): Double {
 
         if (buffer.size == sgFilterWidth) {
@@ -31,7 +21,8 @@ class SavitzkyGolayFilter(private val sgFilterWidth: Int, private val degree: In
         buffer.addLast(x)
 
         return if (buffer.size > sgFilterWidth / 2) {
-            filter.smooth(buffer.toDoubleArray(), coeffs)[sgFilterWidth/2]
+            CurveSmooth(buffer.stream().mapToDouble { d1 -> d1 }.toArray())
+                                .savitzkyGolay(sgFilterWidth)[sgFilterWidth / 2]
         } else {
             0.0
         }
