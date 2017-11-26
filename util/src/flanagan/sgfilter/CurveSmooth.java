@@ -36,141 +36,102 @@
 
 package flanagan.sgfilter;
 
-public class CurveSmooth{
-    
+public class CurveSmooth {
+
     private double[] xData = null;                                  // original x data, y = f(x)  
     private double[] yData = null;                                  // original y data, y = f(x)  
     private int nPoints = 0;                                        // number of data points
     private double[] yDataSavGol = null;                            // Savitzky-Golay smoothed y data, y = f(x)
 
-    // Constructor - data as double - no x data, y = f(x)
-    public CurveSmooth(double[] y){ 
+    public CurveSmooth(double[] y) {
         int n = y.length;
         this.yData = y;
         this.xData = new double[n];
-        for(int i=0; i<n; i++)this.xData[i] = i;
+        for (int i = 0; i < n; i++) this.xData[i] = i;
         this.check();
     }
 
-    // Check for correct dimensions, y = f(x) 
-    private void check(){
-        // Dimension arrays
+    private void check() {
         this.nPoints = this.xData.length;
         int m = this.yData.length;
-        if(m!=this.nPoints)throw new IllegalArgumentException("The length of the x data array, " + this.nPoints + ", must be the same as the length of the y data array, " + m);       
-        if(m<5)throw new IllegalArgumentException("There must be at least five data points");
-    }
-    
-    // order data in ascending x-values, y = f(x)
-    private void ascend() {
-        boolean test1 = true;
-        int ii = 1;
-        while (test1) {
-            if (this.xData[ii] < this.xData[ii - 1]) {
-                test1 = false;
-            } else {
-                ii++;
-                if (ii >= this.nPoints) test1 = false;
-            }
-        }
+        if (m != this.nPoints)
+            throw new IllegalArgumentException("The length of the x data array, " + this.nPoints + ", must be the same as the length of the y data array, " + m);
+        if (m < 5) throw new IllegalArgumentException("There must be at least five data points");
     }
 
-    // Adust width to an odd number of points
-    private int windowLength(int width){
-    
-        int ww = 0;
-        if(Fmath.isEven(width)){
-            ww = width+1;
-        }
-        else{
-           ww = width;
-        }
-        return ww;
+    private int windowLength(int width) {
+        return isEven(width) ? (width + 1) : width;
     }
 
-    public double[] savitzkyGolay(int sgWindowWidth){
+    public double[] savitzkyGolay(int sgWindowWidth) {
         this.yDataSavGol = new double[this.nPoints];
-        // adjust window width to an odd number of points
         int sgWindowWidth1 = this.windowLength(sgWindowWidth);
-        // Apply filter 
         this.savitzkyGolayCommon(sgWindowWidth1);
-        return Conv.copy(this.yDataSavGol);
+        return copy(this.yDataSavGol);
     }
-    
-     // Common method for smoothing with a Savitzky-Golay filter with a window width
-    private double[] savitzkyGolayCommon(int width){
-        
-        // Set filter dimension term
-        int ww = (width - 1)/2;
-        // Calculate filter coefficients
+
+    private double[] savitzkyGolayCommon(int width) {
+        int ww = (width - 1) / 2;
         double[] coeff = (this.savitzkyGolayFilter(ww, ww))[0];
-        // Padout the data to solve edge effects
         double[] psData = this.padData(this.yData, ww);
-        // Apply filter       
-        for(int i=ww; i<this.nPoints+ww; i++){ 
+        for (int i = ww; i < this.nPoints + ww; i++) {
             double sum = 0.0;
             int counter = 0;
-             for(int k1=i-ww; k1<=i+ww; k1++){
-                sum += psData[k1]*coeff[counter++];
-             }
-             this.yDataSavGol[i-ww] = sum;
+            for (int k1 = i - ww; k1 <= i + ww; k1++) {
+                sum += psData[k1] * coeff[counter++];
+            }
+            this.yDataSavGol[i - ww] = sum;
         }
         return this.yDataSavGol;
     }
-    
-    private double[] padData(double[] data, int ww){
-        
-        // Pad out to solve edge effects
-        // Set dimensions
+
+    private double[] padData(double[] data, int ww) {
         int nn = data.length;
-        
-        
-        // Create array for padding
-        double[] psData = new double[nn+2*ww];
-        
-        // fill central array with true data
-        for(int i=0; i<nn; i++){ 
-            psData[i+ww] = data[i];
-        }
-    
-        // pad out leading elements
-        for(int i=0; i<ww; i++){ 
+        double[] psData = new double[nn + 2 * ww];
+        System.arraycopy(data, 0, psData, ww, nn);
+        for (int i = 0; i < ww; i++) {
             psData[i] = psData[ww];
         }
-        
-        // pad out trailing elements
-        for(int i=nn+ww; i<nn+2*ww; i++){ 
-            psData[i] = psData[nn+ww-1];
+        for (int i = nn + ww; i < nn + 2 * ww; i++) {
+            psData[i] = psData[nn + ww - 1];
         }
-        
         return psData;
     }
 
-    private double[][] savitzkyGolayFilter(int bp, int fp){
-        
-        int ww = bp + fp + 1;                   //filter  length 
-        double[] coeff = new double[ww];        // Savitzky-Golay coefficients 
+    private double[][] savitzkyGolayFilter(int bp, int fp) {
 
-        // Assign 'x' values
+        int ww = bp + fp + 1;
         int[] values = new int[ww];
-        for(int i = 0; i<ww; i++){
-            values[i] = i-bp;
+        for (int i = 0; i < ww; i++) {
+            values[i] = i - bp;
         }
 
         int sgPolyDeg = 4;
-        double[][] x = new double[ww][sgPolyDeg +1];
-        for(int i=0; i<ww; i++){
-            for(int j = 0; j< sgPolyDeg +1; j++){
+        double[][] x = new double[ww][sgPolyDeg + 1];
+        for (int i = 0; i < ww; i++) {
+            for (int j = 0; j < sgPolyDeg + 1; j++) {
                 x[i][j] = Math.pow(values[i], j);
             }
-        }            
-              
+        }
         Matrix matX = new Matrix(x);
         Matrix matT = matX.transpose();
-        Matrix matTX = matT.times(matX);        
-        Matrix matI = matTX.inverse();      
+        Matrix matTX = matT.times(matX);
+        Matrix matI = matTX.inverse();
         Matrix matC = matI.times(matT);
         return matC.getArrayCopy();
     }
 
+    private boolean isEven(int x) {
+        boolean test = false;
+        if (x % 2 == 0.0D) test = true;
+        return test;
+    }
+
+    private double[] copy(double[] array) {
+        if (array == null) return null;
+        int n = array.length;
+        double[] copy = new double[n];
+        System.arraycopy(array, 0, copy, 0, n);
+        return copy;
+    }
 }
