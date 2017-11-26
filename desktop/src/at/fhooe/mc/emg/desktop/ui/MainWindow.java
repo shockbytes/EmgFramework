@@ -9,7 +9,7 @@ import at.fhooe.mc.emg.core.EmgController;
 import at.fhooe.mc.emg.storage.CsvDataStorage;
 import at.fhooe.mc.emg.tools.peak.PeakDetectionTool;
 import at.fhooe.mc.emg.tools.conconi.ConconiTool;
-import at.fhooe.mc.emg.tools.conconi.SwingConconiView;
+import at.fhooe.mc.emg.desktop.tools.conconi.SwingConconiView;
 import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog;
 import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog;
 import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog;
@@ -164,36 +164,38 @@ public class MainWindow extends JFrame implements ActionListener,
         menuItemExit.addActionListener(this);
         mnFile.add(menuItemExit);
 
-        JMenu mnDevice = new JMenu("Device");
-        menuBar.add(mnDevice);
+        JMenu menuClient = new JMenu("Client");
+        menuBar.add(menuClient);
 
         mnClients = new JMenu("Clients");
-        mnDevice.add(mnClients);
-        mnDevice.add(new JSeparator());
+        menuClient.add(mnClients);
+        menuClient.add(new JSeparator());
 
         menuItemConnect = new JMenuItem("Connect");
         menuItemConnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F10, InputEvent.SHIFT_MASK));
         menuItemConnect.addActionListener(this);
-        mnDevice.add(menuItemConnect);
+        menuClient.add(menuItemConnect);
 
         menuItemDisconnect = new JMenuItem("Disconnect");
         menuItemDisconnect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
         menuItemDisconnect.addActionListener(this);
-        mnDevice.add(menuItemDisconnect);
+        menuClient.add(menuItemDisconnect);
 
         menuItemSamplingFrequency = new JMenuItem("Sampling Frequency");
         menuItemSamplingFrequency.addActionListener(this);
-        mnDevice.add(menuItemSamplingFrequency);
+        menuClient.add(menuItemSamplingFrequency);
+
+        menuClient.add(new JSeparator());
 
         mnDataRate = new JMenu("Data rate");
 
         menuPorts = new JMenu("Ports");
-        mnDevice.add(menuPorts);
+        menuClient.add(menuPorts);
 
         menuItemReloadPorts = new JMenuItem("Reload");
         menuItemReloadPorts.addActionListener(this);
 
-        mnDevice.add(mnDataRate);
+        menuClient.add(mnDataRate);
 
         mnChannel = new JMenu("Channel");
         menuBar.add(mnChannel);
@@ -325,7 +327,7 @@ public class MainWindow extends JFrame implements ActionListener,
     }
 
     private void setupDataRateMenu() {
-        Arrays.stream(SerialClient.Companion.getSUPPORTED_DATA_RATES()).forEach((dataRate) -> {
+        Arrays.stream(SerialClient.Companion.getSupportedDataRates()).forEach((dataRate) -> {
 
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(String.valueOf(dataRate));
             item.addActionListener(e -> {
@@ -344,7 +346,7 @@ public class MainWindow extends JFrame implements ActionListener,
                 updateStatus(true);
             });
 
-            if (dataRate == SerialClient.Companion.getDEFAULT_DATA_RATE()) {
+            if (dataRate == SerialClient.Companion.getDefaultDataRate()) {
                 item.setSelected(true);
             }
             mnDataRate.add(item);

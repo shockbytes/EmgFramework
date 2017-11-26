@@ -43,8 +43,8 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
     @Throws(Exception::class)
     override fun connect() {
 
-        connectionPort = getPortByName(portName).open(javaClass.name, TIMEOUT) as gnu.io.SerialPort
-        dataRate = DEFAULT_DATA_RATE
+        connectionPort = getPortByName(portName).open(javaClass.name, timeout) as gnu.io.SerialPort
+        dataRate = defaultDataRate
         setupConnectionParams()
 
         inputReader = BufferedReader(InputStreamReader(connectionPort?.inputStream))
@@ -132,9 +132,9 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
 
     companion object {
 
-        private val TIMEOUT = 5000
-        val DEFAULT_DATA_RATE = 115200
+        private val timeout = 5000
+        val defaultDataRate = 115200
 
-        val SUPPORTED_DATA_RATES = intArrayOf(4800, 9600, 19200, 57600, 115200, 230400)
+        val supportedDataRates = intArrayOf(4800, 9600, 19200, 57600, 115200, 230400)
     }
 }
