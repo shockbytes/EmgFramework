@@ -33,6 +33,7 @@ dependencies {
 
     implementation project(':util')
     implementation project(':client')
+    implementation project(':messaging')
 
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation group: 'com.github.wendykierp', name: 'JTransforms', version: '3.1'

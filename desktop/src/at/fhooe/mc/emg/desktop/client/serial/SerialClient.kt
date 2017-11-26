@@ -1,19 +1,18 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
+import EmgMessaging
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
 import gnu.io.CommPortIdentifier
 import gnu.io.SerialPortEventListener
 import java.io.*
 import java.util.*
-import java.util.stream.IntStream
 import kotlin.streams.toList
 
 class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
 
-    override val category: ClientCategory = ClientCategory.SERIAL
+    private var dataRate: Int = 0
 
     private var ports: List<CommPortIdentifier>? = null
 
@@ -23,24 +22,17 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
 
     private var portName: String? = null
 
-    override var currentDataPointer: Int = 0
-        private set
-
     override val name: String
         get() = if (portName == null) shortName else "Serial device @ " + portName!!
 
-    override val shortName: String
-        get() = "Serial"
+    override val shortName: String = "Serial"
 
-    override val isDataStorageEnabled: Boolean
-        get() = true
+    override val isDataStorageEnabled: Boolean = true
 
-    override var samplingFrequency: Double
-        get() = super.samplingFrequency
-        set(fs) {
-            super.samplingFrequency = fs
-            sendSamplingFrequencyToDevice()
-        }
+    override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V1
+
+    override val category: ClientCategory = ClientCategory.SERIAL
+
 
     init {
         initializePorts()
@@ -48,33 +40,8 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         samplingFrequency = 100.toDouble()
     }
 
-    private fun initializePorts() {
-        ports = Collections.list<gnu.io.CommPortIdentifier>(gnu.io.CommPortIdentifier.getPortIdentifiers() as? Enumeration<gnu.io.CommPortIdentifier>?)
-    }
-
-    fun getAvailablePortNames(forceUpdate: Boolean): List<String> {
-
-        if (forceUpdate) {
-            initializePorts()
-        }
-        if (ports != null) {
-            return ports!!.stream().map<String>({ it.name }).toList()
-        }
-        return arrayListOf()
-    }
-
-    fun setSerialPortSelected(port: String) {
-        setPortName(port)
-    }
-
-    @Throws(gnu.io.NoSuchPortException::class)
-    private fun getPortByName(name: String?): gnu.io.CommPortIdentifier {
-        return gnu.io.CommPortIdentifier.getPortIdentifier(name)
-    }
-
     @Throws(Exception::class)
-    override fun connect(callback: ClientDataCallback) {
-        this.callback = callback
+    override fun connect() {
 
         connectionPort = getPortByName(portName).open(javaClass.name, TIMEOUT) as gnu.io.SerialPort
         dataRate = DEFAULT_DATA_RATE
@@ -84,11 +51,6 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         outputWriter = BufferedWriter(OutputStreamWriter(connectionPort?.outputStream))
         connectionPort?.addEventListener(this)
         connectionPort?.notifyOnDataAvailable(true)
-    }
-
-    @Throws(gnu.io.UnsupportedCommOperationException::class)
-    private fun setupConnectionParams() {
-        connectionPort?.setSerialPortParams(dataRate, gnu.io.SerialPort.DATABITS_8, gnu.io.SerialPort.STOPBITS_1, gnu.io.SerialPort.PARITY_NONE)
     }
 
     override fun disconnect() {
@@ -111,62 +73,61 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
 
             try {
 
-                val inputLine = inputReader?.readLine()
-                if (inputLine != null && !inputLine.isEmpty()) {
-                    if (processLine(inputLine)) {
-                        callback?.onRawDataAvailable(inputLine)
-                    }
+                val msg = inputReader?.readLine()
+                if (msg != null && msg.isNotEmpty()) {
+                    processMessage(msg)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
+    }
+
+    override fun sendSamplingFrequencyToClient() {
+        try {
+            outputWriter?.write(EmgMessaging.buildFrequencyMessage(samplingFrequency))
+            outputWriter?.flush()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    @Throws(gnu.io.UnsupportedCommOperationException::class)
+    private fun setupConnectionParams() {
+        connectionPort?.setSerialPortParams(dataRate,
+                gnu.io.SerialPort.DATABITS_8,
+                gnu.io.SerialPort.STOPBITS_1,
+                gnu.io.SerialPort.PARITY_NONE)
+    }
+
+    private fun initializePorts() {
+        @Suppress("UNCHECKED_CAST")
+        ports = Collections.list<gnu.io.CommPortIdentifier>(gnu.io.CommPortIdentifier.getPortIdentifiers()
+                as Enumeration<gnu.io.CommPortIdentifier>?)
+    }
+
+    @Throws(gnu.io.NoSuchPortException::class)
+    private fun getPortByName(name: String?): gnu.io.CommPortIdentifier {
+        return gnu.io.CommPortIdentifier.getPortIdentifier(name)
     }
 
     fun setPortName(portName: String) {
         this.portName = portName
     }
 
-    private fun processLine(inputLine: String): Boolean {
+    fun getAvailablePortNames(forceUpdate: Boolean): List<String> {
 
-        // Always increment x counter value
-        currentDataPointer++
-
-        // Okay, there are more than 1 channel
-        if (inputLine.contains(",")) {
-
-            val values = Arrays.stream(inputLine.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
-                    .map<Float> { s -> if (s.trim { it <= ' ' }.isEmpty()) 0.toFloat() else java.lang.Float.parseFloat(s.trim { it <= ' ' }) }.toList()
-
-            if (values.size <= 1) {
-                return false // Do not process damaged packages
-            }
-
-            IntStream.range(0, values.size).forEach { idx -> channelData.updateXYSeries(idx, currentDataPointer.toDouble(), values[idx].toDouble()) }
-
-        } else {
-
-            val value = if (Character.isDigit(inputLine[0])) java.lang.Float.parseFloat(inputLine) else java.lang.Float.MIN_VALUE
-            if (value != java.lang.Float.MIN_VALUE) {
-                channelData.updateXYSeries(0, currentDataPointer.toDouble(), value.toDouble())
-            }
+        if (forceUpdate) {
+            initializePorts()
         }
-
-        callback?.onChanneledDataAvailable(channelData)
-        return true
+        if (ports != null) {
+            return ports!!.stream().map<String>({ it.name }).toList()
+        }
+        return arrayListOf()
     }
 
-    private fun sendSamplingFrequencyToDevice() {
-        try {
-            val millis = (1.0 / samplingFrequency * 1000).toInt()
-            val command = "delay=" + millis + "\r\n"
-            outputWriter?.write(command)
-            outputWriter?.flush()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
+    fun setSerialPortSelected(port: String) {
+        setPortName(port)
     }
 
     companion object {

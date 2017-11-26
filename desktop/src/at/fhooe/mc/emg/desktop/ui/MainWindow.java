@@ -339,7 +339,8 @@ public class MainWindow extends JFrame implements ActionListener,
                 });
 
                 int rate = Integer.parseInt(item.getText());
-                controller.getClient().setDataRate(rate);
+                // TODO Baudrate only for SerialClient (will be fixed with introduction of EmgView)
+                //controller.getClient().setDataRate(rate);
                 updateStatus(true);
             });
 
@@ -402,7 +403,8 @@ public class MainWindow extends JFrame implements ActionListener,
         String text;
         if (isConnected) {
             text = "Status: Connected to " + controller.getClient().getName();
-            text += " | Baud: " + controller.getClient().getDataRate();
+            // TODO Baudrate only for SerialClient (will be fixed with introduction of EmgView)
+            //text += " | Baud: " + controller.getClient().getDataRate();
             double fs = controller.getClient().getSamplingFrequency();
             text += " | fs = " + ((fs > 0) ? (fs + "Hz") : "N/A");
 

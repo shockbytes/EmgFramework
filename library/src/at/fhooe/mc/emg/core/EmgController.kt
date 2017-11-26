@@ -2,7 +2,6 @@ package at.fhooe.mc.emg.core
 
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.client.simulation.SimulationClient
 import at.fhooe.mc.emg.filter.*
@@ -18,7 +17,7 @@ import java.util.*
  * Author:  Mescht
  * Date:    07.07.2017
  */
-abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>) : ClientDataCallback {
+abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>) {
 
     lateinit var client: EmgClient
 
@@ -102,7 +101,9 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
 
     fun connect() {
         try {
-            client.connect(this)
+            client.connect()
+            client.rawCallbackSubject.subscribe { rawClientCallbackSubject.onNext(it) }
+            client.channeledCallbackSubject.subscribe { channeledClientCallbackSubject.onNext(it) }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -143,14 +144,6 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
     }
 
     // ----------------------------------------------------------------------------------------------------
-
-    override fun onChanneledDataAvailable(channelData: ChannelData) {
-        channeledClientCallbackSubject.onNext(channelData)
-    }
-
-    override fun onRawDataAvailable(line: String) {
-        rawClientCallbackSubject.onNext(line)
-    }
 
     companion object {
         val maxAmount = 512

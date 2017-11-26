@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.client.simulation
 
+import EmgMessaging
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.ClientDataCallback
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.util.AppUtils
 import io.reactivex.Observable
@@ -19,23 +19,24 @@ import kotlin.streams.toList
 
 class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simulationFolder: String) : EmgClient() {
 
-    override val category: ClientCategory = ClientCategory.SIMULATION
-
     private var millis: Long = 0
 
     private var isEndlessLoopEnabled = false
 
-    var simulationSource: SimulationSource? = null
-
-    private var simulationData: List<Double>? = null
+    private var simulationData: List<String>? = null
 
     private var intervalDisposable: Disposable? = null
+
+    private var simulationIndex: Int = 0
+
+    var simulationSource: SimulationSource? = null
 
     var simulationSources: List<SimulationSource>
         private set
 
-    override var currentDataPointer: Int = 0
-        private set
+    override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V2
+
+    override val category: ClientCategory = ClientCategory.SIMULATION
 
     override val name: String
         get() = if (simulationSource == null) shortName else "Simulator /w " + simulationSource?.name
@@ -60,42 +61,39 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simu
     }
 
     @Throws(Exception::class)
-    override fun connect(callback: ClientDataCallback) {
-        this.callback = callback
+    override fun connect() {
 
         if (simulationSource == null) {
-            throw IllegalStateException("Source or listener cannot be null for simulation!")
+            throw IllegalStateException("Source cannot be null for simulation!")
         }
         disconnect() // Reset connection first
         simulationData = prepareSimulationData()
 
-        var index = 0
         intervalDisposable = Observable.interval(millis, TimeUnit.MILLISECONDS, Schedulers.io())
                 .subscribe {
 
-                    val data = simulationData!![index]
-                    callback.onRawDataAvailable(data.toString())
-
-                    channelData.updateXYSeries(0, currentDataPointer.toDouble(), data)
-                    callback.onChanneledDataAvailable(channelData)
-
-                    currentDataPointer++; index++
-
-                    if (index >= simulationData!!.size) {
-                        if (isEndlessLoopEnabled) {
-                            index = 0
-                        } else {
-                            disconnect()
-                        }
+                    val data: String? = simulationData!![simulationIndex]
+                    if (data != null) {
+                        processMessage(data)
                     }
+
+                    // Check for endless loop playback
+                    checkEndlessLoopPlayback()
                 }
     }
 
     override fun disconnect() {
 
+        simulationIndex = 0
+        currentDataPointer = 0
+
         if (intervalDisposable?.isDisposed == false) {
             intervalDisposable?.dispose()
         }
+    }
+
+    override fun sendSamplingFrequencyToClient() {
+        // Do nothing here, simulator client runs local
     }
 
     fun addFileAsSimulationSource(srcPath: String) {
@@ -128,25 +126,25 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simu
                 .toList()
     }
 
-    private fun prepareSimulationData(): List<Double> {
+    private fun prepareSimulationData(): List<String> {
 
-        var list: List<Double> = ArrayList()
-        try {
-            Files.lines(Paths.get(simulationSource?.filePath)).use { stream ->
-
-                list = stream
-                        .map<Double> { s ->
-                            val number = s.substring(s.indexOf(",") + 1, s.length)
-                            if (number.isEmpty()) 0.toDouble() else java.lang.Double.parseDouble(number)
-                        }
-                        .toList()
-
-            }
+        return try {
+            Files.lines(Paths.get(simulationSource?.filePath)).use { stream -> stream.toList() }
         } catch (e: IOException) {
             e.printStackTrace()
+            arrayListOf()
         }
+    }
 
-        return list
+    private fun checkEndlessLoopPlayback() {
+        simulationIndex++
+        if (simulationIndex >= simulationData!!.size) {
+            if (isEndlessLoopEnabled) {
+                simulationIndex = 0
+            } else {
+                disconnect()
+            }
+        }
     }
 
 }
