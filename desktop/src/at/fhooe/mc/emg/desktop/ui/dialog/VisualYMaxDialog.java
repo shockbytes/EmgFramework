@@ -12,7 +12,6 @@ public class VisualYMaxDialog extends JDialog implements ActionListener {
 	public interface OnVisualMaxEnteredListener {
 
 		void onVisualMaxEntered(double max);
-
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -21,6 +20,11 @@ public class VisualYMaxDialog extends JDialog implements ActionListener {
 	
 	private OnVisualMaxEnteredListener listener;
 	private JTextField textMax;
+
+	public static void show(OnVisualMaxEnteredListener listener, JFrame mainWindow) {
+	    VisualYMaxDialog dialog = new VisualYMaxDialog(listener, mainWindow);
+        dialog.setVisible(true);
+	}
 
 	public VisualYMaxDialog(OnVisualMaxEnteredListener listener, JFrame mainWindow) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_dialog_graph_max.png"));

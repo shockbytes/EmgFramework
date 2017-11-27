@@ -10,6 +10,7 @@ import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
+import at.fhooe.mc.emg.util.FrequencyAnalysis
 import at.fhooe.mc.emg.view.EmgView
 import at.fhooe.mc.emg.view.EmgViewCallback
 import at.fhooe.mc.emg.view.VisualView
@@ -19,8 +20,8 @@ import java.util.*
  * Author:  Martin Macheiner
  * Date:    07.07.2017
  */
-abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>,
-                             val emgView: EmgView) : EmgViewCallback {
+abstract class EmgController(private val clients: List<EmgClient>, private val tools: List<Tool>,
+                             private val emgView: EmgView) : EmgViewCallback {
 
     private lateinit var client: EmgClient
 
@@ -117,10 +118,12 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
         return client.channelData.getSingleChannelSection(start, stop, channel)
     }
 
-    fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
+    override fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
         config.isSimulationEndlessLoopEnabled = isEnabled
-        // TODO Pass through
-        // simulationClient.isEndlessLoopEnabled = isEnabled
+        if (hasClient(ClientCategory.SIMULATION)) {
+            val simClient = getClient(ClientCategory.SIMULATION) as SimulationClient
+            simClient.isEndlessLoopEnabled = isEnabled
+        }
     }
 
     private fun tryCopySimulationData(filename: String) {
@@ -205,6 +208,9 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
         updateStatus(false)
     }
 
+    override fun requestFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType) {
+        emgView.showFrequencyAnalysis(type, client.samplingFrequency)
+    }
 
 
     // ----------------------------------------------------------------------------------------------------

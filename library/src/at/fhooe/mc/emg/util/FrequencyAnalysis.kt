@@ -3,8 +3,13 @@ package at.fhooe.mc.emg.util
 import org.jtransforms.fft.DoubleFFT_1D
 import java.util.*
 
-object Analysis {
+object FrequencyAnalysis {
 
+    enum class AnalysisType {
+        FFT, SPECTRUM
+    }
+
+    // TODO Maybe wrap this into Observable?
     fun fft(input: DoubleArray): DoubleArray {
 
         val fftDo = DoubleFFT_1D(input.size.toLong())

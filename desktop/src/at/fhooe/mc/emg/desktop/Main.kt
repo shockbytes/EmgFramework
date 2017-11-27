@@ -22,8 +22,8 @@ object Main {
 
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
                 val view = DesktopMainWindow()
-                // TODO Initialize controller here and hand in window as argument in constructor
-                val controller = DesktopEmgController(
+
+                DesktopEmgController(
                         Arrays.asList(
                                 SerialClient(),
                                 SimulationClient(System.getProperty("user.dir") + "/data/simulation"),

@@ -14,6 +14,7 @@ import at.fhooe.mc.emg.filter.Filter
 import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
+import at.fhooe.mc.emg.util.FrequencyAnalysis
 import at.fhooe.mc.emg.view.EmgViewCallback
 import at.fhooe.mc.emg.view.VisualView
 import java.awt.BorderLayout
@@ -23,10 +24,7 @@ import java.awt.event.*
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-// TODO Try to get rid off DialogListeners
-class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
-        ActionListener, SamplingFrequencyDialog.OnSamplingFrequencySelectedListener,
-        VisualYMaxDialog.OnVisualMaxEnteredListener {
+class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     private var labelStatus: JLabel? = null
     private var textAreaConsole: JTextArea? = null
@@ -82,7 +80,6 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
             }
         })
 
-        // initializeController();
         initializeMenu()
         initializeViews()
 
@@ -182,8 +179,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
         menuItemFilterConfig?.addActionListener(this)
         mnChannel?.add(menuItemFilterConfig)
 
-        val separator_1 = JSeparator()
-        mnChannel?.add(separator_1)
+        val separator1 = JSeparator()
+        mnChannel?.add(separator1)
 
         val mnSimulation = JMenu("Simulation")
         menuBar.add(mnSimulation)
@@ -195,7 +192,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
         cbMenuItemPlaybackLoop?.addActionListener(this)
         mnSimulation.add(cbMenuItemPlaybackLoop)
 
-        val mnAnalysis = JMenu("Analysis")
+        val mnAnalysis = JMenu("FrequencyAnalysis")
         menuBar.add(mnAnalysis)
 
         menuItemFft = JMenuItem("FFT")
@@ -214,7 +211,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
         val mnDebug = JMenu("Debug")
         menuBar.add(mnDebug)
 
-        menuItemVisualMax = JMenuItem("VisualView max")
+        menuItemVisualMax = JMenuItem("Visual max Y")
         menuItemVisualMax?.addActionListener(this)
         mnDebug.add(menuItemVisualMax)
 
@@ -288,37 +285,26 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
     }
 
     private fun showSamplingFrequencyDialog() {
-        val dialog = SamplingFrequencyDialog(this, this)
-        dialog.isVisible = true
+        SamplingFrequencyDialog.show({ frequency ->
+            viewCallback.setSamplingFrequency(frequency)
+        }, this)
     }
 
-    // ---> Channel menu
     private fun showFilterConfigurationDialog() {
         val dialog = FilterConfigDialog(config, this)
         dialog.isVisible = true
     }
 
-    // ---> Analysis menu
-    private fun doFrequencyAnalysis(type: FrequencyAnalysisFrame.AnalysisType) {
-
-        /* TODO
-        FrequencyAnalysisFrame fftFrame = new FrequencyAnalysisFrame(type, visualView.getDataForFrequencyAnalysis(),
-                controller.getClient().getSamplingFrequency(), this);
-        fftFrame.setVisible(true);
-        */
-    }
-
-    // ---> Debug menu
     private fun showVisualMaxDialog() {
-        val dialog = VisualYMaxDialog(this, this)
-        dialog.isVisible = true
+        VisualYMaxDialog.show({ max ->
+            visualView.setYMaximum(max)
+        }, this)
     }
 
     // ---------------------------------------------------------------
 
     override fun actionPerformed(e: ActionEvent) {
 
-        // TODO All of this will go into EmgViewCallback or directly into EmgController
         when {
             e.source === menuItemConnect -> viewCallback.connectToClient()
             e.source === menuItemDisconnect -> disconnectFromDevice()
@@ -327,14 +313,13 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
             e.source === menuItemVisualMax -> showVisualMaxDialog()
             e.source === cbMenuItemLogging -> config.isWriteToLogEnabled = cbMenuItemLogging?.isSelected!!
             e.source === cbMenuItemCopyToSimulation -> config.isCopyToSimulationEnabled = cbMenuItemCopyToSimulation?.isSelected!!
-            e.source === cbMenuItemPlaybackLoop -> {
-                // TODO config.setSimulationPlaybackLoopEnabled(cbMenuItemPlaybackLoop.isSelected());
-            }
+            e.source === cbMenuItemPlaybackLoop -> { viewCallback.setSimulationPlaybackLoopEnabled(cbMenuItemPlaybackLoop?.isSelected!!) }
             e.source === menuItemReset -> reset()
-            e.source === menuItemFft -> doFrequencyAnalysis(FrequencyAnalysisFrame.AnalysisType.FFT)
-            e.source === menuItemPowerSpectrum -> doFrequencyAnalysis(FrequencyAnalysisFrame.AnalysisType.SPECTRUM)
+            e.source === menuItemFft -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysis.AnalysisType.FFT)
+            e.source === menuItemPowerSpectrum -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysis.AnalysisType.SPECTRUM)
             e.source === menuItemReloadPorts -> {
-                // TODO viewCallback.reloadSerialPorts();
+                // TODO This should not be necessary, because it will be replaced by a ConfigView anyway
+                // viewCallback.reloadSerialPorts();
             }
             e.source === menuItemFilterConfig -> showFilterConfigurationDialog()
             e.source === menuItemExport -> {
@@ -342,14 +327,6 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
                 viewCallback.exportData(fileName, CsvDataStorage())
             }
         }
-    }
-
-    override fun onSamplingFrequencySelected(frequency: Double) {
-        viewCallback.setSamplingFrequency(frequency)
-    }
-
-    override fun onVisualMaxEntered(max: Double) {
-        visualView.setYMaximum(max)
     }
 
     override fun setDeviceControlsEnabled(isEnabled: Boolean) {
@@ -430,6 +407,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
         mnClients?.removeAll()
         clients.forEach { c ->
 
+            // Setup chooser for available clients
             val item = JCheckBoxMenuItem(c.shortName)
             item.isSelected = c === defaultClient // Select default client
             item.addActionListener {
@@ -442,6 +420,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
                 }
             }
             mnClients?.add(item)
+
+            // TODO Setup client config views
         }
     }
 
@@ -456,7 +436,11 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>,
     }
 
     override fun setupNetworkClientView(client: NetworkClient) {
-        // TODO
+        // TODO Show config view with ip and port (Possibly not needed)
+    }
+
+    override fun showFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType, fs: Double) {
+        FrequencyAnalysisFrame.show(type, visualView.dataForFrequencyAnalysis, fs, this)
     }
 
     override fun setVisualView(view: VisualView<JComponent>) {

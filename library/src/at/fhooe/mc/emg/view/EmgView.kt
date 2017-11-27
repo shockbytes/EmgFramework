@@ -8,6 +8,7 @@ import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.filter.Filter
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
+import at.fhooe.mc.emg.util.FrequencyAnalysis
 
 /**
  * Author:  Mescht
@@ -15,7 +16,6 @@ import at.fhooe.mc.emg.util.Configuration
  */
 interface EmgView {
 
-    // TODO Keep EmgController for now, but maybe replace it with EmgViewCallback
     fun setup(viewCallback: EmgViewCallback, config: Configuration)
 
     fun reset()
@@ -46,5 +46,6 @@ interface EmgView {
 
     // -------------------------------------------------------
 
+    fun showFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType, fs: Double)
 
 }

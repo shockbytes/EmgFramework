@@ -20,8 +20,6 @@ class SimulationClient(private val simulationFolder: String) : EmgClient() {
 
     private var millis: Long = 0
 
-    private var isEndlessLoopEnabled = false
-
     private var simulationData: List<String>? = null
 
     private var intervalDisposable: Disposable? = null
@@ -32,6 +30,8 @@ class SimulationClient(private val simulationFolder: String) : EmgClient() {
 
     var simulationSources: List<SimulationSource>
         private set
+
+    var isEndlessLoopEnabled = false
 
     override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V2
 
