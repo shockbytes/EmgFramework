@@ -11,8 +11,6 @@ import kotlin.streams.toList
 
 class SerialClient : EmgClient(), SerialPortEventListener {
 
-    private var dataRate: Int = 0
-
     private var ports: List<CommPortIdentifier>? = null
 
     private var inputReader: BufferedReader? = null
@@ -31,6 +29,8 @@ class SerialClient : EmgClient(), SerialPortEventListener {
     override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V1
 
     override val category: ClientCategory = ClientCategory.SERIAL
+
+    var dataRate: Int = 0
 
     init {
         initializePorts()

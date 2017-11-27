@@ -77,7 +77,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
                 view.onCountdownTick(countdown)
 
                 if (countdown == 0) {
-                    controller.connect()
+                    controller.connectToClient()
                     timer?.schedule(timerTask, 0, 1000)
                     cancel()
                 }
@@ -92,7 +92,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
 
         if (timer != null) {
             timer?.cancel()
-            controller.disconnect(null)
+            controller.disconnectFromClient(null)
         }
     }
 
