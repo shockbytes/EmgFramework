@@ -8,5 +8,4 @@ interface ToolView<in T> {
 
     fun setup(viewCallback: T)
 
-
 }

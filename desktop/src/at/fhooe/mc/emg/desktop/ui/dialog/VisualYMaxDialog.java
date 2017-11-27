@@ -30,14 +30,14 @@ public class VisualYMaxDialog extends JDialog implements ActionListener {
 		setBounds(mainWindow.getX() + (mainWindow.getWidth()/2) - (WIDTH /2), mainWindow.getY() + (mainWindow.getHeight()/2) - (HEIGHT /2), WIDTH, HEIGHT);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		setTitle("Maximum visual value");
+		setTitle("Maximum visualView value");
 		getContentPane().setLayout(new BorderLayout());
 
 		JPanel contentPanel = new JPanel();
 		contentPanel.setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(8, 8, 8, 8));
 
-		doneButton = new JButton("Set visual max");
+		doneButton = new JButton("Set visualView max");
 		doneButton.addActionListener(this);
 		
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

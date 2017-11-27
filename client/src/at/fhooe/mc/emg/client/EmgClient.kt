@@ -9,11 +9,12 @@ import io.reactivex.subjects.PublishSubject
  */
 abstract class EmgClient {
 
-    open var samplingFrequency: Double = 0.toDouble()
+    open var samplingFrequency: Double = 100.toDouble()
         set(fs) {
             field = fs
             sendSamplingFrequencyToClient()
         }
+
     var currentDataPointer: Int = 0
         protected set
 
@@ -21,7 +22,7 @@ abstract class EmgClient {
 
     val channeledCallbackSubject: PublishSubject<ChannelData> = PublishSubject.create()
 
-    lateinit var channelData: ChannelData
+    var channelData: ChannelData
         protected set
 
     // ---------------------------------------------------------------
@@ -36,6 +37,9 @@ abstract class EmgClient {
 
     abstract val protocolVersion: EmgMessaging.ProtocolVersion
 
+    // TODO Implement later
+    // abstract val configView: EmgClientConfigView
+
     @Throws(Exception::class)
     abstract fun connect()
 
@@ -44,6 +48,9 @@ abstract class EmgClient {
     abstract fun sendSamplingFrequencyToClient()
 
     // ---------------------------------------------------------------
+    init {
+        channelData = ChannelData(channelWindowWidth)
+    }
 
     fun processMessage(msg: String) {
 
@@ -51,12 +58,16 @@ abstract class EmgClient {
         currentDataPointer++
 
         val channels = EmgMessaging.parseMessage(msg, protocolVersion)
-        channels?.forEachIndexed{ idx, value ->
+        channels?.forEachIndexed { idx, value ->
             channelData.updateXYSeries(idx, currentDataPointer.toDouble(), value)
         }
 
         rawCallbackSubject.onNext(msg)
         channeledCallbackSubject.onNext(channelData)
+    }
+
+    companion object {
+        const val channelWindowWidth = 512
     }
 
 }

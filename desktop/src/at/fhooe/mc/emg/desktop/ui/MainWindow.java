@@ -2,18 +2,18 @@ package at.fhooe.mc.emg.desktop.ui;
 
 import at.fhooe.mc.emg.client.ClientCategory;
 import at.fhooe.mc.emg.client.network.NetworkClient;
-import at.fhooe.mc.emg.desktop.client.serial.SerialClient;
 import at.fhooe.mc.emg.client.simulation.SimulationClient;
+import at.fhooe.mc.emg.desktop.client.serial.SerialClient;
 import at.fhooe.mc.emg.desktop.core.DesktopEmgController;
-import at.fhooe.mc.emg.core.EmgController;
-import at.fhooe.mc.emg.storage.CsvDataStorage;
-import at.fhooe.mc.emg.tools.peak.PeakDetectionTool;
-import at.fhooe.mc.emg.tools.conconi.ConconiTool;
 import at.fhooe.mc.emg.desktop.tools.conconi.SwingConconiView;
 import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog;
 import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog;
 import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog;
-import at.fhooe.mc.emg.visual.Visual;
+import at.fhooe.mc.emg.storage.CsvDataStorage;
+import at.fhooe.mc.emg.tools.conconi.ConconiTool;
+import at.fhooe.mc.emg.tools.peak.PeakDetectionTool;
+import at.fhooe.mc.emg.view.EmgView;
+import at.fhooe.mc.emg.view.VisualView;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -21,11 +21,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
 
-public class MainWindow extends JFrame implements ActionListener,
-        SamplingFrequencyDialog.OnSamplingFrequencySelectedListener,
+public class MainWindow extends JFrame implements EmgView,
+        ActionListener, SamplingFrequencyDialog.OnSamplingFrequencySelectedListener,
         VisualYMaxDialog.OnVisualMaxEnteredListener {
-
-    private static final long serialVersionUID = 1L;
 
     private JLabel labelStatus;
     private JTextArea textAreaConsole;
@@ -59,7 +57,7 @@ public class MainWindow extends JFrame implements ActionListener,
 
     private DesktopEmgController controller;
 
-    private Visual<JComponent> visual;
+    private VisualView<JComponent> visualView;
 
     public MainWindow() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_main.jpg"));
@@ -92,18 +90,19 @@ public class MainWindow extends JFrame implements ActionListener,
 
         controller = new DesktopEmgController(
                 Arrays.asList(
-                        new SerialClient(EmgController.Companion.getMaxAmount()),
-                        new SimulationClient(100.0, EmgController.Companion.getMaxAmount(), System.getProperty("user.dir") + "/data/simulation"),
+                        new SerialClient(),
+                        new SimulationClient(System.getProperty("user.dir") + "/data/simulation"),
                         new NetworkClient()),
                 Arrays.asList(
                         new ConconiTool(new SwingConconiView()),
-                        new PeakDetectionTool()));
+                        new PeakDetectionTool()),
+                this);
 
         controller.getRawClientCallbackSubject().subscribe(raw -> {
             textAreaConsole.append(raw + "\n");
             textAreaConsole.setCaretPosition(textAreaConsole.getDocument().getLength());
         });
-        controller.getChanneledClientCallbackSubject().subscribe(cd -> visual.update(cd, controller.getFilters()));
+        controller.getChanneledClientCallbackSubject().subscribe(cd -> visualView.update(cd, controller.getFilters()));
 
         controller.getSimulationSourcesSubject().subscribe(i -> setupSimulationSourceMenu());
     }
@@ -124,9 +123,9 @@ public class MainWindow extends JFrame implements ActionListener,
         textAreaConsole.setEditable(false);
         splitPane.setLeftComponent(new JScrollPane(textAreaConsole));
 
-        visual = controller.getVisual();
-        visual.initialize();
-        splitPane.setRightComponent(visual.getView());
+        visualView = controller.getVisualView();
+        visualView.initialize();
+        splitPane.setRightComponent(visualView.getView());
 
         updateStatus(false);
     }
@@ -236,7 +235,7 @@ public class MainWindow extends JFrame implements ActionListener,
         JMenu mnDebug = new JMenu("Debug");
         menuBar.add(mnDebug);
 
-        menuItemVisualMax = new JMenuItem("Visual max");
+        menuItemVisualMax = new JMenuItem("VisualView max");
         menuItemVisualMax.addActionListener(this);
         mnDebug.add(menuItemVisualMax);
 
@@ -429,8 +428,8 @@ public class MainWindow extends JFrame implements ActionListener,
             textAreaConsole.setText("");
             splitPane.remove(2);
 
-            visual.reset();
-            splitPane.setRightComponent(visual.getView());
+            visualView.reset();
+            splitPane.setRightComponent(visualView.getView());
         }
     }
 
@@ -478,7 +477,7 @@ public class MainWindow extends JFrame implements ActionListener,
     // ---> Analysis menu
     private void doFrequencyAnalysis(FrequencyAnalysisFrame.AnalysisType type) {
 
-        FrequencyAnalysisFrame fftFrame = new FrequencyAnalysisFrame(type, visual.getDataForFrequencyAnalysis(),
+        FrequencyAnalysisFrame fftFrame = new FrequencyAnalysisFrame(type, visualView.getDataForFrequencyAnalysis(),
                 controller.getClient().getSamplingFrequency(), this);
         fftFrame.setVisible(true);
     }
@@ -534,7 +533,7 @@ public class MainWindow extends JFrame implements ActionListener,
 
     @Override
     public void onVisualMaxEntered(double max) {
-        visual.setYMaximum(max);
+        visualView.setYMaximum(max);
     }
 
 }

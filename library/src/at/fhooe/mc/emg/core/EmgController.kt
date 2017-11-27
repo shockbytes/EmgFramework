@@ -9,15 +9,17 @@ import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
-import at.fhooe.mc.emg.visual.Visual
+import at.fhooe.mc.emg.view.EmgView
+import at.fhooe.mc.emg.view.VisualView
 import io.reactivex.subjects.PublishSubject
 import java.util.*
 
 /**
- * Author:  Mescht
+ * Author:  Martin Macheiner
  * Date:    07.07.2017
  */
-abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>) {
+abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>,
+                             val emgView: EmgView) {
 
     lateinit var client: EmgClient
 
@@ -27,7 +29,7 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
     lateinit var filters: List<Filter>
         private set
 
-    abstract val visual: Visual<*>
+    abstract val visualView: VisualView<*>
 
     val channeledClientCallbackSubject: PublishSubject<ChannelData> = PublishSubject.create<ChannelData>()
     val rawClientCallbackSubject: PublishSubject<String> = PublishSubject.create<String>()
@@ -56,6 +58,8 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
                 LowpassFilter(),
                 RunningAverageFilter(config.runningAverageWindowSize),
                 SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
+
+        // TODO emgView.setup()
     }
 
     private fun storeData(writeOnDisconnectFileName: String?) {
@@ -145,7 +149,4 @@ abstract class EmgController(val clients: List<EmgClient>, val tools: List<Tool>
 
     // ----------------------------------------------------------------------------------------------------
 
-    companion object {
-        val maxAmount = 512
-    }
 }

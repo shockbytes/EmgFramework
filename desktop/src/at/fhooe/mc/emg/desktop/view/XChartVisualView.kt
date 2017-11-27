@@ -1,8 +1,8 @@
-package at.fhooe.mc.emg.desktop.visual
+package at.fhooe.mc.emg.desktop.view
 
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.filter.Filter
-import at.fhooe.mc.emg.visual.Visual
+import at.fhooe.mc.emg.view.VisualView
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.style.Styler
 import java.awt.Color
@@ -13,7 +13,7 @@ import javax.swing.JComponent
  * Author:  Martin Macheiner
  * Date:    03.07.2017
  */
-class XChartVisual : Visual<JComponent> {
+class XChartVisualView : VisualView<JComponent> {
 
     private lateinit var realtimeChart: org.knowm.xchart.XYChart
     private lateinit var chartWrapper: XChartPanel<org.knowm.xchart.XYChart>

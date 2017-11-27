@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.core
+package at.fhooe.mc.emg.view
 
 /**
  * Author:  Mescht
@@ -7,5 +7,6 @@ package at.fhooe.mc.emg.core
 interface EmgView {
 
     // TODO This will be my work for tomorrow
+    //fun setup(viewCallback: EmgView)
 
 }

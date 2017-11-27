@@ -12,8 +12,8 @@
 
 object EmgMessaging {
 
-    const val paramDelimeter = ":"
-    const val channelDelimeter = ","
+    private const val paramDelimeter = ":"
+    private const val channelDelimeter = ","
 
     enum class ProtocolVersion {
         V1, V2
@@ -100,7 +100,7 @@ object EmgMessaging {
         val params = msg.split(paramDelimeter.toRegex()).dropLastWhile { it.trim().isEmpty() }
         // TODO Somehow incorporate timestamps and break compat with #parseMessage()
         // val timestamps = params[0].map { s -> s.toDouble() }
-        return parseV1(params[1])
+        return if (params.size > 1) parseV1(params[1]) else null
     }
 
 

@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.visual
+package at.fhooe.mc.emg.view
 
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.filter.Filter
@@ -7,7 +7,7 @@ import at.fhooe.mc.emg.filter.Filter
  * Author:  Martin Macheiner
  * Date:    03.07.2017
  */
-interface Visual<out T> {
+interface VisualView<out T> {
 
     val dataForFrequencyAnalysis: DoubleArray
 

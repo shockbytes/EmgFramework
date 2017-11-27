@@ -9,7 +9,8 @@ out/
 build/
 
 # Config files
-data
+data/config.json
+data/serial_driver/
 
 # Local configuration file (sdk path, etc)
 local.properties

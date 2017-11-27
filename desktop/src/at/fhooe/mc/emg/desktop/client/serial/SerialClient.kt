@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
 import EmgMessaging
-import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
 import gnu.io.CommPortIdentifier
@@ -10,7 +9,7 @@ import java.io.*
 import java.util.*
 import kotlin.streams.toList
 
-class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
+class SerialClient : EmgClient(), SerialPortEventListener {
 
     private var dataRate: Int = 0
 
@@ -33,11 +32,8 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
 
     override val category: ClientCategory = ClientCategory.SERIAL
 
-
     init {
         initializePorts()
-        channelData = ChannelData(maxAmount)
-        samplingFrequency = 100.toDouble()
     }
 
     @Throws(Exception::class)
@@ -72,7 +68,6 @@ class SerialClient(maxAmount: Int) : EmgClient(), SerialPortEventListener {
         if (event.eventType == gnu.io.SerialPortEvent.DATA_AVAILABLE) {
 
             try {
-
                 val msg = inputReader?.readLine()
                 if (msg != null && msg.isNotEmpty()) {
                     processMessage(msg)

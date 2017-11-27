@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.client.simulation
 
 import EmgMessaging
-import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.util.AppUtils
@@ -17,7 +16,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
-class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simulationFolder: String) : EmgClient() {
+class SimulationClient(private val simulationFolder: String) : EmgClient() {
 
     private var millis: Long = 0
 
@@ -41,11 +40,9 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simu
     override val name: String
         get() = if (simulationSource == null) shortName else "Simulator /w " + simulationSource?.name
 
-    override val shortName: String
-        get() = "Simulator"
+    override val shortName: String = "Simulator"
 
-    override val isDataStorageEnabled: Boolean
-        get() = false
+    override val isDataStorageEnabled: Boolean = false
 
     override var samplingFrequency: Double
         get() = super.samplingFrequency
@@ -55,8 +52,7 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simu
         }
 
     init {
-        samplingFrequency = sampleFrequency
-        channelData = ChannelData(maxAmount)
+        this.samplingFrequency = samplingFrequency // This call is necessary to trigger the set of the var millis
         simulationSources = loadSimulationSources()
     }
 
@@ -129,7 +125,8 @@ class SimulationClient(sampleFrequency: Double, maxAmount: Int, private val simu
     private fun prepareSimulationData(): List<String> {
 
         return try {
-            Files.lines(Paths.get(simulationSource?.filePath)).use { stream -> stream.toList() }
+            Files.lines(Paths.get(simulationSource?.filePath))
+                    .use { stream -> stream.filter { it.isNotEmpty() }.toList() }
         } catch (e: IOException) {
             e.printStackTrace()
             arrayListOf()
