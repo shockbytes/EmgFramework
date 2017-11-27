@@ -1,9 +1,7 @@
 package at.fhooe.mc.emg.desktop.core
 
-import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.core.EmgController
-import at.fhooe.mc.emg.desktop.client.serial.SerialClient
 import at.fhooe.mc.emg.desktop.view.DesktopEmgView
 import at.fhooe.mc.emg.desktop.view.XChartVisualView
 import at.fhooe.mc.emg.tools.Tool
@@ -21,11 +19,6 @@ class DesktopEmgController(c: List<EmgClient>, t: List<Tool>, v: DesktopEmgView<
 
     init {
         v.setVisualView(visualView)
-
-        if (hasClient(ClientCategory.SERIAL)) {
-            val serialClient = getClient(ClientCategory.SERIAL) as SerialClient
-            v.setupSerialClientView(serialClient)
-        }
     }
 
 }

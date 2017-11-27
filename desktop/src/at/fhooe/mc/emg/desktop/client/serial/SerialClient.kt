@@ -3,19 +3,19 @@ package at.fhooe.mc.emg.desktop.client.serial
 import EmgMessaging
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
-import gnu.io.CommPortIdentifier
-import gnu.io.SerialPortEventListener
+import at.fhooe.mc.emg.client.EmgClientConfigView
+import gnu.io.*
 import java.io.*
 import java.util.*
 import kotlin.streams.toList
 
-class SerialClient : EmgClient(), SerialPortEventListener {
+class SerialClient(cv: EmgClientConfigView? = null) : EmgClient(cv), SerialPortEventListener {
 
     private var ports: List<CommPortIdentifier>? = null
 
     private var inputReader: BufferedReader? = null
     private var outputWriter: BufferedWriter? = null
-    private var connectionPort: gnu.io.SerialPort? = null
+    private var connectionPort: SerialPort? = null
 
     private var portName: String? = null
 
@@ -39,7 +39,7 @@ class SerialClient : EmgClient(), SerialPortEventListener {
     @Throws(Exception::class)
     override fun connect() {
 
-        connectionPort = getPortByName(portName).open(javaClass.name, timeout) as gnu.io.SerialPort
+        connectionPort = getPortByName(portName).open(javaClass.name, timeout) as SerialPort
         dataRate = defaultDataRate
         setupConnectionParams()
 
@@ -63,9 +63,9 @@ class SerialClient : EmgClient(), SerialPortEventListener {
         }
     }
 
-    override fun serialEvent(event: gnu.io.SerialPortEvent) {
+    override fun serialEvent(event: SerialPortEvent) {
 
-        if (event.eventType == gnu.io.SerialPortEvent.DATA_AVAILABLE) {
+        if (event.eventType == SerialPortEvent.DATA_AVAILABLE) {
 
             try {
                 val msg = inputReader?.readLine()
@@ -87,26 +87,30 @@ class SerialClient : EmgClient(), SerialPortEventListener {
         }
     }
 
-    @Throws(gnu.io.UnsupportedCommOperationException::class)
+    @Throws(UnsupportedCommOperationException::class)
     private fun setupConnectionParams() {
         connectionPort?.setSerialPortParams(dataRate,
-                gnu.io.SerialPort.DATABITS_8,
-                gnu.io.SerialPort.STOPBITS_1,
-                gnu.io.SerialPort.PARITY_NONE)
+                SerialPort.DATABITS_8,
+                SerialPort.STOPBITS_1,
+                SerialPort.PARITY_NONE)
     }
 
     private fun initializePorts() {
         @Suppress("UNCHECKED_CAST")
-        ports = Collections.list<gnu.io.CommPortIdentifier>(gnu.io.CommPortIdentifier.getPortIdentifiers()
-                as Enumeration<gnu.io.CommPortIdentifier>?)
+        ports = Collections.list<CommPortIdentifier>(CommPortIdentifier.getPortIdentifiers()
+                as Enumeration<CommPortIdentifier>?)
+
+        if (ports!!.isNotEmpty()) {
+            setSerialPortSelected(ports!![0].name)
+        }
     }
 
-    @Throws(gnu.io.NoSuchPortException::class)
-    private fun getPortByName(name: String?): gnu.io.CommPortIdentifier {
-        return gnu.io.CommPortIdentifier.getPortIdentifier(name)
+    @Throws(NoSuchPortException::class)
+    private fun getPortByName(name: String?): CommPortIdentifier {
+        return CommPortIdentifier.getPortIdentifier(name)
     }
 
-    fun setPortName(portName: String) {
+    private fun setPortName(portName: String) {
         this.portName = portName
     }
 

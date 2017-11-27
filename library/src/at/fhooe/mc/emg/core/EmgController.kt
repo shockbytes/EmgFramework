@@ -3,7 +3,6 @@ package at.fhooe.mc.emg.core
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.network.NetworkClient
 import at.fhooe.mc.emg.client.simulation.SimulationClient
 import at.fhooe.mc.emg.filter.*
 import at.fhooe.mc.emg.storage.CsvDataStorage
@@ -62,25 +61,14 @@ abstract class EmgController(private val clients: List<EmgClient>, private val t
     }
 
     private fun setupEmgView() {
-
-        emgView.setup(this, config)
+        emgView.setupView(this, config)
         emgView.setupFilterViews(filters)
         emgView.setupEmgClientView(clients, client)
         emgView.setupToolsView(tools, this)
-
-        val simClient = getClient(ClientCategory.SIMULATION) as? SimulationClient
-        if (simClient != null) {
-            emgView.setupSimulationClientView(simClient)
-        }
-
-        val netClient = getClient(ClientCategory.NETWORK) as? NetworkClient
-        if (netClient != null) {
-            emgView.setupNetworkClientView(netClient)
-        }
+        emgView.setupEmgClientConfigViews(clients)
     }
 
     private fun storeData(writeOnDisconnectFileName: String?) {
-
         if (config.isWriteToLogEnabled && client.isDataStorageEnabled && writeOnDisconnectFileName != null) {
             exportData(writeOnDisconnectFileName, CsvDataStorage())
         }
@@ -110,20 +98,8 @@ abstract class EmgController(private val clients: List<EmgClient>, private val t
         return false
     }
 
-    fun saveConfig() {
-        config.save()
-    }
-
     fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): ChannelData {
         return client.channelData.getSingleChannelSection(start, stop, channel)
-    }
-
-    override fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
-        config.isSimulationEndlessLoopEnabled = isEnabled
-        if (hasClient(ClientCategory.SIMULATION)) {
-            val simClient = getClient(ClientCategory.SIMULATION) as SimulationClient
-            simClient.isEndlessLoopEnabled = isEnabled
-        }
     }
 
     private fun tryCopySimulationData(filename: String) {
@@ -135,10 +111,12 @@ abstract class EmgController(private val clients: List<EmgClient>, private val t
             if (simulationClient != null) {
                 simulationClient.addFileAsSimulationSource(filename)
                 simulationClient.reloadSources()
-
-                emgView.setupSimulationClientView(simulationClient)
             }
         }
+    }
+
+    private fun saveConfig() {
+        config.save()
     }
 
     private fun updateStatus(isConnected: Boolean) {
@@ -181,6 +159,14 @@ abstract class EmgController(private val clients: List<EmgClient>, private val t
 
     override fun setSelectedClient(client: EmgClient) {
         this.client = client
+    }
+
+    override fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
+        config.isSimulationEndlessLoopEnabled = isEnabled
+        if (hasClient(ClientCategory.SIMULATION)) {
+            val simClient = getClient(ClientCategory.SIMULATION) as SimulationClient
+            simClient.isEndlessLoopEnabled = isEnabled
+        }
     }
 
     override fun connectToClient() {

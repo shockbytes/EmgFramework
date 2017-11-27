@@ -7,7 +7,7 @@ import io.reactivex.subjects.PublishSubject
  * Author:  Martin Macheiner
  * Date:    03.07.2017
  */
-abstract class EmgClient {
+abstract class EmgClient(val configView: EmgClientConfigView?) {
 
     open var samplingFrequency: Double = 100.toDouble()
         set(fs) {
@@ -25,6 +25,9 @@ abstract class EmgClient {
     var channelData: ChannelData
         protected set
 
+    val hasConfigView: Boolean
+        get() = configView != null
+
     // ---------------------------------------------------------------
 
     abstract val name: String
@@ -36,9 +39,6 @@ abstract class EmgClient {
     abstract val category: ClientCategory
 
     abstract val protocolVersion: EmgMessaging.ProtocolVersion
-
-    // TODO Implement later
-    // abstract val configView: EmgClientConfigView
 
     @Throws(Exception::class)
     abstract fun connect()

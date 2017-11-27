@@ -5,10 +5,10 @@ package at.fhooe.mc.emg.client
  * Date:    26.11.2017
  */
 
-// TODO Rework this
 interface EmgClientConfigView {
 
-    fun<T> getView(): T
+    val name: String
 
-    fun<C> setup(client: C)
+    fun show(client: EmgClient)
+
 }

@@ -11,7 +11,6 @@ object FrequencyAnalysis {
         FFT, SPECTRUM
     }
 
-    // TODO Maybe wrap this into Observable?
     fun fft(input: DoubleArray): Observable<DoubleArray> {
         return Observable.defer {
             val fftDo = DoubleFFT_1D(input.size.toLong())

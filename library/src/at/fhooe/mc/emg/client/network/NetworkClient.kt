@@ -3,6 +3,7 @@ package at.fhooe.mc.emg.client.network
 import EmgMessaging
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
+import at.fhooe.mc.emg.client.EmgClientConfigView
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.net.DatagramPacket
@@ -13,7 +14,7 @@ import java.net.InetAddress
  * Author:  Martin Macheiner
  * Date:    20.11.2017
  */
-class NetworkClient : EmgClient() {
+class NetworkClient(cv: EmgClientConfigView? = null) : EmgClient(cv) {
 
     override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V1
 

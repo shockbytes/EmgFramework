@@ -62,7 +62,8 @@ public class SwingConconiView implements ActionListener, ConconiView {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setTitle("Conconi Test");
-        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "../icons/ic_tool_conconi.png"));
+        frame.setIconImage(Toolkit.getDefaultToolkit()
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_tool_conconi.png"));
         frame.setContentPane(panelMain);
         frame.setBounds(650, 100, 450, 500);
         return frame;

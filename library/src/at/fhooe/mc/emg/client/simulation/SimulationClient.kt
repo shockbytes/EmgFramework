@@ -3,6 +3,7 @@ package at.fhooe.mc.emg.client.simulation
 import EmgMessaging
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
+import at.fhooe.mc.emg.client.EmgClientConfigView
 import at.fhooe.mc.emg.util.AppUtils
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -16,7 +17,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
-class SimulationClient(private val simulationFolder: String) : EmgClient() {
+class SimulationClient(cv: EmgClientConfigView? = null, private val simulationFolder: String) : EmgClient(cv) {
 
     private var millis: Long = 0
 
@@ -54,6 +55,11 @@ class SimulationClient(private val simulationFolder: String) : EmgClient() {
     init {
         this.samplingFrequency = samplingFrequency // This call is necessary to trigger the set of the var millis
         simulationSources = loadSimulationSources()
+
+        // Select the default simulation source
+        if (simulationSources.isNotEmpty()) {
+             simulationSource = simulationSources[simulationSources.size / 2 + 1]
+        }
     }
 
     @Throws(Exception::class)

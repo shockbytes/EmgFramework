@@ -2,10 +2,7 @@ package at.fhooe.mc.emg.desktop.ui
 
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.network.NetworkClient
-import at.fhooe.mc.emg.client.simulation.SimulationClient
 import at.fhooe.mc.emg.core.EmgController
-import at.fhooe.mc.emg.desktop.client.serial.SerialClient
 import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog
 import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog
 import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog
@@ -38,21 +35,17 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private var menuItemConnect: JMenuItem? = null
     private var menuItemVisualMax: JMenuItem? = null
     private var menuItemDisconnect: JMenuItem? = null
-    private var menuItemReloadPorts: JMenuItem? = null
     private var menuItemFilterConfig: JMenuItem? = null
     private var menuItemPowerSpectrum: JMenuItem? = null
     private var menuItemSamplingFrequency: JMenuItem? = null
 
     private var cbMenuItemLogging: JCheckBoxMenuItem? = null
-    private var cbMenuItemPlaybackLoop: JCheckBoxMenuItem? = null
     private var cbMenuItemCopyToSimulation: JCheckBoxMenuItem? = null
 
-    private var menuPorts: JMenu? = null
-    private var mnChannel: JMenu? = null
+    private var menuFilter: JMenu? = null
+    private var menuClient: JMenu? = null
     private var mnClients: JMenu? = null
-    private var mnDataRate: JMenu? = null
     private var mnTools: JMenu? = null
-    private var mnSimulationData: JMenu? = null
 
     // --------------------------------------------------
 
@@ -63,7 +56,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private lateinit var visualView: VisualView<JComponent>
 
     init {
-        iconImage = Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_main.jpg")
+        iconImage = Toolkit.getDefaultToolkit()
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_main.jpg")
         initialize()
     }
 
@@ -86,7 +80,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         isVisible = true
     }
 
-    // --------------- Initialization & setup methods ----------------
+    // --------------- Initialization & show methods ----------------
     private fun initializeViews() {
 
         contentPane.background = Color.WHITE
@@ -139,58 +133,38 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuItemExit?.addActionListener(this)
         mnFile.add(menuItemExit)
 
-        val menuClient = JMenu("Client")
+        menuClient = JMenu("Client")
         menuBar.add(menuClient)
 
         mnClients = JMenu("Clients")
-        menuClient.add(mnClients)
-        menuClient.add(JSeparator())
+        menuClient?.add(mnClients)
+        menuClient?.add(JSeparator())
 
         menuItemConnect = JMenuItem("Connect")
         menuItemConnect?.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_F10, InputEvent.SHIFT_MASK)
         menuItemConnect?.addActionListener(this)
-        menuClient.add(menuItemConnect)
+        menuClient?.add(menuItemConnect)
 
         menuItemDisconnect = JMenuItem("Disconnect")
         menuItemDisconnect?.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK)
         menuItemDisconnect?.addActionListener(this)
-        menuClient.add(menuItemDisconnect)
+        menuClient?.add(menuItemDisconnect)
 
         menuItemSamplingFrequency = JMenuItem("Sampling Frequency")
         menuItemSamplingFrequency?.addActionListener(this)
-        menuClient.add(menuItemSamplingFrequency)
+        menuClient?.add(menuItemSamplingFrequency)
 
-        menuClient.add(JSeparator())
+        menuClient?.add(JSeparator())
 
-        mnDataRate = JMenu("Data rate")
-
-        menuPorts = JMenu("Ports")
-        menuClient.add(menuPorts)
-
-        menuItemReloadPorts = JMenuItem("Reload")
-        menuItemReloadPorts?.addActionListener(this)
-
-        menuClient.add(mnDataRate)
-
-        mnChannel = JMenu("Channel")
-        menuBar.add(mnChannel)
+        menuFilter = JMenu("Filter")
+        menuBar.add(menuFilter)
 
         menuItemFilterConfig = JMenuItem("Configuration")
         menuItemFilterConfig?.addActionListener(this)
-        mnChannel?.add(menuItemFilterConfig)
+        menuFilter?.add(menuItemFilterConfig)
 
         val separator1 = JSeparator()
-        mnChannel?.add(separator1)
-
-        val mnSimulation = JMenu("Simulation")
-        menuBar.add(mnSimulation)
-
-        mnSimulationData = JMenu("Sources")
-        mnSimulation.add(mnSimulationData)
-
-        cbMenuItemPlaybackLoop = JCheckBoxMenuItem("Playback loop")
-        cbMenuItemPlaybackLoop?.addActionListener(this)
-        mnSimulation.add(cbMenuItemPlaybackLoop)
+        menuFilter?.add(separator1)
 
         val mnAnalysis = JMenu("Analysis")
         menuBar.add(mnAnalysis)
@@ -217,46 +191,6 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
         // Disable all controls until connection is established
         setDeviceControlsEnabled(false)
-    }
-
-    private fun setupAvailableCommPorts(client: SerialClient, forceUpdate: Boolean) {
-
-        menuPorts?.removeAll()
-        menuPorts?.add(menuItemReloadPorts)
-        menuPorts?.add(JSeparator())
-
-        client.getAvailablePortNames(forceUpdate).forEach { s ->
-            val item = JCheckBoxMenuItem(s)
-            item.addActionListener { client.setSerialPortSelected(item.text) }
-            menuPorts?.add(item)
-        }
-
-        // Select the first port
-        if (menuPorts!!.itemCount > 2) {
-            menuPorts!!.getItem(2).isSelected = true
-            client.setSerialPortSelected(menuPorts!!.getItem(2).text)
-        }
-    }
-
-    private fun setupDataRateMenu(client: SerialClient) {
-        SerialClient.supportedDataRates.forEach {
-            val item = JCheckBoxMenuItem(it.toString())
-            item.addActionListener {
-                mnDataRate?.menuComponents?.forEach {
-                    val otherItem = it as JCheckBoxMenuItem
-                    if (otherItem !== item) {
-                        otherItem.isSelected = false
-                    }
-                }
-                val rate = Integer.parseInt(item.text)
-                client.dataRate = rate
-            }
-
-            if (it == SerialClient.defaultDataRate) {
-                item.isSelected = true
-            }
-            mnDataRate?.add(item)
-        }
     }
 
     // ---------------------------------------------------------------
@@ -313,14 +247,9 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
             e.source === menuItemVisualMax -> showVisualMaxDialog()
             e.source === cbMenuItemLogging -> config.isWriteToLogEnabled = cbMenuItemLogging?.isSelected!!
             e.source === cbMenuItemCopyToSimulation -> config.isCopyToSimulationEnabled = cbMenuItemCopyToSimulation?.isSelected!!
-            e.source === cbMenuItemPlaybackLoop -> { viewCallback.setSimulationPlaybackLoopEnabled(cbMenuItemPlaybackLoop?.isSelected!!) }
             e.source === menuItemReset -> reset()
             e.source === menuItemFft -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysis.AnalysisType.FFT)
             e.source === menuItemPowerSpectrum -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysis.AnalysisType.SPECTRUM)
-            e.source === menuItemReloadPorts -> {
-                // TODO This should not be necessary, because it will be replaced by a ConfigView anyway
-                // viewCallback.reloadSerialPorts();
-            }
             e.source === menuItemFilterConfig -> showFilterConfigurationDialog()
             e.source === menuItemExport -> {
                 val fileName = UiUtils.showCsvSaveDialog()
@@ -331,19 +260,13 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     override fun setDeviceControlsEnabled(isEnabled: Boolean) {
 
-        mnDataRate?.isEnabled = isEnabled
         menuItemDisconnect?.isEnabled = isEnabled
         menuItemSamplingFrequency?.isEnabled = isEnabled
 
         // Logic is in reverse for connection and channels
-        mnChannel?.isEnabled = !isEnabled
+        menuFilter?.isEnabled = !isEnabled
         mnClients?.isEnabled = !isEnabled
         menuItemConnect?.isEnabled = !isEnabled
-    }
-
-    override fun setupSerialClientView(client: SerialClient) {
-        setupAvailableCommPorts(client, false)
-        setupDataRateMenu(client)
     }
 
     override fun updateStatus(status: String) {
@@ -357,29 +280,6 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     override fun onChanneledClientDataAvailable(cd: ChannelData, filters: List<Filter>) {
         visualView.update(cd, filters)
-    }
-
-    override fun setupSimulationClientView(client: SimulationClient) {
-
-        mnSimulationData?.removeAll()
-        client.simulationSources.forEach { src ->
-
-            val item = JCheckBoxMenuItem(src.name)
-            item.addActionListener {
-                mnSimulationData?.menuComponents?.forEach {
-                    val otherItem = it as JCheckBoxMenuItem
-                    if (otherItem !== item) {
-                        otherItem.isSelected = false
-                    }
-                }
-                client.simulationSource = src
-            }
-            mnSimulationData?.add(item)
-        }
-
-        if (client.simulationSources.isNotEmpty()) {
-            mnSimulationData?.getItem(client.simulationSources.size / 2 + 1)?.doClick()
-        }
     }
 
     override fun setupToolsView(tools: List<Tool>, controller: EmgController) {
@@ -397,9 +297,9 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         filter.forEach { f ->
             val item = JCheckBoxMenuItem(f.name)
             item.addItemListener { f.isEnabled = it.stateChange == ItemEvent.SELECTED }
-            mnChannel?.add(item)
+            menuFilter?.add(item)
         }
-        mnChannel?.getItem(2)?.isSelected = true
+        menuFilter?.getItem(2)?.isSelected = true
     }
 
     override fun setupEmgClientView(clients: List<EmgClient>, defaultClient: EmgClient) {
@@ -420,23 +320,30 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
                 }
             }
             mnClients?.add(item)
-
-            // TODO Setup client config views
         }
     }
 
-    override fun setup(viewCallback: EmgViewCallback, config: Configuration) {
+    override fun setupEmgClientConfigViews(clients: List<EmgClient>) {
+
+        clients.forEach { c ->
+            if (c.hasConfigView) {
+                val item = JMenuItem(c.configView?.name)
+                item.addActionListener {
+                    c.configView?.show(c)
+                }
+                menuClient?.add(item)
+            }
+        }
+    }
+
+
+    override fun setupView(viewCallback: EmgViewCallback, config: Configuration) {
         this.viewCallback = viewCallback
         this.config = config
 
         // Initialize checkboxes from stored config
         cbMenuItemLogging?.isSelected = config.isWriteToLogEnabled
         cbMenuItemCopyToSimulation?.isSelected = config.isCopyToSimulationEnabled
-        cbMenuItemPlaybackLoop?.isSelected = config.isSimulationEndlessLoopEnabled
-    }
-
-    override fun setupNetworkClientView(client: NetworkClient) {
-        // TODO Show config view with ip and port (Possibly not needed)
     }
 
     override fun showFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType, fs: Double) {

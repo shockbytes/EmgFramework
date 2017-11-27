@@ -28,7 +28,8 @@ public class SamplingFrequencyDialog extends JDialog implements ActionListener {
     }
 
 	public SamplingFrequencyDialog(OnSamplingFrequencySelectedListener listener, JFrame mainWindow) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_dialog_fs.png"));
+		setIconImage(Toolkit.getDefaultToolkit()
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_dialog_fs.png"));
 		this.listener = listener;
 
 		int WIDTH = 200;

@@ -25,7 +25,8 @@ internal class FrequencyAnalysisFrame private constructor(type: AnalysisType, in
     init {
 
         defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
-        iconImage = Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_analysis.png")
+        iconImage = Toolkit.getDefaultToolkit()
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_analysis.png")
         title = "Frequency analysis"
         setBoundsRelativeToParent(parent)
 

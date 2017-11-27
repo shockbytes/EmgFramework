@@ -2,8 +2,6 @@ package at.fhooe.mc.emg.view
 
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.network.NetworkClient
-import at.fhooe.mc.emg.client.simulation.SimulationClient
 import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.filter.Filter
 import at.fhooe.mc.emg.tools.Tool
@@ -16,7 +14,7 @@ import at.fhooe.mc.emg.util.FrequencyAnalysis
  */
 interface EmgView {
 
-    fun setup(viewCallback: EmgViewCallback, config: Configuration)
+    fun setupView(viewCallback: EmgViewCallback, config: Configuration)
 
     fun reset()
 
@@ -28,12 +26,6 @@ interface EmgView {
 
     fun onChanneledClientDataAvailable(cd: ChannelData, filters: List<Filter>)
 
-    // ----------------------- Clients -----------------------
-
-    fun setupSimulationClientView(client: SimulationClient)
-
-    fun setupNetworkClientView(client: NetworkClient)
-
     // -------------------------------------------------------
 
     // ------------------ Utility list views -----------------
@@ -43,6 +35,8 @@ interface EmgView {
     fun setupFilterViews(filter: List<Filter>)
 
     fun setupEmgClientView(clients: List<EmgClient>, defaultClient: EmgClient)
+
+    fun setupEmgClientConfigViews(clients: List<EmgClient>)
 
     // -------------------------------------------------------
 

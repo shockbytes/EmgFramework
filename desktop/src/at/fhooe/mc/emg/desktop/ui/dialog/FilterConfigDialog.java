@@ -24,7 +24,8 @@ public class FilterConfigDialog extends JDialog implements ChangeListener {
 	public FilterConfigDialog(Configuration config, JFrame mainWindow) {
 		setResizable(false);
 		setTitle("Filter configuration");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_dialog_filter_config.png"));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(System.getProperty("user.dir") + "/desktop/icons/ic_dialog_filter_config.png"));
 		this.config = config;
 
 		int WIDTH = 345;

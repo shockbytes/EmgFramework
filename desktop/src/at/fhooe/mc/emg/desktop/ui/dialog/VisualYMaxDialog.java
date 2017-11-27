@@ -26,8 +26,9 @@ public class VisualYMaxDialog extends JDialog implements ActionListener {
         dialog.setVisible(true);
 	}
 
-	public VisualYMaxDialog(OnVisualMaxEnteredListener listener, JFrame mainWindow) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir") + "/icons/ic_dialog_graph_max.png"));
+	private VisualYMaxDialog(OnVisualMaxEnteredListener listener, JFrame mainWindow) {
+		setIconImage(Toolkit.getDefaultToolkit()
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_dialog_graph_max.png"));
 		this.listener = listener;
 		int WIDTH = 200;
 		int HEIGHT = 120;
