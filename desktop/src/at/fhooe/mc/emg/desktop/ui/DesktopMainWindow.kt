@@ -192,7 +192,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         cbMenuItemPlaybackLoop?.addActionListener(this)
         mnSimulation.add(cbMenuItemPlaybackLoop)
 
-        val mnAnalysis = JMenu("FrequencyAnalysis")
+        val mnAnalysis = JMenu("Analysis")
         menuBar.add(mnAnalysis)
 
         menuItemFft = JMenuItem("FFT")
