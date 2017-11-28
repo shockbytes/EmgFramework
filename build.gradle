@@ -1,13 +1,6 @@
 group 'at.fhooe.mc.emg'
 version '1.0'
 
-def kotlin_version = "1.1.51"
-def java_source_compat = 1.8
-def kotlin_jvm_target = "1.8"
-
-ext.kotlin_version = kotlin_version
-ext.java_source_comat = java_source_compat
-ext.kotlin_jvm_target = kotlin_jvm_target
 
 buildscript {
 
@@ -25,6 +18,14 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'idea'
 apply plugin: 'maven'
+
+def kotlin_version = "1.1.51"
+def java_source_compat = 1.8
+def kotlin_jvm_target = "1.8"
+
+ext.kotlin_version = kotlin_version
+ext.java_source_compat = java_source_compat
+ext.kotlin_jvm_target = kotlin_jvm_target
 
 sourceCompatibility = java_source_compat
 
