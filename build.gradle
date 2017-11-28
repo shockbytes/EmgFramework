@@ -11,11 +11,7 @@ ext.kotlin_jvm_target = kotlin_jvm_target
 
 buildscript {
 
-    ext.kotlin_version = kotlin_version
-    ext.java_source_comat = java_source_compat
-    ext.kotlin_jvm_target = kotlin_jvm_target
-
-    //ext.kotlin_version = kotlin_version
+    ext.kotlin_version = '1.1.51'
 
     repositories {
         mavenCentral()
