@@ -44,5 +44,5 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * ~~Remove .jars in /libs and provide dependencies via Gradle~~
 
 ### Experimental
-* Compile module **EmgMessaging** with Kotlin Native to run on all clients
+* Compile module **EmgMessaging** with Kotlin Native to run on all client platform
 * Detect serial driver and install files automatically, if not installed
