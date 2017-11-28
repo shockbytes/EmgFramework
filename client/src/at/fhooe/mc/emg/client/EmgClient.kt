@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.client
 
-import EmgMessaging
+import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.subjects.PublishSubject
 
 /**

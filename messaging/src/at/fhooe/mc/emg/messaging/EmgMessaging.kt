@@ -1,3 +1,5 @@
+package at.fhooe.mc.emg.messaging
+
 /**
  * Author:  Martin Macheiner
  * Date:    24.11.2017
@@ -32,8 +34,8 @@ object EmgMessaging {
 
         return when (protocolVersion) {
 
-            EmgMessaging.ProtocolVersion.V1 -> buildV1(emgData)
-            EmgMessaging.ProtocolVersion.V2 -> buildV2(emgData, timestamp)
+            ProtocolVersion.V1 -> buildV1(emgData)
+            ProtocolVersion.V2 -> buildV2(emgData, timestamp)
         }
     }
 
@@ -75,8 +77,8 @@ object EmgMessaging {
 
         return when (protocolVersion) {
 
-            EmgMessaging.ProtocolVersion.V1 -> parseV1(msg)
-            EmgMessaging.ProtocolVersion.V2 -> parseV2(msg)
+            ProtocolVersion.V1 -> parseV1(msg)
+            ProtocolVersion.V2 -> parseV2(msg)
         }
     }
 
