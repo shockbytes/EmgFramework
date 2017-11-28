@@ -1,7 +1,7 @@
 group 'at.fhooe.mc.emg'
 version '1.0'
 
-def kotlin_version = '1.1.51'
+def kotlin_version = "1.1.51"
 def java_source_compat = 1.8
 def kotlin_jvm_target = "1.8"
 
