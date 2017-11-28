@@ -1,9 +1,9 @@
 package at.fhooe.mc.emg.client.network
 
-import EmgMessaging
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.client.EmgClientConfigView
+import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.net.DatagramPacket

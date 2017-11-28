@@ -1,9 +1,9 @@
 package at.fhooe.mc.emg.client.simulation
 
-import EmgMessaging
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.client.EmgClientConfigView
+import at.fhooe.mc.emg.messaging.EmgMessaging
 import at.fhooe.mc.emg.util.AppUtils
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable

@@ -1,9 +1,9 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
-import EmgMessaging
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.client.EmgClientConfigView
+import at.fhooe.mc.emg.messaging.EmgMessaging
 import gnu.io.*
 import java.io.*
 import java.util.*

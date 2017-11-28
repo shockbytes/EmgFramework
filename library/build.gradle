@@ -47,7 +47,7 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDirs = ['/src/']
+            srcDirs = ['src/']
         }
     }
 }
