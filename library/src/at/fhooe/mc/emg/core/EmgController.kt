@@ -20,7 +20,7 @@ import java.util.*
  * Date:    07.07.2017
  */
 abstract class EmgController(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
-                             private val emgView: EmgView) : EmgViewCallback {
+                             var emgView: EmgView?) : EmgViewCallback {
 
     private lateinit var client: EmgClientDriver
 
@@ -61,11 +61,11 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
     }
 
     private fun setupEmgView() {
-        emgView.setupView(this, config)
-        emgView.setupFilterViews(filters)
-        emgView.setupEmgClientView(clients, client)
-        emgView.setupToolsView(tools, this)
-        emgView.setupEmgClientConfigViews(clients)
+        emgView?.setupView(this, config)
+        emgView?.setupFilterViews(filters)
+        emgView?.setupEmgClientView(clients, client)
+        emgView?.setupToolsView(tools, this)
+        emgView?.setupEmgClientConfigViews(clients)
     }
 
     private fun storeData(writeOnDisconnectFileName: String?) {
@@ -130,7 +130,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
             text = "Status: Not connected"
         }
 
-        emgView.updateStatus(text)
+        emgView?.updateStatus(text)
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -172,14 +172,14 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
     override fun connectToClient() {
         try {
 
-            emgView.reset()
+            emgView?.reset()
 
             client.connect()
-            client.rawCallbackSubject.subscribe { emgView.onRawClientDataAvailable(it) }
-            client.channeledCallbackSubject.subscribe { emgView.onChanneledClientDataAvailable(it, filters) }
+            client.rawCallbackSubject.subscribe { emgView?.onRawClientDataAvailable(it) }
+            client.channeledCallbackSubject.subscribe { emgView?.onChanneledClientDataAvailable(it, filters) }
 
             updateStatus(true)
-            emgView.setDeviceControlsEnabled(true)
+            emgView?.setDeviceControlsEnabled(true)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -190,12 +190,12 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         client.disconnect()
         storeData(writeFileOnDisconnectFileName)
 
-        emgView.setDeviceControlsEnabled(false)
+        emgView?.setDeviceControlsEnabled(false)
         updateStatus(false)
     }
 
     override fun requestFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType) {
-        emgView.showFrequencyAnalysis(type, client.samplingFrequency)
+        emgView?.showFrequencyAnalysis(type, client.samplingFrequency)
     }
 
 

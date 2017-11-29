@@ -11,7 +11,7 @@ import java.util.*
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  */
-class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
+class ConconiTool(var view: ConconiView?) : Tool, ConconiViewCallback {
 
     private var timer: Timer? = null
 
@@ -27,7 +27,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
     override fun start(controller: EmgController) {
         this.controller = controller
 
-        view.setup(this)
+        view?.setup(this)
 
         data = ConconiData()
         dataStartPointer = 0
@@ -51,7 +51,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
             override fun run() {
 
                 i++
-                view.onTick(i, times[idx])
+                view?.onTick(i, times[idx])
 
                 if (i + 5 == times[idx]) {
                     playCountdownSound()
@@ -74,7 +74,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
             override fun run() {
 
                 countdown--
-                view.onCountdownTick(countdown)
+                view?.onCountdownTick(countdown)
 
                 if (countdown == 0) {
                     controller.connectToClient()
@@ -114,7 +114,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
         val roundData = controller.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
         data?.addRoundData(roundData)
-        view.onRoundDataAvailable(roundData, index)
+        view?.onRoundDataAvailable(roundData, index)
 
         dataStartPointer = dataStopPointer
     }
@@ -138,7 +138,7 @@ class ConconiTool(val view: ConconiView) : Tool, ConconiViewCallback {
         return try {
             data = AppUtils.deserializeFromFile(filename)
             for (i in 0..data!!.roundCount) {
-                view.onRoundDataAvailable(data!!.getRoundData(i), i)
+                view?.onRoundDataAvailable(data!!.getRoundData(i), i)
             }
             true
         } catch (e: Exception) {
