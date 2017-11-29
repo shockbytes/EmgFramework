@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.desktop.client.simulation
 
-import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.EmgClientConfigView
-import at.fhooe.mc.emg.client.simulation.SimulationClient
+import at.fhooe.mc.emg.client.EmgClientDriver
+import at.fhooe.mc.emg.client.EmgClientDriverConfigView
+import at.fhooe.mc.emg.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.client.simulation.SimulationSource
 import java.awt.GridLayout
 import java.awt.Rectangle
@@ -14,7 +14,7 @@ import javax.swing.border.EmptyBorder
  * Date:    27.11.2017
  */
 
-class DesktopSimulationClientConfigView : EmgClientConfigView {
+class DesktopSimulationClientDriverConfigView : EmgClientDriverConfigView {
 
     override val name: String = "Simulation Config"
 
@@ -50,9 +50,9 @@ class DesktopSimulationClientConfigView : EmgClientConfigView {
         frame.contentPane = contentPanel
     }
 
-    override fun show(client: EmgClient) {
+    override fun show(client: EmgClientDriver) {
 
-        client as SimulationClient
+        client as SimulationClientDriver
 
         client.simulationSources.forEach {
             comboBoxSources.addItem(it.name)
@@ -72,7 +72,7 @@ class DesktopSimulationClientConfigView : EmgClientConfigView {
         frame.isVisible = true
     }
 
-    private fun findSimulationSourceByName(client: SimulationClient, name: String): SimulationSource? {
+    private fun findSimulationSourceByName(client: SimulationClientDriver, name: String): SimulationSource? {
         client.simulationSources.forEach {
             if (it.name == name) {
                 return it
@@ -84,7 +84,7 @@ class DesktopSimulationClientConfigView : EmgClientConfigView {
     // -------------------------------------------------------------
 
     /*
-    override fun setupSimulationClientView(client: SimulationClient) {
+    override fun setupSimulationClientView(client: SimulationClientDriver) {
 
         mnSimulationData?.removeAll()
         client.simulationSources.forEach { src ->

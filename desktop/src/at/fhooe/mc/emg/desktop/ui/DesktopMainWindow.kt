@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.desktop.ui
 
 import at.fhooe.mc.emg.client.ChannelData
-import at.fhooe.mc.emg.client.EmgClient
+import at.fhooe.mc.emg.client.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog
 import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog
@@ -302,7 +302,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuFilter?.getItem(2)?.isSelected = true
     }
 
-    override fun setupEmgClientView(clients: List<EmgClient>, defaultClient: EmgClient) {
+    override fun setupEmgClientView(clients: List<EmgClientDriver>, defaultClient: EmgClientDriver) {
 
         mnClients?.removeAll()
         clients.forEach { c ->
@@ -323,7 +323,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         }
     }
 
-    override fun setupEmgClientConfigViews(clients: List<EmgClient>) {
+    override fun setupEmgClientConfigViews(clients: List<EmgClientDriver>) {
 
         clients.forEach { c ->
             if (c.hasConfigView) {

@@ -1,15 +1,15 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
 import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.EmgClientConfigView
+import at.fhooe.mc.emg.client.EmgClientDriver
+import at.fhooe.mc.emg.client.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import gnu.io.*
 import java.io.*
 import java.util.*
 import kotlin.streams.toList
 
-class SerialClient(cv: EmgClientConfigView? = null) : EmgClient(cv), SerialPortEventListener {
+class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv), SerialPortEventListener {
 
     private var ports: List<CommPortIdentifier>? = null
 

@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.client.simulation
 
 import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.EmgClientConfigView
+import at.fhooe.mc.emg.client.EmgClientDriver
+import at.fhooe.mc.emg.client.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import at.fhooe.mc.emg.util.AppUtils
 import io.reactivex.Observable
@@ -17,7 +17,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
-class SimulationClient(cv: EmgClientConfigView? = null, private val simulationFolder: String) : EmgClient(cv) {
+class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val simulationFolder: String) : EmgClientDriver(cv) {
 
     private var millis: Long = 0
 

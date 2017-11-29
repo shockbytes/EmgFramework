@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
-import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.EmgClientConfigView
+import at.fhooe.mc.emg.client.EmgClientDriver
+import at.fhooe.mc.emg.client.EmgClientDriverConfigView
 import java.awt.GridLayout
 import java.awt.Rectangle
 import javax.swing.*
@@ -11,7 +11,7 @@ import javax.swing.border.EmptyBorder
  * Author:  Mescht
  * Date:    27.11.2017
  */
-class DesktopSerialClientConfigView : EmgClientConfigView {
+class DesktopSerialClientDriverConfigView : EmgClientDriverConfigView {
 
     override val name: String = "Serial Config"
 
@@ -32,8 +32,8 @@ class DesktopSerialClientConfigView : EmgClientConfigView {
         frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
 
         comboBoxPorts = JComboBox()
-        comboBoxDatarates = JComboBox(SerialClient.supportedDataRates.map { i -> i.toString() }.toTypedArray())
-        comboBoxDatarates.selectedItem = SerialClient.defaultDataRate.toString()
+        comboBoxDatarates = JComboBox(SerialClientDriver.supportedDataRates.map { i -> i.toString() }.toTypedArray())
+        comboBoxDatarates.selectedItem = SerialClientDriver.defaultDataRate.toString()
         btnReload = JButton("RELOAD")
         btnApply = JButton("APPLY CHANGES")
 
@@ -49,9 +49,9 @@ class DesktopSerialClientConfigView : EmgClientConfigView {
         frame.contentPane = contentPanel
     }
 
-    override fun show(client: EmgClient) {
+    override fun show(client: EmgClientDriver) {
 
-        client as SerialClient
+        client as SerialClientDriver
 
         btnReload.addActionListener {
             comboBoxPorts.removeAllItems()

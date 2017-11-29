@@ -2,8 +2,8 @@ package at.fhooe.mc.emg.core
 
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.simulation.SimulationClient
+import at.fhooe.mc.emg.client.EmgClientDriver
+import at.fhooe.mc.emg.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.filter.*
 import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.storage.DataStorage
@@ -19,10 +19,10 @@ import java.util.*
  * Author:  Martin Macheiner
  * Date:    07.07.2017
  */
-abstract class EmgController(private val clients: List<EmgClient>, private val tools: List<Tool>,
+abstract class EmgController(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
                              private val emgView: EmgView) : EmgViewCallback {
 
-    private lateinit var client: EmgClient
+    private lateinit var client: EmgClientDriver
 
     private lateinit var config: Configuration
 
@@ -80,7 +80,7 @@ abstract class EmgController(private val clients: List<EmgClient>, private val t
 
     // ------------------------------------------ Public methods ------------------------------------------
 
-    fun getClient(category: ClientCategory): EmgClient? {
+    fun getClient(category: ClientCategory): EmgClientDriver? {
         clients.forEach {
             if (it.category === category) {
                 return it
@@ -107,7 +107,7 @@ abstract class EmgController(private val clients: List<EmgClient>, private val t
         if (hasClient(ClientCategory.SIMULATION)
                 && config.isCopyToSimulationEnabled
                 && client.category !== ClientCategory.SIMULATION) {
-            val simulationClient: SimulationClient? = getClient(ClientCategory.SIMULATION) as? SimulationClient
+            val simulationClient: SimulationClientDriver? = getClient(ClientCategory.SIMULATION) as? SimulationClientDriver
             if (simulationClient != null) {
                 simulationClient.addFileAsSimulationSource(filename)
                 simulationClient.reloadSources()
@@ -157,14 +157,14 @@ abstract class EmgController(private val clients: List<EmgClient>, private val t
         saveConfig()
     }
 
-    override fun setSelectedClient(client: EmgClient) {
+    override fun setSelectedClient(client: EmgClientDriver) {
         this.client = client
     }
 
     override fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
         config.isSimulationEndlessLoopEnabled = isEnabled
         if (hasClient(ClientCategory.SIMULATION)) {
-            val simClient = getClient(ClientCategory.SIMULATION) as SimulationClient
+            val simClient = getClient(ClientCategory.SIMULATION) as SimulationClientDriver
             simClient.isEndlessLoopEnabled = isEnabled
         }
     }

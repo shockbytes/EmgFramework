@@ -7,7 +7,7 @@ import io.reactivex.subjects.PublishSubject
  * Author:  Martin Macheiner
  * Date:    03.07.2017
  */
-abstract class EmgClient(val configView: EmgClientConfigView?) {
+abstract class EmgClientDriver(val configView: EmgClientDriverConfigView?) {
 
     open var samplingFrequency: Double = 100.toDouble()
         set(fs) {

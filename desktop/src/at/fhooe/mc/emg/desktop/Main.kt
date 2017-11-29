@@ -1,12 +1,12 @@
 package at.fhooe.mc.emg.desktop
 
 
-import at.fhooe.mc.emg.client.network.NetworkClient
-import at.fhooe.mc.emg.client.simulation.SimulationClient
-import at.fhooe.mc.emg.desktop.client.network.DesktopNetworkClientConfigView
-import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientConfigView
-import at.fhooe.mc.emg.desktop.client.serial.SerialClient
-import at.fhooe.mc.emg.desktop.client.simulation.DesktopSimulationClientConfigView
+import at.fhooe.mc.emg.client.network.NetworkClientDriver
+import at.fhooe.mc.emg.client.simulation.SimulationClientDriver
+import at.fhooe.mc.emg.desktop.client.network.DesktopNetworkClientDriverConfigView
+import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriverConfigView
+import at.fhooe.mc.emg.desktop.client.serial.SerialClientDriver
+import at.fhooe.mc.emg.desktop.client.simulation.DesktopSimulationClientDriverConfigView
 import at.fhooe.mc.emg.desktop.core.DesktopEmgController
 import at.fhooe.mc.emg.desktop.tools.conconi.SwingConconiView
 import at.fhooe.mc.emg.desktop.ui.DesktopMainWindow
@@ -27,10 +27,10 @@ object Main {
 
             DesktopEmgController(
                     Arrays.asList(
-                            SerialClient(DesktopSerialClientConfigView()),
-                            SimulationClient(DesktopSimulationClientConfigView(),
+                            SerialClientDriver(DesktopSerialClientDriverConfigView()),
+                            SimulationClientDriver(DesktopSimulationClientDriverConfigView(),
                                     System.getProperty("user.dir") + "/data/simulation"),
-                            NetworkClient(DesktopNetworkClientConfigView())),
+                            NetworkClientDriver(DesktopNetworkClientDriverConfigView())),
                     Arrays.asList(
                             ConconiTool(SwingConconiView()),
                             PeakDetectionTool()),

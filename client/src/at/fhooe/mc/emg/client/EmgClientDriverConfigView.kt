@@ -5,10 +5,10 @@ package at.fhooe.mc.emg.client
  * Date:    26.11.2017
  */
 
-interface EmgClientConfigView {
+interface EmgClientDriverConfigView {
 
     val name: String
 
-    fun show(client: EmgClient)
+    fun show(client: EmgClientDriver)
 
 }

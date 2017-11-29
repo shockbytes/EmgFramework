@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.view
 
-import at.fhooe.mc.emg.client.EmgClient
+import at.fhooe.mc.emg.client.EmgClientDriver
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.util.Configuration
 import at.fhooe.mc.emg.util.FrequencyAnalysis
@@ -14,7 +14,7 @@ interface EmgViewCallback {
 
     fun closeView(config: Configuration)
 
-    fun setSelectedClient(client: EmgClient)
+    fun setSelectedClient(client: EmgClientDriver)
 
     fun connectToClient()
 

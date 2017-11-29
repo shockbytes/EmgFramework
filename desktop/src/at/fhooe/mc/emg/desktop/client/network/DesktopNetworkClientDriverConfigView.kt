@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.desktop.client.network
 
-import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.EmgClientConfigView
-import at.fhooe.mc.emg.client.network.NetworkClient
+import at.fhooe.mc.emg.client.EmgClientDriver
+import at.fhooe.mc.emg.client.EmgClientDriverConfigView
+import at.fhooe.mc.emg.client.network.NetworkClientDriver
 import java.awt.GridLayout
 import java.awt.Rectangle
 import javax.swing.*
@@ -13,7 +13,7 @@ import javax.swing.border.EmptyBorder
  * Date:    27.11.2017
  */
 
-class DesktopNetworkClientConfigView : EmgClientConfigView {
+class DesktopNetworkClientDriverConfigView : EmgClientDriverConfigView {
 
     override val name: String = "Network Config"
 
@@ -48,9 +48,9 @@ class DesktopNetworkClientConfigView : EmgClientConfigView {
         frame.contentPane = contentPanel
     }
 
-    override fun show(client: EmgClient) {
+    override fun show(client: EmgClientDriver) {
 
-        client as NetworkClient
+        client as NetworkClientDriver
 
         textFieldPort.text = client.port.toString()
         textFieldIp.text = client.ip

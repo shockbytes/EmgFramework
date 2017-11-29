@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.client.network
 
 import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.EmgClient
-import at.fhooe.mc.emg.client.EmgClientConfigView
+import at.fhooe.mc.emg.client.EmgClientDriver
+import at.fhooe.mc.emg.client.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -14,7 +14,7 @@ import java.net.InetAddress
  * Author:  Martin Macheiner
  * Date:    20.11.2017
  */
-class NetworkClient(cv: EmgClientConfigView? = null) : EmgClient(cv) {
+class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
     override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V1
 
