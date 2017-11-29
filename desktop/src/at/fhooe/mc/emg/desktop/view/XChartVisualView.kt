@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.desktop.view
 
-import at.fhooe.mc.emg.client.ChannelData
-import at.fhooe.mc.emg.filter.Filter
-import at.fhooe.mc.emg.view.VisualView
+import at.fhooe.mc.emg.clientdriver.ChannelData
+import at.fhooe.mc.emg.core.filter.Filter
+import at.fhooe.mc.emg.core.view.VisualView
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.style.Styler
 import java.awt.Color

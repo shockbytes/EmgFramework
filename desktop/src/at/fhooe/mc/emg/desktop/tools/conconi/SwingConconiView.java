@@ -1,12 +1,12 @@
 package at.fhooe.mc.emg.desktop.tools.conconi;
 
-import at.fhooe.mc.emg.client.ChannelData;
+import at.fhooe.mc.emg.clientdriver.ChannelData;
 import at.fhooe.mc.emg.desktop.ui.UiUtils;
-import at.fhooe.mc.emg.tools.conconi.ConconiTool;
-import at.fhooe.mc.emg.tools.conconi.ConconiView;
-import at.fhooe.mc.emg.tools.conconi.ConconiViewCallback;
-import at.fhooe.mc.emg.util.AppUtils;
-import at.fhooe.mc.emg.util.PeakDetector;
+import at.fhooe.mc.emg.core.tools.conconi.ConconiTool;
+import at.fhooe.mc.emg.core.tools.conconi.ConconiView;
+import at.fhooe.mc.emg.core.tools.conconi.ConconiViewCallback;
+import at.fhooe.mc.emg.core.util.AppUtils;
+import at.fhooe.mc.emg.core.util.PeakDetector;
 import org.jetbrains.annotations.NotNull;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;

@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
-import at.fhooe.mc.emg.client.EmgClientDriver
-import at.fhooe.mc.emg.client.EmgClientDriverConfigView
+import at.fhooe.mc.emg.clientdriver.EmgClientDriver
+import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import java.awt.GridLayout
 import java.awt.Rectangle
 import javax.swing.*

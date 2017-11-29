@@ -1,4 +1,4 @@
 rootProject.name = 'desktop'
-include ':library'
-include ':client'
+include ':core'
 include ':messaging'
+include ':clientdriver'

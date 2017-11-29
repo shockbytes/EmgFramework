@@ -1,6 +1,6 @@
 rootProject.name = 'framework'
 include ':desktop'
-include ':library'
-include ':client'
+include ':core'
+include ':clientdriver'
 include ':messaging'
 include ':util'

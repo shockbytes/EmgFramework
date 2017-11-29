@@ -1,8 +1,10 @@
 package at.fhooe.mc.emg.desktop
 
 
-import at.fhooe.mc.emg.client.network.NetworkClientDriver
-import at.fhooe.mc.emg.client.simulation.SimulationClientDriver
+import at.fhooe.mc.emg.core.client.network.NetworkClientDriver
+import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
+import at.fhooe.mc.emg.core.tools.conconi.ConconiTool
+import at.fhooe.mc.emg.core.tools.peak.PeakDetectionTool
 import at.fhooe.mc.emg.desktop.client.network.DesktopNetworkClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.SerialClientDriver
@@ -10,8 +12,6 @@ import at.fhooe.mc.emg.desktop.client.simulation.DesktopSimulationClientDriverCo
 import at.fhooe.mc.emg.desktop.core.DesktopEmgController
 import at.fhooe.mc.emg.desktop.tools.conconi.SwingConconiView
 import at.fhooe.mc.emg.desktop.ui.DesktopMainWindow
-import at.fhooe.mc.emg.tools.conconi.ConconiTool
-import at.fhooe.mc.emg.tools.peak.PeakDetectionTool
 import java.awt.EventQueue
 import java.util.*
 

@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
-import at.fhooe.mc.emg.client.ClientCategory
-import at.fhooe.mc.emg.client.EmgClientDriver
-import at.fhooe.mc.emg.client.EmgClientDriverConfigView
+import at.fhooe.mc.emg.clientdriver.ClientCategory
+import at.fhooe.mc.emg.clientdriver.EmgClientDriver
+import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import gnu.io.*
 import java.io.*

@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.desktop.client.network
 
-import at.fhooe.mc.emg.client.EmgClientDriver
-import at.fhooe.mc.emg.client.EmgClientDriverConfigView
-import at.fhooe.mc.emg.client.network.NetworkClientDriver
+import at.fhooe.mc.emg.clientdriver.EmgClientDriver
+import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
+import at.fhooe.mc.emg.core.client.network.NetworkClientDriver
 import java.awt.GridLayout
 import java.awt.Rectangle
 import javax.swing.*

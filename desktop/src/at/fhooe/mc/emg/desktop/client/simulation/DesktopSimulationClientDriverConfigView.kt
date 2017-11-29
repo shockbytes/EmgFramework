@@ -1,9 +1,9 @@
 package at.fhooe.mc.emg.desktop.client.simulation
 
-import at.fhooe.mc.emg.client.EmgClientDriver
-import at.fhooe.mc.emg.client.EmgClientDriverConfigView
-import at.fhooe.mc.emg.client.simulation.SimulationClientDriver
-import at.fhooe.mc.emg.client.simulation.SimulationSource
+import at.fhooe.mc.emg.clientdriver.EmgClientDriver
+import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
+import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
+import at.fhooe.mc.emg.core.client.simulation.SimulationSource
 import java.awt.GridLayout
 import java.awt.Rectangle
 import javax.swing.*
