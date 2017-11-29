@@ -1,15 +1,12 @@
-package at.fhooe.mc.emg.util
+package at.fhooe.mc.emg.analysis
 
+import at.fhooe.mc.emg.util.AppUtils
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.jtransforms.fft.DoubleFFT_1D
 import java.util.*
 
-object FrequencyAnalysis {
-
-    enum class AnalysisType {
-        FFT, SPECTRUM
-    }
+object AnalysisUtils {
 
     fun fft(input: DoubleArray): Observable<DoubleArray> {
         return Observable.defer {

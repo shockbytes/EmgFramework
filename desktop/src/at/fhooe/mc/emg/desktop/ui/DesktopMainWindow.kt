@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.desktop.ui
 
+import at.fhooe.mc.emg.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgController
@@ -11,7 +12,6 @@ import at.fhooe.mc.emg.filter.Filter
 import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
-import at.fhooe.mc.emg.util.FrequencyAnalysis
 import at.fhooe.mc.emg.view.EmgViewCallback
 import at.fhooe.mc.emg.view.VisualView
 import java.awt.BorderLayout
@@ -65,7 +65,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private fun initialize() {
         isResizable = true
         setBounds(100, 150, 450, 300)
-        title = "Emg Desktop v0.6"
+        title = "Emg Desktop v0.9"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
 
@@ -249,8 +249,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
             e.source === cbMenuItemLogging -> config.isWriteToLogEnabled = cbMenuItemLogging?.isSelected!!
             e.source === cbMenuItemCopyToSimulation -> config.isCopyToSimulationEnabled = cbMenuItemCopyToSimulation?.isSelected!!
             e.source === menuItemReset -> reset()
-            e.source === menuItemFft -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysis.AnalysisType.FFT)
-            e.source === menuItemPowerSpectrum -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysis.AnalysisType.SPECTRUM)
+            e.source === menuItemFft -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysisMethod.Method.FFT)
+            e.source === menuItemPowerSpectrum -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysisMethod.Method.SPECTRUM)
             e.source === menuItemFilterConfig -> showFilterConfigurationDialog()
             e.source === menuItemExport -> {
                 val fileName = UiUtils.showCsvSaveDialog()
@@ -347,8 +347,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         cbMenuItemCopyToSimulation?.isSelected = config.isCopyToSimulationEnabled
     }
 
-    override fun showFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType, fs: Double) {
-        FrequencyAnalysisFrame.show(type, visualView.dataForFrequencyAnalysis, fs, this)
+    override fun showFrequencyAnalysis(method: FrequencyAnalysisMethod) {
+        method.evaluate(FrequencyAnalysisFrame())
     }
 
     override fun setVisualView(view: VisualView<JComponent>) {

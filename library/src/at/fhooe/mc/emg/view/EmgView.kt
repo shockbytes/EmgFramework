@@ -1,12 +1,12 @@
 package at.fhooe.mc.emg.view
 
+import at.fhooe.mc.emg.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.filter.Filter
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
-import at.fhooe.mc.emg.util.FrequencyAnalysis
 
 /**
  * Author:  Mescht
@@ -40,6 +40,6 @@ interface EmgView {
 
     // -------------------------------------------------------
 
-    fun showFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType, fs: Double)
+    fun showFrequencyAnalysis(method: FrequencyAnalysisMethod)
 
 }

@@ -27,8 +27,8 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 ### Major
 * Support Peak detection
 * Support **BluetoothClient**
-* Refactor Analysis views like Tool views
-* Refactor with **MVC/MVP pattern** to separate logic from views
+* ~~Refactor Analysis views like Tool views~~
+* ~~Refactor with **MVC/MVP pattern** to separate logic from views~~
 * ~~Refactor Config views for Clients~~
 * ~~Support **NetworkClient**~~
 * ~~Replace interfaces with RxJava~~

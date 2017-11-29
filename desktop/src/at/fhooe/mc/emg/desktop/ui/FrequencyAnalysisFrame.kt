@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.desktop.ui
 
-import at.fhooe.mc.emg.util.FrequencyAnalysis
-import at.fhooe.mc.emg.util.FrequencyAnalysis.AnalysisType
+import at.fhooe.mc.emg.analysis.FrequencyAnalysisMethod
+import at.fhooe.mc.emg.analysis.FrequencyAnalysisView
 import org.knowm.xchart.CategoryChart
 import org.knowm.xchart.CategoryChartBuilder
 import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle
@@ -9,15 +9,13 @@ import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.style.Styler.*
 import java.awt.BorderLayout
 import java.awt.Color
+import java.awt.Rectangle
 import java.awt.Toolkit
-import java.util.*
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 
-// TODO Decouple this with View later
-internal class FrequencyAnalysisFrame private constructor(type: AnalysisType, input: DoubleArray,
-                                                          sampleFrequency: Double, parent: JFrame) : JFrame() {
+class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
 
     private val contentPane: JPanel
     private var chart: CategoryChart? = null
@@ -28,7 +26,7 @@ internal class FrequencyAnalysisFrame private constructor(type: AnalysisType, in
         iconImage = Toolkit.getDefaultToolkit()
                 .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_analysis.png")
         title = "Frequency analysis"
-        setBoundsRelativeToParent(parent)
+        bounds = Rectangle(400, 200, 450, 300)
 
         contentPane = JPanel()
         contentPane.border = EmptyBorder(8, 8, 8, 8)
@@ -37,12 +35,7 @@ internal class FrequencyAnalysisFrame private constructor(type: AnalysisType, in
         setContentPane(contentPane)
 
         initializeChart()
-        doCalculation(type, input, sampleFrequency)
-    }
-
-    private fun setBoundsRelativeToParent(parent: JFrame) {
-        val b = parent.bounds
-        setBounds(b.x + b.width + 10, b.y - b.height / 2 + 30, 450, 300)
+        isVisible = true
     }
 
     private fun initializeChart() {
@@ -63,42 +56,24 @@ internal class FrequencyAnalysisFrame private constructor(type: AnalysisType, in
         contentPane.add(chartWrapper)
     }
 
-    private fun doCalculation(type: AnalysisType, input: DoubleArray, fs: Double) {
+    override fun showEvaluation(method: FrequencyAnalysisMethod.Method, xData: DoubleArray, yData: DoubleArray) {
 
-        FrequencyAnalysis.fft(input).subscribe { fft ->
-            when (type) {
-                FrequencyAnalysis.AnalysisType.FFT -> showFFTPlot(fft)
-                FrequencyAnalysis.AnalysisType.SPECTRUM -> showPowerSpectrumPlot(fft, fs)
+        val name: String
+        val color: Color
+        when(method) {
+
+            FrequencyAnalysisMethod.Method.FFT -> {
+                name = "FFT"
+                color = Color.decode("#0091EA")
             }
-
+            FrequencyAnalysisMethod.Method.SPECTRUM -> {
+                name = "Power spectrum"
+                color = Color.decode("#8BC34A")
+            }
         }
-    }
 
-    private fun showFFTPlot(fft: DoubleArray) {
-
-        val xData = DoubleArray(fft.size)
-        Arrays.setAll(xData) { i -> i.toDouble() }
-
-        val c = Color.decode("#0091EA")
-        chart?.addSeries("FFT", xData, fft)
-                ?.setMarkerColor(c)?.lineColor = c
-    }
-
-    private fun showPowerSpectrumPlot(fft: DoubleArray, fs: Double) {
-        FrequencyAnalysis.powerSpectrum(fft, fs).subscribe { data ->
-            val c = Color.decode("#8BC34A")
-            chart?.addSeries("Power spectrum", data.first, data.second)
-                    ?.setMarkerColor(c)?.lineColor = c
-        }
-    }
-
-    companion object {
-
-        fun show(type: AnalysisType, input: DoubleArray,
-                 sampleFrequency: Double, parent: JFrame) {
-            val frame = FrequencyAnalysisFrame(type, input, sampleFrequency, parent)
-            frame.isVisible = true
-        }
+        chart?.addSeries(name, xData, yData)
+                ?.setMarkerColor(color)?.lineColor = color
     }
 
 }

@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.core
 
+import at.fhooe.mc.emg.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.client.ChannelData
 import at.fhooe.mc.emg.client.ClientCategory
 import at.fhooe.mc.emg.client.EmgClientDriver
@@ -9,7 +10,6 @@ import at.fhooe.mc.emg.storage.CsvDataStorage
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.tools.Tool
 import at.fhooe.mc.emg.util.Configuration
-import at.fhooe.mc.emg.util.FrequencyAnalysis
 import at.fhooe.mc.emg.view.EmgView
 import at.fhooe.mc.emg.view.EmgViewCallback
 import at.fhooe.mc.emg.view.VisualView
@@ -190,8 +190,8 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         updateStatus(false)
     }
 
-    override fun requestFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType) {
-        emgView?.showFrequencyAnalysis(type, client.samplingFrequency)
+    override fun requestFrequencyAnalysis(method: FrequencyAnalysisMethod.Method) {
+        emgView?.showFrequencyAnalysis(FrequencyAnalysisMethod(method, visualView.dataForFrequencyAnalysis, client.samplingFrequency))
     }
 
 

@@ -1,9 +1,9 @@
 package at.fhooe.mc.emg.view
 
+import at.fhooe.mc.emg.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.client.EmgClientDriver
 import at.fhooe.mc.emg.storage.DataStorage
 import at.fhooe.mc.emg.util.Configuration
-import at.fhooe.mc.emg.util.FrequencyAnalysis
 
 /**
  * Author:  Martin Macheiner
@@ -26,6 +26,6 @@ interface EmgViewCallback {
 
     fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean)
 
-    fun requestFrequencyAnalysis(type: FrequencyAnalysis.AnalysisType)
+    fun requestFrequencyAnalysis(method: FrequencyAnalysisMethod.Method)
 
 }
