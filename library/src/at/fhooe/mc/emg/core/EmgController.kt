@@ -20,7 +20,7 @@ import java.util.*
  * Date:    07.07.2017
  */
 abstract class EmgController(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
-                             var emgView: EmgView?) : EmgViewCallback {
+                             open var emgView: EmgView?) : EmgViewCallback {
 
     private lateinit var client: EmgClientDriver
 
@@ -29,8 +29,6 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
     private lateinit var filters: List<Filter>
 
     abstract val visualView: VisualView<*>
-
-
 
     val currentDataPointer: Int
         get() = client.currentDataPointer
@@ -56,16 +54,14 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
                 LowpassFilter(),
                 RunningAverageFilter(config.runningAverageWindowSize),
                 SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
-
-        setupEmgView()
     }
 
     private fun setupEmgView() {
         emgView?.setupView(this, config)
         emgView?.setupFilterViews(filters)
-        emgView?.setupEmgClientView(clients, client)
+        emgView?.setupEmgClientDriverView(clients, client)
         emgView?.setupToolsView(tools, this)
-        emgView?.setupEmgClientConfigViews(clients)
+        emgView?.setupEmgClientDriverConfigViews(clients)
     }
 
     private fun storeData(writeOnDisconnectFileName: String?) {
@@ -73,12 +69,12 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
             exportData(writeOnDisconnectFileName, CsvDataStorage())
         }
     }
-    // ----------------------------------------- Abstract methods ------------------------------------------
-
-
-    // ----------------------------------------------------------------------------------------------------
 
     // ------------------------------------------ Public methods ------------------------------------------
+
+    fun start() {
+        setupEmgView()
+    }
 
     fun getClient(category: ClientCategory): EmgClientDriver? {
         clients.forEach {

@@ -56,6 +56,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private lateinit var visualView: VisualView<JComponent>
 
     init {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
         iconImage = Toolkit.getDefaultToolkit()
                 .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_main.jpg")
         initialize()
@@ -302,7 +303,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuFilter?.getItem(2)?.isSelected = true
     }
 
-    override fun setupEmgClientView(clients: List<EmgClientDriver>, defaultClient: EmgClientDriver) {
+    override fun setupEmgClientDriverView(clients: List<EmgClientDriver>, defaultClient: EmgClientDriver) {
 
         mnClients?.removeAll()
         clients.forEach { c ->
@@ -323,7 +324,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         }
     }
 
-    override fun setupEmgClientConfigViews(clients: List<EmgClientDriver>) {
+    override fun setupEmgClientDriverConfigViews(clients: List<EmgClientDriver>) {
 
         clients.forEach { c ->
             if (c.hasConfigView) {

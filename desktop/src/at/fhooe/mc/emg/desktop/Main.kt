@@ -14,16 +14,12 @@ import at.fhooe.mc.emg.tools.conconi.ConconiTool
 import at.fhooe.mc.emg.tools.peak.PeakDetectionTool
 import java.awt.EventQueue
 import java.util.*
-import javax.swing.UIManager
 
 object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
         EventQueue.invokeLater {
-
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-            val view = DesktopMainWindow()
 
             DesktopEmgController(
                     Arrays.asList(
@@ -34,7 +30,8 @@ object Main {
                     Arrays.asList(
                             ConconiTool(SwingConconiView()),
                             PeakDetectionTool()),
-                    view)
+                    DesktopMainWindow())
+                    .start()
         }
     }
 

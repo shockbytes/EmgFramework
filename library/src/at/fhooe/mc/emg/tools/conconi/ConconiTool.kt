@@ -11,7 +11,7 @@ import java.util.*
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  */
-class ConconiTool(var view: ConconiView?) : Tool, ConconiViewCallback {
+class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
 
     private var timer: Timer? = null
 

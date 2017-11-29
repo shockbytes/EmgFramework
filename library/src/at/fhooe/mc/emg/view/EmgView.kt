@@ -34,9 +34,9 @@ interface EmgView {
 
     fun setupFilterViews(filter: List<Filter>)
 
-    fun setupEmgClientView(clients: List<EmgClientDriver>, defaultClient: EmgClientDriver)
+    fun setupEmgClientDriverView(clients: List<EmgClientDriver>, defaultClient: EmgClientDriver)
 
-    fun setupEmgClientConfigViews(clients: List<EmgClientDriver>)
+    fun setupEmgClientDriverConfigViews(clients: List<EmgClientDriver>)
 
     // -------------------------------------------------------
 
