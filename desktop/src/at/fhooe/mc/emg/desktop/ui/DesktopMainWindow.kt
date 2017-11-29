@@ -64,7 +64,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private fun initialize() {
         isResizable = true
         setBounds(100, 150, 450, 300)
-        title = "Emg Desktop v1.0"
+        title = "Emg Desktop v0.6"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
 

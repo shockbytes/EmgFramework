@@ -27,8 +27,9 @@ class NetworkClient(cv: EmgClientConfigView? = null) : EmgClient(cv) {
 
     override val isDataStorageEnabled: Boolean = true
 
-    private var ip: String = "localhost"
-    private var port: Int = 5673
+    var ip: String = "localhost"
+    var port: Int = 5673
+
     private val buffer = ByteArray(64)
     private var datagramSocket: DatagramSocket? = null
 

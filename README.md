@@ -29,7 +29,7 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * Support **BluetoothClient**
 * Refactor Analysis views like Tool views
 * Refactor with **MVC/MVP pattern** to separate logic from views
-* Refactor Config views for Clients
+* ~~Refactor Config views for Clients~~
 * ~~Support **NetworkClient**~~
 * ~~Replace interfaces with RxJava~~
 * ~~Support Conconi Test~~
@@ -38,6 +38,7 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * ~~Improve performance by replacing/rewriting chart library (decouple chart with interface for easy replacement)~~
 
 ### Minor
+* VisualView Bug when reconnecting to client (View not emptied)
 * Store sampling rate in file name of simulation data
 * Support .ARFF files as data storage (for machine learning approaches)
 * ~~Write communication library for clients (Arduino)~~

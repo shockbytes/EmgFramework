@@ -15,8 +15,6 @@ class DesktopSerialClientConfigView : EmgClientConfigView {
 
     override val name: String = "Serial Config"
 
-    private lateinit var serialClient: SerialClient
-
     private val frame: JFrame = JFrame()
     private lateinit var comboBoxPorts: JComboBox<String>
     private lateinit var comboBoxDatarates: JComboBox<String>
@@ -31,7 +29,7 @@ class DesktopSerialClientConfigView : EmgClientConfigView {
 
         frame.bounds = Rectangle(400, 200, 275, 275)
         frame.title = name
-        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
 
         comboBoxPorts = JComboBox()
         comboBoxDatarates = JComboBox(SerialClient.supportedDataRates.map { i -> i.toString() }.toTypedArray())
@@ -53,7 +51,7 @@ class DesktopSerialClientConfigView : EmgClientConfigView {
 
     override fun show(client: EmgClient) {
 
-        serialClient = client as SerialClient
+        client as SerialClient
 
         btnReload.addActionListener {
             comboBoxPorts.removeAllItems()
@@ -64,6 +62,7 @@ class DesktopSerialClientConfigView : EmgClientConfigView {
         // Load the ports the first time
         btnReload.doClick()
 
+        btnApply.actionListeners.forEach { btnApply.removeActionListener(it) }
         btnApply.addActionListener {
 
             // Set selected port

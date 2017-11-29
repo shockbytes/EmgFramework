@@ -3,8 +3,10 @@ package at.fhooe.mc.emg.desktop.client.network
 import at.fhooe.mc.emg.client.EmgClient
 import at.fhooe.mc.emg.client.EmgClientConfigView
 import at.fhooe.mc.emg.client.network.NetworkClient
+import java.awt.GridLayout
 import java.awt.Rectangle
-import javax.swing.JFrame
+import javax.swing.*
+import javax.swing.border.EmptyBorder
 
 /**
  * Author:  Mescht
@@ -16,7 +18,9 @@ class DesktopNetworkClientConfigView : EmgClientConfigView {
     override val name: String = "Network Config"
 
     private val frame: JFrame = JFrame()
-    private lateinit var networkClient: NetworkClient
+    private lateinit var textFieldIp: JTextField
+    private lateinit var textFieldPort: JTextField
+    private lateinit var btnApply: JButton
 
     init {
         setupFrame()
@@ -26,13 +30,43 @@ class DesktopNetworkClientConfigView : EmgClientConfigView {
 
         frame.bounds = Rectangle(400, 200, 300, 200)
         frame.title = name
-        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
 
+        textFieldIp = JTextField()
+        textFieldPort = JTextField()
+        btnApply = JButton("APPLY")
+
+        val contentPanel = JPanel()
+        contentPanel.layout = GridLayout(6, 1, 4, 4)
+        contentPanel.border = EmptyBorder(8, 8, 8, 8)
+        contentPanel.add(JLabel("IP Address"))
+        contentPanel.add(textFieldIp)
+        contentPanel.add(JLabel())
+        contentPanel.add(JLabel("Port"))
+        contentPanel.add(textFieldPort)
+        contentPanel.add(btnApply)
+        frame.contentPane = contentPanel
     }
 
     override fun show(client: EmgClient) {
-        // TODO
-        networkClient = client as NetworkClient
+
+        client as NetworkClient
+
+        textFieldPort.text = client.port.toString()
+        textFieldIp.text = client.ip
+
+        btnApply.actionListeners.forEach { btnApply.removeActionListener(it) }
+        btnApply.addActionListener {
+
+            val port = textFieldPort.text.toIntOrNull()
+            if (port != null) {
+                client.setSocketOptions(textFieldIp.text, port)
+                frame.dispose()
+            } else {
+                JOptionPane.showMessageDialog(frame, "Port must be an integer value!")
+                textFieldPort.text = ""
+            }
+        }
 
         frame.isVisible = true
     }
