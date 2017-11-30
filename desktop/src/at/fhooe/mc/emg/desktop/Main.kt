@@ -14,12 +14,15 @@ import at.fhooe.mc.emg.desktop.tools.conconi.SwingConconiView
 import at.fhooe.mc.emg.desktop.ui.DesktopMainWindow
 import java.awt.EventQueue
 import java.util.*
+import javax.swing.UIManager
 
 object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
         EventQueue.invokeLater {
+
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
             DesktopEmgController(
                     Arrays.asList(

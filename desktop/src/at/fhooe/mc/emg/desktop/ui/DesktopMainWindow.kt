@@ -55,7 +55,6 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private lateinit var visualView: VisualView<JComponent>
 
     init {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
         iconImage = Toolkit.getDefaultToolkit()
                 .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_main.jpg")
         initialize()
