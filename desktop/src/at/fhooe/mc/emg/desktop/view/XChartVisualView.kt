@@ -27,6 +27,10 @@ class XChartVisualView : VisualView<JComponent> {
     override val view: JComponent
         get() = chartWrapper
 
+    init {
+        initialize()
+    }
+
     override fun initialize() {
 
         realtimeChart = org.knowm.xchart.XYChartBuilder().width(800).height(600).theme(Styler.ChartTheme.GGPlot2).build()

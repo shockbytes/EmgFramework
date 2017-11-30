@@ -1,9 +1,9 @@
 package at.fhooe.mc.emg.core
 
-import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.clientdriver.ChannelData
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
+import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.core.filter.*
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
@@ -172,7 +172,8 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
 
             client.connect()
             client.rawCallbackSubject.subscribe { emgView?.onRawClientDataAvailable(it) }
-            client.channeledCallbackSubject.subscribe { emgView?.onChanneledClientDataAvailable(it, filters) }
+            // Directly call this on the visual view, the EmgView would call the same single line
+            client.channeledCallbackSubject.subscribe { visualView.update(it, filters) }
 
             updateStatus(true)
             emgView?.setDeviceControlsEnabled(true)
@@ -190,8 +191,8 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         updateStatus(false)
     }
 
-    override fun requestFrequencyAnalysis(method: FrequencyAnalysisMethod.Method) {
-        emgView?.showFrequencyAnalysis(FrequencyAnalysisMethod(method, visualView.dataForFrequencyAnalysis, client.samplingFrequency))
+    override fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod.Method) {
+        emgView?.showFrequencyAnalysisView(FrequencyAnalysisMethod(method, visualView.dataForFrequencyAnalysis, client.samplingFrequency))
     }
 
 

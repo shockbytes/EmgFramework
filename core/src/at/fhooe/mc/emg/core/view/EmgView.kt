@@ -1,9 +1,8 @@
 package at.fhooe.mc.emg.core.view
 
-import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
-import at.fhooe.mc.emg.clientdriver.ChannelData
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.Configuration
@@ -24,8 +23,6 @@ interface EmgView {
 
     fun onRawClientDataAvailable(raw: String)
 
-    fun onChanneledClientDataAvailable(cd: ChannelData, filters: List<Filter>)
-
     // -------------------------------------------------------
 
     // ------------------ Utility list views -----------------
@@ -40,6 +37,6 @@ interface EmgView {
 
     // -------------------------------------------------------
 
-    fun showFrequencyAnalysis(method: FrequencyAnalysisMethod)
+    fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod)
 
 }

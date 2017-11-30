@@ -1,19 +1,18 @@
 package at.fhooe.mc.emg.desktop.ui
 
-import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
-import at.fhooe.mc.emg.clientdriver.ChannelData
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgController
-import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog
-import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog
-import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog
-import at.fhooe.mc.emg.desktop.view.DesktopEmgView
+import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.Configuration
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
+import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog
+import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog
+import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog
+import at.fhooe.mc.emg.desktop.view.DesktopEmgView
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Toolkit
@@ -249,8 +248,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
             e.source === cbMenuItemLogging -> config.isWriteToLogEnabled = cbMenuItemLogging?.isSelected!!
             e.source === cbMenuItemCopyToSimulation -> config.isCopyToSimulationEnabled = cbMenuItemCopyToSimulation?.isSelected!!
             e.source === menuItemReset -> reset()
-            e.source === menuItemFft -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysisMethod.Method.FFT)
-            e.source === menuItemPowerSpectrum -> viewCallback.requestFrequencyAnalysis(FrequencyAnalysisMethod.Method.SPECTRUM)
+            e.source === menuItemFft -> viewCallback.requestFrequencyAnalysisView(FrequencyAnalysisMethod.Method.FFT)
+            e.source === menuItemPowerSpectrum -> viewCallback.requestFrequencyAnalysisView(FrequencyAnalysisMethod.Method.SPECTRUM)
             e.source === menuItemFilterConfig -> showFilterConfigurationDialog()
             e.source === menuItemExport -> {
                 val fileName = UiUtils.showCsvSaveDialog()
@@ -277,10 +276,6 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     override fun onRawClientDataAvailable(raw: String) {
         textAreaConsole?.append(raw + "\n")
         textAreaConsole?.caretPosition = textAreaConsole!!.document.length
-    }
-
-    override fun onChanneledClientDataAvailable(cd: ChannelData, filters: List<Filter>) {
-        visualView.update(cd, filters)
     }
 
     override fun setupToolsView(tools: List<Tool>, controller: EmgController) {
@@ -347,13 +342,12 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         cbMenuItemCopyToSimulation?.isSelected = config.isCopyToSimulationEnabled
     }
 
-    override fun showFrequencyAnalysis(method: FrequencyAnalysisMethod) {
+    override fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod) {
         method.evaluate(FrequencyAnalysisFrame())
     }
 
     override fun setVisualView(view: VisualView<JComponent>) {
         visualView = view
-        visualView.initialize()
         splitPane?.rightComponent = visualView.view
     }
 }

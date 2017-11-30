@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.core.view
 
-import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
+import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.storage.DataStorage
 import at.fhooe.mc.emg.core.util.Configuration
 
@@ -26,6 +26,6 @@ interface EmgViewCallback {
 
     fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean)
 
-    fun requestFrequencyAnalysis(method: FrequencyAnalysisMethod.Method)
+    fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod.Method)
 
 }
