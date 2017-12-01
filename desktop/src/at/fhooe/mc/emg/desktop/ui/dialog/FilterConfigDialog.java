@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.desktop.ui.dialog;
 
-import at.fhooe.mc.emg.core.util.Configuration;
+import at.fhooe.mc.emg.core.util.config.EmgConfig;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -19,9 +19,9 @@ public class FilterConfigDialog extends JDialog implements ChangeListener {
 	private JSlider sliderSavitzkyGolay;
 	private JLabel labelSavitzkyGolay;
 
-	private Configuration config;
+	private EmgConfig config;
 
-	public FilterConfigDialog(Configuration config, JFrame mainWindow) {
+	public FilterConfigDialog(EmgConfig config, JFrame mainWindow) {
 		setResizable(false);
 		setTitle("Filter configuration");
 		setIconImage(Toolkit.getDefaultToolkit()

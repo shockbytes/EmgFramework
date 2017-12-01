@@ -15,7 +15,7 @@ import javax.swing.border.EmptyBorder
 
 class DesktopNetworkClientDriverConfigView : EmgClientDriverConfigView {
 
-    override val name: String = "Network Config"
+    override val name: String = "Network EmgConfigOld"
 
     private val frame: JFrame = JFrame()
     private lateinit var textFieldIp: JTextField

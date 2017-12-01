@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.core.client.network.NetworkClientDriver
 import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.core.tools.conconi.ConconiTool
 import at.fhooe.mc.emg.core.tools.peak.PeakDetectionTool
+import at.fhooe.mc.emg.core.util.config.JsonEmgConfigStorage
 import at.fhooe.mc.emg.desktop.client.network.DesktopNetworkClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.SerialClientDriver
@@ -14,6 +15,7 @@ import at.fhooe.mc.emg.desktop.tools.conconi.SwingConconiView
 import at.fhooe.mc.emg.desktop.ui.DesktopMainWindow
 import java.awt.EventQueue
 import java.util.*
+import java.io.File
 import javax.swing.UIManager
 
 object Main {
@@ -33,7 +35,8 @@ object Main {
                     Arrays.asList(
                             ConconiTool(SwingConconiView()),
                             PeakDetectionTool()),
-                    DesktopMainWindow())
+                    DesktopMainWindow(),
+                    JsonEmgConfigStorage(File(System.getProperty("user.dir") + "/data/config.json")))
                     .start()
         }
     }

@@ -6,7 +6,7 @@ import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.tools.Tool
-import at.fhooe.mc.emg.core.util.Configuration
+import at.fhooe.mc.emg.core.util.config.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog
@@ -50,7 +50,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     private lateinit var viewCallback: EmgViewCallback
 
-    private lateinit var config: Configuration
+    private lateinit var config: EmgConfig
 
     private lateinit var visualView: VisualView<JComponent>
 
@@ -158,7 +158,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuFilter = JMenu("Filter")
         menuBar.add(menuFilter)
 
-        menuItemFilterConfig = JMenuItem("Configuration")
+        menuItemFilterConfig = JMenuItem("Filter configuration")
         menuItemFilterConfig?.addActionListener(this)
         menuFilter?.add(menuItemFilterConfig)
 
@@ -332,7 +332,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     }
 
 
-    override fun setupView(viewCallback: EmgViewCallback, config: Configuration) {
+    override fun setupView(viewCallback: EmgViewCallback, config: EmgConfig) {
         this.viewCallback = viewCallback
         this.config = config
 

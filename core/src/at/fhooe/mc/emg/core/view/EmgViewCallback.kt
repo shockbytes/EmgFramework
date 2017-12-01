@@ -3,7 +3,7 @@ package at.fhooe.mc.emg.core.view
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.storage.DataStorage
-import at.fhooe.mc.emg.core.util.Configuration
+import at.fhooe.mc.emg.core.util.config.EmgConfig
 
 /**
  * Author:  Martin Macheiner
@@ -12,7 +12,7 @@ import at.fhooe.mc.emg.core.util.Configuration
 
 interface EmgViewCallback {
 
-    fun closeView(config: Configuration)
+    fun closeView(config: EmgConfig)
 
     fun setSelectedClient(client: EmgClientDriver)
 

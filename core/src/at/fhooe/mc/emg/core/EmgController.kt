@@ -9,7 +9,8 @@ import at.fhooe.mc.emg.core.filter.*
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.DataStorage
 import at.fhooe.mc.emg.core.tools.Tool
-import at.fhooe.mc.emg.core.util.Configuration
+import at.fhooe.mc.emg.core.util.config.EmgConfig
+import at.fhooe.mc.emg.core.util.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
@@ -20,11 +21,11 @@ import java.util.*
  * Date:    07.07.2017
  */
 abstract class EmgController(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
-                             open var emgView: EmgView?) : EmgViewCallback {
+                             open var emgView: EmgView?, private val configStorage: EmgConfigStorage) : EmgViewCallback {
 
     private lateinit var client: EmgClientDriver
 
-    private lateinit var config: Configuration
+    private lateinit var config: EmgConfig
 
     private lateinit var filters: List<Filter>
 
@@ -42,7 +43,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
     private fun initialize() {
 
         // Load configuration
-        config = Configuration
+        config = configStorage.load()
 
         // Set default client
         client = clients[clients.size / 2]
@@ -111,10 +112,6 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         }
     }
 
-    private fun saveConfig() {
-        config.save()
-    }
-
     private fun updateStatus(isConnected: Boolean) {
 
         var text: String
@@ -148,9 +145,9 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         updateStatus(true)
     }
 
-    override fun closeView(config: Configuration) {
+    override fun closeView(config: EmgConfig) {
         this.config = config
-        saveConfig()
+        configStorage.store(config)
     }
 
     override fun setSelectedClient(client: EmgClientDriver) {

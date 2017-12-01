@@ -16,7 +16,7 @@ import javax.swing.border.EmptyBorder
 
 class DesktopSimulationClientDriverConfigView : EmgClientDriverConfigView {
 
-    override val name: String = "Simulation Config"
+    override val name: String = "Simulation EmgConfigOld"
 
     private val frame: JFrame = JFrame()
 

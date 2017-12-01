@@ -5,7 +5,7 @@ import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.tools.Tool
-import at.fhooe.mc.emg.core.util.Configuration
+import at.fhooe.mc.emg.core.util.config.EmgConfig
 
 /**
  * Author:  Mescht
@@ -13,7 +13,7 @@ import at.fhooe.mc.emg.core.util.Configuration
  */
 interface EmgView {
 
-    fun setupView(viewCallback: EmgViewCallback, config: Configuration)
+    fun setupView(viewCallback: EmgViewCallback, config: EmgConfig)
 
     fun reset()
 
