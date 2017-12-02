@@ -13,6 +13,8 @@ import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog
 import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog
 import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog
 import at.fhooe.mc.emg.desktop.view.DesktopEmgView
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Toolkit
@@ -272,9 +274,11 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         labelStatus?.text = status
     }
 
-    override fun onRawClientDataAvailable(raw: String) {
-        textAreaConsole?.append(raw + "\n")
-        textAreaConsole?.caretPosition = textAreaConsole!!.document.length
+    override fun exposeRawClientDataObservable(observable: Observable<String>) {
+        observable.subscribeOn(Schedulers.io()).subscribe {
+            textAreaConsole?.append(it + "\n")
+            textAreaConsole?.caretPosition = textAreaConsole!!.document.length
+        }
     }
 
     override fun setupToolsView(tools: List<Tool>, controller: EmgController) {

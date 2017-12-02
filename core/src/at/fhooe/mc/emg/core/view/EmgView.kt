@@ -6,6 +6,7 @@ import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.config.EmgConfig
+import io.reactivex.Observable
 
 /**
  * Author:  Mescht
@@ -21,7 +22,7 @@ interface EmgView {
 
     fun lockDeviceControls(isLocked: Boolean)
 
-    fun onRawClientDataAvailable(raw: String)
+    fun exposeRawClientDataObservable(observable: Observable<String>)
 
     // -------------------------------------------------------
 

@@ -14,6 +14,7 @@ import at.fhooe.mc.emg.core.util.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 
 /**
@@ -30,6 +31,8 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
     private lateinit var filters: List<Filter>
 
     abstract val visualView: VisualView<*>
+
+    private val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
 
     val currentDataPointer: Int
         get() = client.currentDataPointer
@@ -63,6 +66,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         emgView?.setupEmgClientDriverView(clients, client)
         emgView?.setupToolsView(tools, this)
         emgView?.setupEmgClientDriverConfigViews(clients)
+        emgView?.exposeRawClientDataObservable(rawCallbackSubject)
     }
 
     private fun storeData(writeOnDisconnectFileName: String?) {
@@ -77,7 +81,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         setupEmgView()
     }
 
-    fun getClient(category: ClientCategory): EmgClientDriver? {
+    private fun getClient(category: ClientCategory): EmgClientDriver? {
         clients.forEach {
             if (it.category === category) {
                 return it
@@ -86,7 +90,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         return null
     }
 
-    fun hasClient(category: ClientCategory): Boolean {
+    private fun hasClient(category: ClientCategory): Boolean {
         clients.forEach {
             if (it.category === category) {
                 return true
@@ -168,7 +172,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
             emgView?.reset()
 
             client.connect()
-            client.rawCallbackSubject.subscribe { emgView?.onRawClientDataAvailable(it) }
+            client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
             // Directly call this on the visual view, the EmgView would call the same single line
             client.channeledCallbackSubject.subscribe { visualView.update(it, filters) }
 
