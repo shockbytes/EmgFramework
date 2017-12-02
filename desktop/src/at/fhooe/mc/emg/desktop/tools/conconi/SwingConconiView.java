@@ -5,7 +5,7 @@ import at.fhooe.mc.emg.desktop.ui.UiUtils;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiTool;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiView;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiViewCallback;
-import at.fhooe.mc.emg.core.util.AppUtils;
+import at.fhooe.mc.emg.core.util.CoreUtils;
 import at.fhooe.mc.emg.core.util.PeakDetector;
 import org.jetbrains.annotations.NotNull;
 import org.knowm.xchart.XChartPanel;
@@ -86,7 +86,7 @@ public class SwingConconiView implements ActionListener, ConconiView {
 
         double speed = ConconiTool.Companion.getSpeeds()[round];
         int peaks = PeakDetector.INSTANCE.detectSimpleThresholdPeaks(data.getYSeries(0), 200);
-        double avg = AppUtils.INSTANCE.roundDouble(Arrays.stream(data.getYSeries(0))
+        double avg = CoreUtils.INSTANCE.roundDouble(Arrays.stream(data.getYSeries(0))
                 .average().orElse(-1), 2);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();

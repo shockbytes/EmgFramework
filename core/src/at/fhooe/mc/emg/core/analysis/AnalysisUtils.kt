@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.analysis
 
-import at.fhooe.mc.emg.core.util.AppUtils
+import at.fhooe.mc.emg.core.util.CoreUtils
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.jtransforms.fft.DoubleFFT_1D
@@ -24,9 +24,9 @@ object AnalysisUtils {
             val resolution = fs / N
             val spectrum = DoubleArray(N / 2 - 1)
             val xData = DoubleArray(N / 2 - 1)
-            Arrays.setAll(xData) { i -> AppUtils.roundDouble(i * resolution, 2) }
+            Arrays.setAll(xData) { i -> CoreUtils.roundDouble(i * resolution, 2) }
             for (k in 2 until N / 2 - 1) {
-                spectrum[k] = AppUtils.roundDouble(Math.sqrt(Math.pow(fft[2 * k], 2.0) + Math.pow(fft[2 * k + 1], 2.0)), 2)
+                spectrum[k] = CoreUtils.roundDouble(Math.sqrt(Math.pow(fft[2 * k], 2.0) + Math.pow(fft[2 * k + 1], 2.0)), 2)
             }
             Observable.just(Pair(xData, spectrum))
         }.subscribeOn(Schedulers.computation())

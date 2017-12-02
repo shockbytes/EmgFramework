@@ -4,7 +4,7 @@ import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
-import at.fhooe.mc.emg.core.util.AppUtils
+import at.fhooe.mc.emg.core.util.CoreUtils
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -109,7 +109,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val 
             val modified = Files.readAllLines(Paths.get(destinationFile.absolutePath))
                     .filter { s -> !s.isEmpty() && Character.isDigit(s[0]) }
                     .toList().joinToString("\n")
-            AppUtils.writeFile(destinationFile, modified)
+            CoreUtils.writeFile(destinationFile, modified)
 
         } catch (e: IOException) {
             e.printStackTrace()

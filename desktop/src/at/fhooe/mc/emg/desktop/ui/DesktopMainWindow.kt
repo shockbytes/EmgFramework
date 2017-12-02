@@ -189,7 +189,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         mnDebug.add(menuItemVisualMax)
 
         // Disable all controls until connection is established
-        setDeviceControlsEnabled(false)
+        lockDeviceControls(false)
     }
 
     // ---------------------------------------------------------------
@@ -257,15 +257,15 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         }
     }
 
-    override fun setDeviceControlsEnabled(isEnabled: Boolean) {
+    override fun lockDeviceControls(isLocked: Boolean) {
 
-        menuItemDisconnect?.isEnabled = isEnabled
-        menuItemSamplingFrequency?.isEnabled = isEnabled
+        menuItemDisconnect?.isEnabled = isLocked
+        menuItemSamplingFrequency?.isEnabled = isLocked
 
         // Logic is in reverse for connection and channels
-        menuFilter?.isEnabled = !isEnabled
-        mnClients?.isEnabled = !isEnabled
-        menuItemConnect?.isEnabled = !isEnabled
+        menuFilter?.isEnabled = !isLocked
+        mnClients?.isEnabled = !isLocked
+        menuItemConnect?.isEnabled = !isLocked
     }
 
     override fun updateStatus(status: String) {

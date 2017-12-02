@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.util.config
 
-import at.fhooe.mc.emg.core.util.AppUtils
+import at.fhooe.mc.emg.core.util.CoreUtils
 import com.google.gson.Gson
 import java.io.File
 import java.io.IOException
@@ -40,7 +40,7 @@ class JsonEmgConfigStorage(private val file: File) : EmgConfigStorage {
                 file.createNewFile()
             }
 
-            AppUtils.writeFile(file, gson.toJson(config))
+            CoreUtils.writeFile(file, gson.toJson(config))
 
         } catch (e: IOException) {
             e.printStackTrace()

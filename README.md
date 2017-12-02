@@ -38,7 +38,8 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * ~~Improve performance by replacing/rewriting chart library (decouple chart with interface for easy replacement)~~
 
 ### Minor
-* VisualView Bug when reconnecting to client (View not emptied)
+* VisualView Bug when reconnecting to client (View not emptied on Desktop)
+* Pack Analysis tools also in list with a setup() method in EmgView
 * Store sampling rate in file name of simulation data
 * Support .ARFF files as data storage (for machine learning approaches)
 * ~~Write communication library for clients (Arduino)~~

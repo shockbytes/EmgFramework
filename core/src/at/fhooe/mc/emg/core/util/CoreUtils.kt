@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.sound.sampled.AudioSystem
 
-object AppUtils {
+object CoreUtils {
 
     fun roundDouble(value: Double, digits: Int): Double {
 

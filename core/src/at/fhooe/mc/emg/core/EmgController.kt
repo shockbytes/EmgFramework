@@ -173,7 +173,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
             client.channeledCallbackSubject.subscribe { visualView.update(it, filters) }
 
             updateStatus(true)
-            emgView?.setDeviceControlsEnabled(true)
+            emgView?.lockDeviceControls(true)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -184,7 +184,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         client.disconnect()
         storeData(writeFileOnDisconnectFileName)
 
-        emgView?.setDeviceControlsEnabled(false)
+        emgView?.lockDeviceControls(false)
         updateStatus(false)
     }
 

@@ -19,7 +19,7 @@ interface EmgView {
 
     fun updateStatus(status: String)
 
-    fun setDeviceControlsEnabled(isEnabled: Boolean)
+    fun lockDeviceControls(isLocked: Boolean)
 
     fun onRawClientDataAvailable(raw: String)
 

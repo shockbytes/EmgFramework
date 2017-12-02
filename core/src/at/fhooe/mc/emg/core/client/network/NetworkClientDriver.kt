@@ -37,14 +37,14 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     override fun connect() {
 
-        isRunning = true
-        datagramSocket = DatagramSocket()
-        datagramSocket?.connect(InetAddress.getByName(ip), port)
+        Observable.defer {
 
-        // Initialize by sending sampling frequency
-        sendSamplingFrequencyToClient()
+            isRunning = true
+            datagramSocket = DatagramSocket()
+            datagramSocket?.connect(InetAddress.getByName(ip), port)
 
-        Observable.defer{
+            // Initialize by sending sampling frequency
+            sendSamplingFrequencyToClient()
 
             while (isRunning) {
                 val packet = DatagramPacket(buffer, buffer.size)
@@ -57,17 +57,23 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
     }
 
     override fun disconnect() {
+        Observable.defer {
+            // Send disconnect message before closing socket
+            sendMessage("disconnect")
 
-        // Send disconnect message before closing socket
-        sendMessage("disconnect")
+            isRunning = false
+            datagramSocket?.disconnect()
+            datagramSocket?.close()
 
-        isRunning = false
-        datagramSocket?.disconnect()
-        datagramSocket?.close()
+            Observable.empty<Boolean>()
+        }.subscribeOn(Schedulers.io()).subscribe()
     }
 
     override fun sendSamplingFrequencyToClient() {
-        sendMessage(EmgMessaging.buildFrequencyMessage(samplingFrequency))
+        Observable.defer {
+            sendMessage(EmgMessaging.buildFrequencyMessage(samplingFrequency))
+            Observable.empty<Boolean>()
+        }.subscribeOn(Schedulers.io()).subscribe()
     }
 
     fun setSocketOptions(ip: String, port: Int) {

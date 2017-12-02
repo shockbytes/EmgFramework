@@ -2,7 +2,7 @@ package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.core.tools.Tool
-import at.fhooe.mc.emg.core.util.AppUtils
+import at.fhooe.mc.emg.core.util.CoreUtils
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -37,7 +37,7 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
     private fun playCountdownSound() {
 
         val file = File(System.getProperty("user.dir") + "/data/sound/conconi_countdown.wav")
-        AppUtils.playSound(file)
+        CoreUtils.playSound(file)
     }
 
     override fun onStartClicked() {
@@ -124,7 +124,7 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
         return try {
 
             if (data != null) {
-                AppUtils.serializeToFile(data!!, filename)
+                CoreUtils.serializeToFile(data!!, filename)
             }
             true
         } catch (e: IOException) {
@@ -136,7 +136,7 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
     private fun loadData(filename: String): Boolean {
 
         return try {
-            data = AppUtils.deserializeFromFile(filename)
+            data = CoreUtils.deserializeFromFile(filename)
             for (i in 0..data!!.roundCount) {
                 view?.onRoundDataAvailable(data!!.getRoundData(i), i)
             }
