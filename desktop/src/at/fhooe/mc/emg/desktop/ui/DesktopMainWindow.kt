@@ -58,14 +58,14 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     init {
         iconImage = Toolkit.getDefaultToolkit()
-                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_main.jpg")
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_main.png")
         initialize()
     }
 
     private fun initialize() {
         isResizable = true
         setBounds(100, 150, 450, 300)
-        title = "Emg Desktop v0.9"
+        title = "Emg Desktop v1.0"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
 

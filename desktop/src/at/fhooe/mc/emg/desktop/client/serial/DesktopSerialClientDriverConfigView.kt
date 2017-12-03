@@ -13,7 +13,7 @@ import javax.swing.border.EmptyBorder
  */
 class DesktopSerialClientDriverConfigView : EmgClientDriverConfigView {
 
-    override val name: String = "Serial EmgConfigOld"
+    override val name: String = "Serial Config"
 
     private val frame: JFrame = JFrame()
     private lateinit var comboBoxPorts: JComboBox<String>

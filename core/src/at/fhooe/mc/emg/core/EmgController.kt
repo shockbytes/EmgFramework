@@ -120,11 +120,11 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
 
         var text: String
         if (isConnected) {
-            text = "Status: Connected to " + client.name
+            text = client.name
             val fs = client.samplingFrequency
             text += " | fs = ".plus(if (fs > 0) ("$fs Hz") else "N/A")
         } else {
-            text = "Status: Not connected"
+            text = "Not connected"
         }
 
         emgView?.updateStatus(text)
