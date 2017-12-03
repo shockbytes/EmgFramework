@@ -82,31 +82,4 @@ class DesktopSimulationClientDriverConfigView : EmgClientDriverConfigView {
     }
 
     // -------------------------------------------------------------
-
-    /*
-    override fun setupSimulationClientView(client: SimulationClientDriver) {
-
-        mnSimulationData?.removeAll()
-        client.simulationSources.forEach { src ->
-
-            val item = JCheckBoxMenuItem(src.name)
-            item.addActionListener {
-                mnSimulationData?.menuComponents?.forEach {
-                    val otherItem = it as JCheckBoxMenuItem
-                    if (otherItem !== item) {
-                        otherItem.isSelected = false
-                    }
-                }
-                client.simulationSource = src
-            }
-            mnSimulationData?.add(item)
-        }
-
-        if (client.simulationSources.isNotEmpty()) {
-            mnSimulationData?.getItem(client.simulationSources.size / 2 + 1)?.doClick()
-        }
-    }
-
-    */
-
 }

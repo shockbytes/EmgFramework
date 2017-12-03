@@ -11,8 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
@@ -66,7 +65,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val 
     override fun connect() {
 
         if (simulationSource == null) {
-            throw IllegalStateException("Source cannot be null for simulation!")
+            throw IllegalStateException("Simulation source cannot be null!")
         }
         disconnect() // Reset connection first
         simulationData = prepareSimulationData()
@@ -106,7 +105,8 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val 
         try {
 
             FileUtils.copyFile(srcFile, destinationFile)
-            val modified = Files.readAllLines(Paths.get(destinationFile.absolutePath))
+
+            val modified = FileUtils.readLines(destinationFile, Charset.forName("UTF-8"))
                     .filter { s -> !s.isEmpty() && Character.isDigit(s[0]) }
                     .toList().joinToString("\n")
             CoreUtils.writeFile(destinationFile, modified)
@@ -131,8 +131,8 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val 
     private fun prepareSimulationData(): List<String> {
 
         return try {
-            Files.lines(Paths.get(simulationSource?.filePath))
-                    .use { stream -> stream.filter { it.isNotEmpty() }.toList() }
+            FileUtils.readLines(File(simulationSource?.filePath), Charset.forName("UTF-8"))
+                    .filter { it.isNotEmpty() }.toList()
         } catch (e: IOException) {
             e.printStackTrace()
             arrayListOf()
