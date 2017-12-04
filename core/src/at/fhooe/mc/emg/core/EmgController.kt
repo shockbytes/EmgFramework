@@ -184,7 +184,9 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
                     println(visualView.bufferSpan.toString())
                     channelCallback
                             .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                            .subscribe { it.forEach { visualView.update(it, filters) } }
+                            .subscribe {
+                                it.forEach { visualView.update(it, filters) }
+                            }
                 }
             }
             // Directly call this on the visual view, the EmgView would call the same single line
