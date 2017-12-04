@@ -172,25 +172,22 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         try {
 
             emgView?.reset()
-
             client.connect()
+
             client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
-            var channelCallback = client.channeledCallbackSubject
-                    .subscribeOn(Schedulers.io())
+            var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
             if (visualView.requestScheduler) {
                 channelCallback = channelCallback.observeOn(visualView.scheduler)
-                println(visualView.scheduler?.toString())
                 if (visualView.requestBufferedUpdates) {
-                    println(visualView.bufferSpan.toString())
                     channelCallback
                             .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                            .subscribe {
-                                it.forEach { visualView.update(it, filters) }
-                            }
+                            .subscribe { it.forEach { visualView.update(it, filters) } }
+                } else {
+                    channelCallback.subscribe { visualView.update(it, filters) }
                 }
+            } else {
+                channelCallback.subscribe { visualView.update(it, filters) }
             }
-            // Directly call this on the visual view, the EmgView would call the same single line
-            channelCallback.subscribe { visualView.update(it, filters) }
 
             updateStatus(true)
             emgView?.lockDeviceControls(true)

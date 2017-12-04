@@ -29,8 +29,8 @@ class XChartVisualView : VisualView<JComponent> {
     override val view: JComponent
         get() = chartWrapper
 
-    override val scheduler: Scheduler? = Schedulers.io()
-    override val bufferSpan: Long = 500
+    override val scheduler: Scheduler? = null
+    override val bufferSpan: Long = -1
 
     init {
         initialize()
@@ -52,7 +52,6 @@ class XChartVisualView : VisualView<JComponent> {
 
     override fun update(data: ChannelData, filters: List<Filter>) {
 
-        println(Thread.currentThread().toString())
         if (!addChannelsIfNecessary(data, filters)) {
             for (i in 0 until data.channelCount) {
                 filters
