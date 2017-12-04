@@ -3,8 +3,8 @@ package at.fhooe.mc.emg.desktop.view
 import at.fhooe.mc.emg.clientdriver.ChannelData
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.view.VisualView
-import hu.akarnokd.rxjava2.swing.SwingSchedulers
 import io.reactivex.Scheduler
+import io.reactivex.schedulers.Schedulers
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.style.Styler
 import java.awt.Color
@@ -29,8 +29,8 @@ class XChartVisualView : VisualView<JComponent> {
     override val view: JComponent
         get() = chartWrapper
 
-    override val scheduler: Scheduler? = null
-    override val bufferSpan: Long = -1
+    override val scheduler: Scheduler? = Schedulers.io()
+    override val bufferSpan: Long = 500
 
     init {
         initialize()
@@ -52,6 +52,7 @@ class XChartVisualView : VisualView<JComponent> {
 
     override fun update(data: ChannelData, filters: List<Filter>) {
 
+        println(Thread.currentThread().toString())
         if (!addChannelsIfNecessary(data, filters)) {
             for (i in 0 until data.channelCount) {
                 filters
