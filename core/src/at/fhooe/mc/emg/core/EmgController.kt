@@ -14,8 +14,10 @@ import at.fhooe.mc.emg.core.util.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Author:  Martin Macheiner
@@ -173,8 +175,16 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
 
             client.connect()
             client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
+            val channelCallback = client.channeledCallbackSubject
+                    .subscribeOn(Schedulers.io())
+            if (visualView.requestScheduler) {
+                channelCallback.observeOn(visualView.scheduler)
+                if (visualView.requestBufferedUpdates) {
+                    channelCallback.buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
+                }
+            }
             // Directly call this on the visual view, the EmgView would call the same single line
-            client.channeledCallbackSubject.subscribe { visualView.update(it, filters) }
+            channelCallback.subscribe { visualView.update(it, filters) }
 
             updateStatus(true)
             emgView?.lockDeviceControls(true)

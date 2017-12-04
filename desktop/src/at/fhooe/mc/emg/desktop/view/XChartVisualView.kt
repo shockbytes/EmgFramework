@@ -3,6 +3,8 @@ package at.fhooe.mc.emg.desktop.view
 import at.fhooe.mc.emg.clientdriver.ChannelData
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.view.VisualView
+import hu.akarnokd.rxjava2.swing.SwingSchedulers
+import io.reactivex.Scheduler
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.style.Styler
 import java.awt.Color
@@ -27,13 +29,21 @@ class XChartVisualView : VisualView<JComponent> {
     override val view: JComponent
         get() = chartWrapper
 
+    override val scheduler: Scheduler? = null
+    override val bufferSpan: Long = -1
+
     init {
         initialize()
     }
 
     override fun initialize() {
 
-        realtimeChart = org.knowm.xchart.XYChartBuilder().width(800).height(600).theme(Styler.ChartTheme.GGPlot2).build()
+        realtimeChart = org.knowm.xchart.XYChartBuilder()
+                .width(800)
+                .height(600)
+                .theme(Styler.ChartTheme.GGPlot2)
+                .build()
+
         realtimeChart.styler.legendPosition = Styler.LegendPosition.OutsideE
         realtimeChart.styler.isPlotGridLinesVisible = false
         realtimeChart.styler.plotBackgroundColor = Color.WHITE
