@@ -175,13 +175,16 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
 
             client.connect()
             client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
-            val channelCallback = client.channeledCallbackSubject
+            var channelCallback = client.channeledCallbackSubject
                     .subscribeOn(Schedulers.io())
             if (visualView.requestScheduler) {
-                channelCallback.observeOn(visualView.scheduler)
+                channelCallback = channelCallback.observeOn(visualView.scheduler)
+                println(visualView.scheduler?.toString())
+                /*
                 if (visualView.requestBufferedUpdates) {
+                    println(visualView.bufferSpan.toString())
                     channelCallback.buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                }
+                } */
             }
             // Directly call this on the visual view, the EmgView would call the same single line
             channelCallback.subscribe { visualView.update(it, filters) }
