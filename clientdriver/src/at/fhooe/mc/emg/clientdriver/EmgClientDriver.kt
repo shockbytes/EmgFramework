@@ -1,5 +1,7 @@
 package at.fhooe.mc.emg.clientdriver
 
+import at.fhooe.mc.emg.clientdriver.model.EmgData
+import at.fhooe.mc.emg.clientdriver.model.EmgPoint
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.subjects.PublishSubject
 
@@ -20,9 +22,9 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
 
-    val channeledCallbackSubject: PublishSubject<ChannelData> = PublishSubject.create()
+    val channeledCallbackSubject: PublishSubject<EmgData> = PublishSubject.create()
 
-    var channelData: ChannelData
+    var data: EmgData
         protected set
 
     val hasConfigView: Boolean
@@ -49,7 +51,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     // ---------------------------------------------------------------
     init {
-        channelData = ChannelData(channelWindowWidth)
+        data = EmgData(channelWindowWidth)
     }
 
     fun processMessage(msg: String) {
@@ -59,11 +61,11 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
         val channels = EmgMessaging.parseMessage(msg, protocolVersion)
         channels?.forEachIndexed { idx, value ->
-            channelData.updateXYSeries(idx, currentDataPointer.toDouble(), value)
+            data.updateChannel(idx, EmgPoint(currentDataPointer.toDouble(), value))
         }
 
         rawCallbackSubject.onNext(msg)
-        channeledCallbackSubject.onNext(channelData)
+        channeledCallbackSubject.onNext(data)
     }
 
     companion object {

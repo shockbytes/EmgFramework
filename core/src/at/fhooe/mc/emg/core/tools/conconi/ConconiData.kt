@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.tools.conconi
 
-import at.fhooe.mc.emg.clientdriver.ChannelData
+import at.fhooe.mc.emg.clientdriver.model.EmgData
 import java.io.Serializable
 import java.util.*
 
@@ -10,7 +10,7 @@ import java.util.*
  */
 internal class ConconiData : Serializable {
 
-    private val roundData: MutableList<ChannelData>
+    private val roundData: MutableList<EmgData>
 
     val roundCount: Int
         get() = roundData.size
@@ -19,11 +19,11 @@ internal class ConconiData : Serializable {
         roundData = ArrayList()
     }
 
-    fun addRoundData(crd: ChannelData) {
+    fun addRoundData(crd: EmgData) {
         roundData.add(crd)
     }
 
-    fun getRoundData(index: Int): ChannelData {
+    fun getRoundData(index: Int): EmgData {
         return roundData[index]
     }
 

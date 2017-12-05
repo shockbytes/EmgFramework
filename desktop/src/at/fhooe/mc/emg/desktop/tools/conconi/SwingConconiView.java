@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.desktop.tools.conconi;
 
-import at.fhooe.mc.emg.clientdriver.ChannelData;
+import at.fhooe.mc.emg.clientdriver.model.EmgData;
+import at.fhooe.mc.emg.clientdriver.model.EmgPoint;
 import at.fhooe.mc.emg.desktop.ui.UiUtils;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiTool;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiView;
@@ -82,12 +83,12 @@ public class SwingConconiView implements ActionListener, ConconiView {
     }
 
     @Override
-    public void onRoundDataAvailable(@NotNull ChannelData data, int round) {
+    public void onRoundDataAvailable(@NotNull EmgData data, int round) {
 
         double speed = ConconiTool.Companion.getSpeeds()[round];
-        int peaks = PeakDetector.INSTANCE.detectSimpleThresholdPeaks(data.getYSeries(0), 200);
-        double avg = CoreUtils.INSTANCE.roundDouble(Arrays.stream(data.getYSeries(0))
-                .average().orElse(-1), 2);
+        double[] yData = data.plotData(0).stream().mapToDouble(EmgPoint::getY).toArray();
+        int peaks = PeakDetector.INSTANCE.detectSimpleThresholdPeaks(yData, 200);
+        double avg = CoreUtils.INSTANCE.roundDouble(Arrays.stream(yData).average().orElse(-1), 2);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.addRow(new String[]{String.valueOf(speed), String.valueOf(avg), String.valueOf(peaks)});

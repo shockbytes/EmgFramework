@@ -137,8 +137,8 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
 
         return try {
             data = CoreUtils.deserializeFromFile(filename)
-            for (i in 0..data!!.roundCount) {
-                view?.onRoundDataAvailable(data!!.getRoundData(i), i)
+            (0 until data!!.roundCount).forEachIndexed { idx, _ ->
+                view?.onRoundDataAvailable(data?.getRoundData(idx)!!, idx)
             }
             true
         } catch (e: Exception) {

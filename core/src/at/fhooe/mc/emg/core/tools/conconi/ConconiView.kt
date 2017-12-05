@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.tools.conconi
 
-import at.fhooe.mc.emg.clientdriver.ChannelData
+import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.tools.ToolView
 
 /**
@@ -14,6 +14,6 @@ interface ConconiView : ToolView<ConconiViewCallback> {
 
     fun onTick(seconds: Int, goal: Int)
 
-    fun onRoundDataAvailable(data: ChannelData, round: Int)
+    fun onRoundDataAvailable(data: EmgData, round: Int)
 
 }
