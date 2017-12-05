@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.view
 
-import at.fhooe.mc.emg.clientdriver.ChannelData
+import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.filter.Filter
 import io.reactivex.Scheduler
 
@@ -26,7 +26,7 @@ interface VisualView<out T> {
 
     fun initialize()
 
-    fun update(data: ChannelData, filters: List<Filter>)
+    fun update(data: EmgData, filters: List<Filter>)
 
     fun setYMaximum(maximum: Double)
 

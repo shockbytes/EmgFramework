@@ -1,14 +1,12 @@
 package at.fhooe.mc.emg.desktop.view
 
-import at.fhooe.mc.emg.clientdriver.ChannelData
+import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.view.VisualView
 import io.reactivex.Scheduler
-import io.reactivex.schedulers.Schedulers
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.style.Styler
 import java.awt.Color
-import java.util.*
 import javax.swing.JComponent
 
 /**
@@ -50,16 +48,18 @@ class XChartVisualView : VisualView<JComponent> {
         chartWrapper = XChartPanel(realtimeChart)
     }
 
-    override fun update(data: ChannelData, filters: List<Filter>) {
+    override fun update(data: EmgData, filters: List<Filter>) {
 
         if (!addChannelsIfNecessary(data, filters)) {
             for (i in 0 until data.channelCount) {
                 filters
                         .filter { it.isEnabled }
                         .forEach { filter ->
+                            val plotData = data.plotData(i)
                             realtimeChart.updateXYSeries((i + 1).toString() + "." + filter.shortName,
-                                    data.getXSeries(i),
-                                    Arrays.stream(data.getYSeries(i)).map({ filter.step(it) }).toArray(), null)
+                                    plotData.map { it.x },
+                                    plotData.map({ filter.step(it.y) }),
+                                    null)
                         }
             }
         }
@@ -75,18 +75,20 @@ class XChartVisualView : VisualView<JComponent> {
         chartWrapper.invalidate()
     }
 
-    private fun addChannelsIfNecessary(channelData: ChannelData, filters: List<Filter>): Boolean {
+    private fun addChannelsIfNecessary(data: EmgData, filters: List<Filter>): Boolean {
 
         val series = realtimeChart.seriesMap.entries.size
-        val addSeries = series < channelData.channelCount
+        val addSeries = series < data.channelCount
         if (addSeries) {
-            for (i in series until channelData.channelCount) {
+            for (i in series until data.channelCount) {
                 filters
                         .filter { it.isEnabled }
                         .forEach { filter ->
+                            val plotData = data.plotData(i)
                             realtimeChart.addSeries((i + 1).toString() + "." + filter.shortName,
-                                    channelData.getXSeries(i),
-                                    Arrays.stream(channelData.getYSeries(i)).map({ filter.step(it) }).toArray(), null)
+                                    plotData.map { it.x },
+                                    plotData.map({ filter.step(it.y) }),
+                                    null)
                         }
             }
         }

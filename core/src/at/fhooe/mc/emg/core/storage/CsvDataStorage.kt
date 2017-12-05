@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.storage
 
-import at.fhooe.mc.emg.clientdriver.ChannelData
+import at.fhooe.mc.emg.clientdriver.model.EmgData
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException
@@ -8,10 +8,10 @@ import java.io.PrintWriter
 
 class CsvDataStorage : DataStorage {
 
-    override fun store(path: String, data: ChannelData): Boolean {
+    override fun store(path: String, data: EmgData): Boolean {
 
         try {
-            PrintWriter(BufferedWriter(FileWriter(path))).use { writer -> writer.println(data.csvLogOutput) }
+            PrintWriter(BufferedWriter(FileWriter(path))).use { writer -> writer.println(data.asCsv()) }
         } catch (e: IOException) {
             e.printStackTrace()
             return false

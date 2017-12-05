@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.core
 
-import at.fhooe.mc.emg.clientdriver.ChannelData
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
+import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.core.filter.*
@@ -101,8 +101,8 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         return false
     }
 
-    fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): ChannelData {
-        return client.channelData.getSingleChannelSection(start, stop, channel)
+    fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): EmgData {
+        return client.data.section(start, stop, channel)
     }
 
     private fun tryCopySimulationData(filename: String) {
@@ -140,7 +140,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
 
         // Only copy to folder if copy to simulation is enabled and the client isn't the simulation client
         // because then the simulationSource is already stored in the directory
-        val success = dataStorage.store(filename, client.channelData)
+        val success = dataStorage.store(filename, client.data)
         if (success) {
             tryCopySimulationData(filename)
         }
