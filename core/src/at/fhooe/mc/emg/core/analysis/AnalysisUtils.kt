@@ -9,28 +9,37 @@ import java.util.*
 object AnalysisUtils {
 
     fun fft(input: DoubleArray): Observable<DoubleArray> {
-        return Observable.defer {
-            val fftDo = DoubleFFT_1D(input.size.toLong())
-            val fft = DoubleArray(input.size * 2)
-            System.arraycopy(input, 0, fft, 0, input.size)
-            fftDo.realForwardFull(fft)
-            Observable.just(fft)
-        }.subscribeOn(Schedulers.computation())
+
+        return if (input.isEmpty()) {
+            Observable.just(DoubleArray(0))
+        } else {
+            Observable.defer {
+                val fftDo = DoubleFFT_1D(input.size.toLong())
+                val fft = DoubleArray(input.size * 2)
+                System.arraycopy(input, 0, fft, 0, input.size)
+                fftDo.realForwardFull(fft)
+                Observable.just(fft)
+            }.subscribeOn(Schedulers.computation())
+        }
     }
 
     fun powerSpectrum(fft: DoubleArray, fs: Double): Observable<Pair<DoubleArray, DoubleArray>> {
-        return Observable.defer {
-            val N = fft.size
-            val resolution = fs / N
-            val spectrum = DoubleArray(N / 2 - 1)
-            val xData = DoubleArray(N / 2 - 1)
-            Arrays.setAll(xData) { i -> CoreUtils.roundDouble(i * resolution, 2) }
-            for (k in 2 until N / 2 - 1) {
-                spectrum[k] = CoreUtils.roundDouble(Math.sqrt(Math.pow(fft[2 * k], 2.0) + Math.pow(fft[2 * k + 1], 2.0)), 2)
-            }
-            Observable.just(Pair(xData, spectrum))
-        }.subscribeOn(Schedulers.computation())
-    }
 
+        return if (fft.isEmpty()) {
+            Observable.just(Pair(DoubleArray(0), DoubleArray(0)))
+        } else {
+            Observable.defer {
+                val n = fft.size
+                val resolution = fs / n
+                val spectrum = DoubleArray(n / 2 - 1)
+                val xData = DoubleArray(n / 2 - 1)
+                Arrays.setAll(xData) { i -> CoreUtils.roundDouble(i * resolution, 2) }
+                for (k in 2 until n / 2 - 1) {
+                    spectrum[k] = CoreUtils.roundDouble(Math.sqrt(Math.pow(fft[2 * k], 2.0) + Math.pow(fft[2 * k + 1], 2.0)), 2)
+                }
+                Observable.just(Pair(xData, spectrum))
+            }.subscribeOn(Schedulers.computation())
+        }
+    }
 
 }
