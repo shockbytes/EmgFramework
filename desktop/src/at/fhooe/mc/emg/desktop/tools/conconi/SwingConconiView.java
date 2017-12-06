@@ -106,11 +106,11 @@ public class SwingConconiView implements ActionListener, ConconiView {
             viewCallback.onStopClicked();
             labelTime.setText("Test finished!");
         } else if (e.getSource() == btnSave) {
-            if (!viewCallback.onSaveClicked(UiUtils.showConconiSaveDialog())) {
+            if (!viewCallback.onSaveClicked(UiUtils.INSTANCE.showConconiSaveDialog())) {
                 JOptionPane.showMessageDialog(panelMain, "Cannot save Conconi data!");
             }
         } else if (e.getSource() == btnLoad) {
-           if (!viewCallback.onLoadClicked(UiUtils.showConconiLoadDialog())) {
+           if (!viewCallback.onLoadClicked(UiUtils.INSTANCE.showConconiLoadDialog())) {
                JOptionPane.showMessageDialog(panelMain, "Cannot load file!");
            }
         }
