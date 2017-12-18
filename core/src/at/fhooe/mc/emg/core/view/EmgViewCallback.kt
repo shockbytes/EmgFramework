@@ -28,4 +28,5 @@ interface EmgViewCallback {
 
     fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod.Method)
 
+    fun setVisualViewEnabled(visualEnabled: Boolean)
 }

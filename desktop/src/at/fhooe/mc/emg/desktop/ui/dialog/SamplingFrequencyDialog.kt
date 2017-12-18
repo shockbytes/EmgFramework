@@ -7,12 +7,8 @@ import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 
-class SamplingFrequencyDialog(private val listener: OnSamplingFrequencySelectedListener?,
+class SamplingFrequencyDialog(private val listener: ((Double) -> Unit)?,
                               mainWindow: JFrame) : JDialog(), ActionListener {
-
-    interface OnSamplingFrequencySelectedListener {
-        fun onSamplingFrequencySelected(frequency: Double)
-    }
 
     private val doneButton: JButton
     private val textFrequency: JTextField
@@ -74,10 +70,8 @@ class SamplingFrequencyDialog(private val listener: OnSamplingFrequencySelectedL
     private fun validateData() {
         val fs = samplingFrequency
         if (fs > 0) {
-            if (listener != null) {
-                listener.onSamplingFrequencySelected(fs)
-                dispose()
-            }
+            listener?.invoke(fs)
+            dispose()
         } else {
             JOptionPane.showMessageDialog(this,
                     "Please enter a number bigger than 0.0", "Parse error", JOptionPane.ERROR_MESSAGE)
@@ -86,7 +80,7 @@ class SamplingFrequencyDialog(private val listener: OnSamplingFrequencySelectedL
 
     companion object {
 
-        fun show(listener: OnSamplingFrequencySelectedListener, mainWindow: JFrame) {
+        fun show(listener: (Double) -> Unit, mainWindow: JFrame) {
             val dialog = SamplingFrequencyDialog(listener, mainWindow)
             dialog.isVisible = true
         }

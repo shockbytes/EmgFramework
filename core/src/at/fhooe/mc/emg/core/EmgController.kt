@@ -14,6 +14,7 @@ import at.fhooe.mc.emg.core.util.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.util.*
@@ -35,6 +36,11 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
     abstract val visualView: VisualView<*>
 
     private val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
+
+    private var rawDisposable: Disposable? = null
+    private var channelDisposable: Disposable? = null
+
+    private var isVisualEnabled: Boolean = true
 
     val currentDataPointer: Int
         get() = client.currentDataPointer
@@ -77,12 +83,6 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         }
     }
 
-    // ------------------------------------------ Public methods ------------------------------------------
-
-    fun start() {
-        setupEmgView()
-    }
-
     private fun getClient(category: ClientCategory): EmgClientDriver? {
         clients.forEach {
             if (it.category === category) {
@@ -99,10 +99,6 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
             }
         }
         return false
-    }
-
-    fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): EmgData {
-        return client.data.section(start, stop, channel)
     }
 
     private fun tryCopySimulationData(filename: String) {
@@ -130,6 +126,16 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         }
 
         emgView?.updateStatus(text)
+    }
+
+    // ------------------------------------------ Public methods ------------------------------------------
+
+    fun start() {
+        setupEmgView()
+    }
+
+    fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): EmgData {
+        return client.data.section(start, stop, channel)
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -174,19 +180,22 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
             emgView?.reset()
             client.connect()
 
-            client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
-            var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
-            if (visualView.requestScheduler) {
-                channelCallback = channelCallback.observeOn(visualView.scheduler)
-                if (visualView.requestBufferedUpdates) {
-                    channelCallback
-                            .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                            .subscribe { it.forEach { visualView.update(it, filters) } }
+            rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
+
+            if (isVisualEnabled) {
+                var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
+                if (visualView.requestScheduler) {
+                    channelCallback = channelCallback.observeOn(visualView.scheduler)
+                    channelDisposable = if (visualView.requestBufferedUpdates) {
+                        channelCallback
+                                .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
+                                .subscribe { it.forEach { visualView.update(it, filters) } }
+                    } else {
+                        channelCallback.subscribe { visualView.update(it, filters) }
+                    }
                 } else {
-                    channelCallback.subscribe { visualView.update(it, filters) }
+                    channelDisposable = channelCallback.subscribe { visualView.update(it, filters) }
                 }
-            } else {
-                channelCallback.subscribe { visualView.update(it, filters) }
             }
 
             updateStatus(true)
@@ -201,12 +210,19 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         client.disconnect()
         storeData(writeFileOnDisconnectFileName)
 
+        rawDisposable?.dispose()
+        channelDisposable?.dispose()
+
         emgView?.lockDeviceControls(false)
         updateStatus(false)
     }
 
     override fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod.Method) {
         emgView?.showFrequencyAnalysisView(FrequencyAnalysisMethod(method, visualView.dataForFrequencyAnalysis, client.samplingFrequency))
+    }
+
+    override fun setVisualViewEnabled(isVisualEnabled: Boolean) {
+        this.isVisualEnabled = isVisualEnabled
     }
 
 

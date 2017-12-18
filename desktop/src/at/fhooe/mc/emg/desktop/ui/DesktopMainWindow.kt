@@ -41,6 +41,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private var menuItemSamplingFrequency: JMenuItem? = null
 
     private var cbMenuItemLogging: JCheckBoxMenuItem? = null
+    private var cbMenuItemEnableVisual: JCheckBoxMenuItem? = null
     private var cbMenuItemCopyToSimulation: JCheckBoxMenuItem? = null
 
     private var menuFilter: JMenu? = null
@@ -106,33 +107,38 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         val menuBar = JMenuBar()
         jMenuBar = menuBar
 
-        val mnFile = JMenu("File")
-        menuBar.add(mnFile)
+        val mnGen = JMenu("General")
+        menuBar.add(mnGen)
 
         cbMenuItemLogging = JCheckBoxMenuItem("Write file on disconnect")
         cbMenuItemLogging?.isSelected = true
         cbMenuItemLogging?.addActionListener(this)
-        mnFile.add(cbMenuItemLogging)
+        mnGen.add(cbMenuItemLogging)
 
         cbMenuItemCopyToSimulation = JCheckBoxMenuItem("Copy to simulation")
         cbMenuItemCopyToSimulation?.addActionListener(this)
         cbMenuItemCopyToSimulation?.isSelected = true
-        mnFile.add(cbMenuItemCopyToSimulation)
+        mnGen.add(cbMenuItemCopyToSimulation)
+
+        cbMenuItemEnableVisual = JCheckBoxMenuItem("Enable VisualView")
+        cbMenuItemEnableVisual?.addActionListener(this)
+        cbMenuItemEnableVisual?.isSelected = true
+        mnGen.add(cbMenuItemEnableVisual)
 
         menuItemExport = JMenuItem("Export")
         menuItemExport?.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK)
         menuItemExport?.addActionListener(this)
-        mnFile.add(menuItemExport)
+        mnGen.add(menuItemExport)
 
         menuItemReset = JMenuItem("Reset")
         menuItemReset?.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK)
         menuItemReset?.addActionListener(this)
-        mnFile.add(menuItemReset)
+        mnGen.add(menuItemReset)
 
         menuItemExit = JMenuItem("Exit")
         menuItemExit?.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK)
         menuItemExit?.addActionListener(this)
-        mnFile.add(menuItemExit)
+        mnGen.add(menuItemExit)
 
         menuClient = JMenu("Client")
         menuBar.add(menuClient)
@@ -247,6 +253,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
             e.source === menuItemSamplingFrequency -> showSamplingFrequencyDialog()
             e.source === menuItemVisualMax -> showVisualMaxDialog()
             e.source === cbMenuItemLogging -> config.isWriteToLogEnabled = cbMenuItemLogging?.isSelected!!
+            e.source === cbMenuItemEnableVisual -> viewCallback.setVisualViewEnabled(cbMenuItemEnableVisual?.isSelected!!)
             e.source === cbMenuItemCopyToSimulation -> config.isCopyToSimulationEnabled = cbMenuItemCopyToSimulation?.isSelected!!
             e.source === menuItemReset -> reset()
             e.source === menuItemFft -> viewCallback.requestFrequencyAnalysisView(FrequencyAnalysisMethod.Method.FFT)
@@ -254,7 +261,9 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
             e.source === menuItemFilterConfig -> showFilterConfigurationDialog()
             e.source === menuItemExport -> {
                 val fileName = UiUtils.showCsvSaveDialog()
-                viewCallback.exportData(fileName, CsvDataStorage())
+                if (fileName != null) {
+                    viewCallback.exportData(fileName, CsvDataStorage())
+                }
             }
         }
     }
@@ -268,6 +277,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuFilter?.isEnabled = !isLocked
         mnClients?.isEnabled = !isLocked
         menuItemConnect?.isEnabled = !isLocked
+        cbMenuItemEnableVisual?.isEnabled = !isLocked
     }
 
     override fun updateStatus(status: String) {

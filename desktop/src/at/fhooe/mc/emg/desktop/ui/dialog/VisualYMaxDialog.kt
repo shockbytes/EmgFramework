@@ -7,7 +7,7 @@ import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 
-class VisualYMaxDialog private constructor(private val listener: OnVisualMaxEnteredListener?,
+class VisualYMaxDialog private constructor(private val listener: ((Double) -> Unit)?,
                                            mainWindow: JFrame) : JDialog(), ActionListener {
 
     private val doneButton: JButton
@@ -23,11 +23,6 @@ class VisualYMaxDialog private constructor(private val listener: OnVisualMaxEnte
                 (-1).toDouble()
             }
         }
-
-    interface OnVisualMaxEnteredListener {
-
-        fun onVisualMaxEntered(max: Double)
-    }
 
     init {
         setIconImage(Toolkit.getDefaultToolkit()
@@ -74,10 +69,8 @@ class VisualYMaxDialog private constructor(private val listener: OnVisualMaxEnte
 
         val max = value
         if (max > 0) {
-            if (listener != null) {
-                listener.onVisualMaxEntered(max)
-                dispose()
-            }
+            listener?.invoke(max)
+            dispose()
         } else {
             JOptionPane.showMessageDialog(this,
                     "Please enter a number bigger than 0.0", "Parse error", JOptionPane.ERROR_MESSAGE)
@@ -86,7 +79,7 @@ class VisualYMaxDialog private constructor(private val listener: OnVisualMaxEnte
 
     companion object {
 
-        fun show(listener: OnVisualMaxEnteredListener, mainWindow: JFrame) {
+        fun show(listener: (Double) -> Unit, mainWindow: JFrame) {
             val dialog = VisualYMaxDialog(listener, mainWindow)
             dialog.isVisible = true
         }
