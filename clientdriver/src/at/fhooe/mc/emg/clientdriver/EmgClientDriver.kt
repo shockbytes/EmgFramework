@@ -59,7 +59,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
         // Always increment x counter value
         currentDataPointer++
 
-        val channels = EmgMessaging.parseMessage(msg, protocolVersion)
+        val channels = EmgMessaging.parseClientMessage(msg, protocolVersion)
         channels?.forEachIndexed { idx, value ->
             data.updateChannel(idx, EmgPoint(currentDataPointer.toDouble(), value))
         }

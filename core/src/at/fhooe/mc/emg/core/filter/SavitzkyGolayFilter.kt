@@ -21,8 +21,8 @@ class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {
         buffer.addLast(x)
 
         return if (buffer.size > sgFilterWidth / 2) {
-            CurveSmooth(buffer.stream().mapToDouble { d1 -> d1 }.toArray())
-                                .savitzkyGolay(sgFilterWidth)[sgFilterWidth / 2]
+            CurveSmooth(buffer.toDoubleArray())
+                    .savitzkyGolay(sgFilterWidth)?.get(sgFilterWidth / 2) ?: 0.toDouble()
         } else {
             0.0
         }

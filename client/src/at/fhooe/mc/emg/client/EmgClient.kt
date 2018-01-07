@@ -9,23 +9,27 @@ abstract class EmgClient {
 
     abstract val protocolVersion: EmgMessaging.ProtocolVersion
 
-    private lateinit var timerObservable: Observable<Long>
     private var timerDisposable: Disposable? = null
 
-    private var period: Long = 1000
+    private var period: Long = 10
 
     init {
         setup()
     }
 
     private fun setup() {
-
-        timerObservable = Observable.interval(period, TimeUnit.MILLISECONDS)
         setupTransmission()
     }
 
+    private fun updateDelay(delayMillis: Long) {
+        period = delayMillis
+
+        timerDisposable?.dispose()
+        start()
+    }
+
     fun start() {
-        timerDisposable = timerObservable.subscribe {
+        timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS).subscribe {
             send(EmgMessaging.buildClientMessage(provideData(), System.currentTimeMillis(), protocolVersion))
         }
     }
@@ -33,6 +37,15 @@ abstract class EmgClient {
     fun stop() {
         timerDisposable?.dispose()
         tearDown()
+    }
+
+    fun handleMessage(data: String) {
+
+        when (EmgMessaging.parseServerMessage(data)) {
+
+            EmgMessaging.ServerMessageType.DELAY -> updateDelay(EmgMessaging.parseFrequencyMessage(data))
+            EmgMessaging.ServerMessageType.NA -> println("Cannot identify server message type!")
+        }
     }
 
     abstract fun setupTransmission()

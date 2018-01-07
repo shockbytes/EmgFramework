@@ -3,9 +3,12 @@ package at.fhooe.mc.emg.core.tools.conconi
 import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.CoreUtils
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Author:  Martin Macheiner
@@ -13,10 +16,10 @@ import java.util.*
  */
 class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
 
-    private var timer: Timer? = null
-
     private lateinit var controller: EmgController
-    private var data: ConconiData? = null
+    private var data: ConconiData = ConconiData()
+
+    private var timerDisposable: Disposable? = null
 
     private var dataStartPointer: Int = 0
     private var dataStopPointer: Int = 0
@@ -41,71 +44,66 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
     }
 
     override fun onStartClicked() {
-
-        timer = Timer()
-        val timerTask = object : TimerTask() {
-
-            internal var i = 0
-            internal var idx = 0
-
-            override fun run() {
-
-                i++
-                view?.onTick(i, times[idx])
-
-                if (i + 5 == times[idx]) {
-                    playCountdownSound()
-                }
-
-                if (i == times[idx]) {
-                    storeRoundData(idx)
-
-                    i = 0
-                    idx++
-                }
-
-            }
-        }
-
-        val countdownTask = object : TimerTask() {
-
-            internal var countdown = 6
-
-            override fun run() {
-
-                countdown--
-                view?.onCountdownTick(countdown)
-
-                if (countdown == 0) {
-                    controller.connectToClient()
-                    timer?.schedule(timerTask, 0, 1000)
-                    cancel()
-                }
-            }
-        }
-        timer?.schedule(countdownTask, 0, 1000)
         playCountdownSound()
-
+        startCountdown() // Start the countdown and then start the actual test
     }
 
     override fun onStopClicked() {
-
-        if (timer != null) {
-            timer?.cancel()
-            controller.disconnectFromClient(null)
-        }
+        timerDisposable?.dispose()
+        controller.disconnectFromClient(null)
     }
 
     override fun onSaveClicked(filename: String): Boolean {
         return saveData(filename)
     }
 
-    override fun onLoadClicked(filename: String): Boolean{
+    override fun onLoadClicked(filename: String): Boolean {
         return loadData(filename)
     }
 
     override fun onViewClosed() {
-        timer?.cancel()
+        timerDisposable?.dispose()
+    }
+
+    private fun startCountdown() {
+
+        var disposable: Disposable? = null
+        var counter = 6
+        disposable = Observable.interval(1, TimeUnit.SECONDS).subscribe {
+
+            counter--
+            view?.onCountdownTick(counter)
+            if (counter == 0) {
+                controller.connectToClient()
+                startTest()
+                disposable?.dispose()
+            }
+        }
+    }
+
+    private fun startTest() {
+
+        var tick = 0
+        var roundIdx = 0
+        timerDisposable = Observable.interval(1000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.computation())
+                .subscribe {
+
+                    tick++
+                    view?.onTick(tick, times[roundIdx])
+
+                    // Check if a new round starts in 5 seconds, and play a sound if it starts
+                    if (tick + 5 == times[roundIdx]) {
+                        playCountdownSound()
+                    }
+                    // Store round data after a round has finished
+                    if (tick == times[roundIdx]) {
+                        storeRoundData(roundIdx)
+                        tick = 0
+                        roundIdx++
+                    }
+                }
+
     }
 
     private fun storeRoundData(index: Int) {
@@ -113,20 +111,15 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
         dataStopPointer = controller.currentDataPointer
         val roundData = controller.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
-        data?.addRoundData(roundData)
+        data.addRoundData(roundData)
         view?.onRoundDataAvailable(roundData, index)
 
         dataStartPointer = dataStopPointer
     }
 
     private fun saveData(filename: String): Boolean {
-
         return try {
-
-            if (data != null) {
-                CoreUtils.serializeToFile(data!!, filename)
-            }
-            true
+            CoreUtils.serializeToFile(data, filename)
         } catch (e: IOException) {
             e.printStackTrace()
             false
@@ -134,11 +127,10 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
     }
 
     private fun loadData(filename: String): Boolean {
-
         return try {
             data = CoreUtils.deserializeFromFile(filename)
-            (0 until data!!.roundCount).forEachIndexed { idx, _ ->
-                view?.onRoundDataAvailable(data?.getRoundData(idx)!!, idx)
+            (0 until data.roundCount).forEachIndexed { idx, _ ->
+                view?.onRoundDataAvailable(data.getRoundData(idx), idx)
             }
             true
         } catch (e: Exception) {

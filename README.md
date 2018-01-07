@@ -20,13 +20,25 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * Frequency analysis
 * Simulation data playback
 * Store recorded data in csv-file
-* Conconi Test
+* Conconi Test Tool
+
+## Versions
+
+### 0.8.4
+* First build with working client module
+* View encapsulation for peak detection
+* Introduction of MuscleFatigueTool (entry point for later work)
+
+## 0.7.1
+* VisualView disabling
+* Desktop Kotlin fixes
 
 ## Open points
 
 ### Major
 * Support Peak detection
 * Support **BluetoothClient**
+* Support **Muscle Fatigue detection** as a Tool
 * ~~Refactor Analysis views like Tool views~~
 * ~~Refactor with **MVC/MVP pattern** to separate logic from views~~
 * ~~Refactor Config views for Clients~~
@@ -46,5 +58,5 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * ~~Remove .jars in /libs and provide dependencies via Gradle~~
 
 ### Experimental
-* Compile module **EmgMessaging** with Kotlin Native to run on all client platform
+* Compile module **EmgClient** with Kotlin Native to run on all client platform
 * Detect serial driver and install files automatically, if not installed

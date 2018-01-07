@@ -20,8 +20,13 @@ class XChartVisualView : VisualView<JComponent> {
 
     override val dataForFrequencyAnalysis: DoubleArray
         get() {
-            val first = realtimeChart.seriesMap.values.iterator().next()
-            return first.yData.stream().mapToDouble({ it.toDouble() }).toArray()
+
+            return if (realtimeChart.seriesMap.values.iterator().hasNext()) {
+                val first = realtimeChart.seriesMap.values.iterator().next()
+                first.yData.map{ it.toDouble() }.toDoubleArray()
+            } else {
+                DoubleArray(0)
+            }
         }
 
     override val view: JComponent

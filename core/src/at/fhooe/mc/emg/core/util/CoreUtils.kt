@@ -35,10 +35,15 @@ object CoreUtils {
     }
 
     @Throws(IOException::class)
-    fun <T : Serializable> serializeToFile(obj: T, filename: String) {
-        val oos = ObjectOutputStream(FileOutputStream(filename))
-        oos.writeObject(obj)
-        oos.close()
+    fun <T : Serializable> serializeToFile(obj: T?, filename: String): Boolean {
+        return if (obj != null) {
+            val oos = ObjectOutputStream(FileOutputStream(filename))
+            oos.writeObject(obj)
+            oos.close()
+            true
+        } else {
+            false
+        }
     }
 
     @Throws(Exception::class)

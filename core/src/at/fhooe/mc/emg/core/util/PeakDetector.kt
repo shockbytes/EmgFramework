@@ -1,10 +1,13 @@
 package at.fhooe.mc.emg.core.util
 
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+
 /**
- * Author:  Mescht
+ * Author:  Martin Macheiner
  * Date:    08.07.2017
  */
-// TODO Implement peak detector
+// TODO Implement peaks detector
 object PeakDetector {
 
     fun detectSimpleThresholdPeaks(yVals: DoubleArray, threshold: Int): Int {
@@ -24,8 +27,10 @@ object PeakDetector {
         return peaks
     }
 
-    fun detectPeakLocations(yVals: DoubleArray): List<Int>? {
-        return null
+    fun detectPeakLocations(data: DoubleArray): Observable<IntArray> {
+        return Observable.defer {
+            Observable.just(IntArray(data.size))
+        }.subscribeOn(Schedulers.computation())
     }
 
 }

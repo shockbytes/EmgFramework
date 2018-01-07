@@ -4,7 +4,8 @@ package at.fhooe.mc.emg.desktop
 import at.fhooe.mc.emg.core.client.network.NetworkClientDriver
 import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.core.tools.conconi.ConconiTool
-import at.fhooe.mc.emg.core.tools.peak.PeakDetectionTool
+import at.fhooe.mc.emg.core.tools.fatigue.MuscleFatigueTool
+import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionTool
 import at.fhooe.mc.emg.core.util.config.JsonEmgConfigStorage
 import at.fhooe.mc.emg.desktop.client.network.DesktopNetworkClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriverConfigView
@@ -12,9 +13,10 @@ import at.fhooe.mc.emg.desktop.client.serial.SerialClientDriver
 import at.fhooe.mc.emg.desktop.client.simulation.DesktopSimulationClientDriverConfigView
 import at.fhooe.mc.emg.desktop.core.DesktopEmgController
 import at.fhooe.mc.emg.desktop.tools.conconi.SwingConconiView
+import at.fhooe.mc.emg.desktop.tools.fatigue.SwingMuscleFatigueView
+import at.fhooe.mc.emg.desktop.tools.peaks.SwingPeakDetectionView
 import at.fhooe.mc.emg.desktop.ui.DesktopMainWindow
 import java.awt.EventQueue
-import java.util.*
 import java.io.File
 import javax.swing.UIManager
 
@@ -27,14 +29,15 @@ object Main {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
             DesktopEmgController(
-                    Arrays.asList(
+                    listOf(
                             SerialClientDriver(DesktopSerialClientDriverConfigView()),
                             SimulationClientDriver(DesktopSimulationClientDriverConfigView(),
                                     System.getProperty("user.dir") + "/data/simulation"),
                             NetworkClientDriver(DesktopNetworkClientDriverConfigView())),
-                    Arrays.asList(
+                    listOf(
                             ConconiTool(SwingConconiView()),
-                            PeakDetectionTool()),
+                            PeakDetectionTool(SwingPeakDetectionView()),
+                            MuscleFatigueTool(SwingMuscleFatigueView())),
                     DesktopMainWindow(),
                     JsonEmgConfigStorage(File(System.getProperty("user.dir") + "/data/config.json")))
                     .start()
