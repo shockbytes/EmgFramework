@@ -50,6 +50,9 @@ class XChartVisualView : VisualView<JComponent> {
         realtimeChart.styler.legendPosition = Styler.LegendPosition.OutsideE
         realtimeChart.styler.isPlotGridLinesVisible = false
         realtimeChart.styler.plotBackgroundColor = Color.WHITE
+        realtimeChart.styler.seriesColors = arrayOf(Color.decode("#1976D2"), Color.decode("#607D8B"),
+                Color.decode("#009688"), Color.decode("#4CAF50"), Color.decode("#F44336"),
+                Color.decode("#FF9800"), Color.decode("#FFEB3B"), Color.decode("#FF6F00"))
         chartWrapper = XChartPanel(realtimeChart)
     }
 

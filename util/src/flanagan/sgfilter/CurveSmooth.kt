@@ -45,7 +45,7 @@ class CurveSmooth(y: DoubleArray) {
 
     init {
 
-        (0..y.size).mapIndexed { idx, _ -> xData[idx] = idx.toDouble() }
+        (0 until y.size).mapIndexed { idx, _ -> xData[idx] = idx.toDouble() }
         check()
     }
 
