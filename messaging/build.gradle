@@ -41,3 +41,12 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = rootProject.kotlin_jvm_target
 }
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
