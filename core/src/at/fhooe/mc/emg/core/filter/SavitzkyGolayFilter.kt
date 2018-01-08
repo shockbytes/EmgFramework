@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.filter
 
-import flanagan.sgfilter.CurveSmooth
+import at.fhooe.mc.emg.core.util.filter.sg.CurveSmooth
 import java.util.*
 
 class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {

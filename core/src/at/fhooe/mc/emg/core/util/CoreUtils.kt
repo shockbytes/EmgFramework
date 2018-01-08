@@ -47,12 +47,15 @@ object CoreUtils {
     }
 
     @Throws(Exception::class)
-    fun <T> deserializeFromFile(filename: String): T {
+    inline fun <reified T> deserializeFromFile(filename: String): T {
 
-        val ois = ObjectInputStream(FileInputStream(filename))
-        val obj = ois.readObject() as T
-        ois.close()
-        return obj
+        ObjectInputStream(FileInputStream(filename)).use {
+            val obj = it.readObject()
+            if (obj is T) {
+                return obj
+            }
+        }
+        throw IOException("Cannot read value from file or invalid cast of ${T::class.java.simpleName}")
     }
 
 }

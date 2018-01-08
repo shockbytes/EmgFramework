@@ -34,7 +34,7 @@
 *
 ***************************************************************************************/
 
-package flanagan.sgfilter
+package at.fhooe.mc.emg.core.util.filter.sg
 
 class CurveSmooth(y: DoubleArray) {
 

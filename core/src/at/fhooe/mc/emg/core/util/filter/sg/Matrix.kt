@@ -1,4 +1,4 @@
-package flanagan.sgfilter
+package at.fhooe.mc.emg.core.util.filter.sg
 
 internal class Matrix {
 

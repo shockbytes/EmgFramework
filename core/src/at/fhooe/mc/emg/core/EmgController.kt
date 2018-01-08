@@ -221,10 +221,9 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         emgView?.showFrequencyAnalysisView(FrequencyAnalysisMethod(method, visualView.dataForFrequencyAnalysis, client.samplingFrequency))
     }
 
-    override fun setVisualViewEnabled(isVisualEnabled: Boolean) {
-        this.isVisualEnabled = isVisualEnabled
+    override fun setVisualViewEnabled(visualEnabled: Boolean) {
+        this.isVisualEnabled = visualEnabled
     }
-
 
     // ----------------------------------------------------------------------------------------------------
 
