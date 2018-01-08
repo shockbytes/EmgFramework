@@ -6,6 +6,7 @@ package at.fhooe.mc.emg.core.tools
  */
 interface ToolView<in T> {
 
-    fun setup(viewCallback: T)
+    fun setup(viewCallback: T, showViewImmediate: Boolean)
 
+    fun showView()
 }

@@ -26,9 +26,16 @@ public class SwingMuscleFatigueView implements MuscleFatigueView {
     }
 
     @Override
-    public void setup(MuscleFatigueViewCallback viewCallback) {
+    public void setup(MuscleFatigueViewCallback viewCallback, boolean showViewImmediate) {
         this.viewCallback = viewCallback;
 
+        if (showViewImmediate) {
+            showView();
+        }
+    }
+
+    @Override
+    public void showView() {
         JFrame frame = wrap();
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -39,5 +46,4 @@ public class SwingMuscleFatigueView implements MuscleFatigueView {
         });
         frame.setVisible(true);
     }
-
 }

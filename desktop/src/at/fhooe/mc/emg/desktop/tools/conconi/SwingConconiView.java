@@ -2,12 +2,12 @@ package at.fhooe.mc.emg.desktop.tools.conconi;
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData;
 import at.fhooe.mc.emg.clientdriver.model.EmgPoint;
-import at.fhooe.mc.emg.desktop.ui.UiUtils;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiTool;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiView;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiViewCallback;
 import at.fhooe.mc.emg.core.util.CoreUtils;
 import at.fhooe.mc.emg.core.util.PeakDetector;
+import at.fhooe.mc.emg.desktop.ui.UiUtils;
 import org.jetbrains.annotations.NotNull;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
@@ -160,9 +160,16 @@ public class SwingConconiView implements ActionListener, ConconiView {
     }
 
     @Override
-    public void setup(@NotNull ConconiViewCallback viewCallback) {
+    public void setup(@NotNull ConconiViewCallback viewCallback, boolean showViewImmediate) {
         this.viewCallback = viewCallback;
 
+        if (showViewImmediate) {
+            showView();
+        }
+    }
+
+    @Override
+    public void showView() {
         JFrame frame = wrap();
         frame.addWindowListener(new WindowAdapter() {
             @Override

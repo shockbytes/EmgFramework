@@ -10,5 +10,7 @@ interface Tool {
 
     val name: String
 
-    fun start(controller: EmgController)
+    val view: ToolView<*>?
+
+    fun start(controller: EmgController, showViewImmediate: Boolean)
 }

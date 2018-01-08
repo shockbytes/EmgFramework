@@ -28,7 +28,15 @@ public class SwingPeakDetectionView implements PeakDetectionView {
     }
 
     @Override
-    public void setup(Unit viewCallback) {
+    public void setup(Unit viewCallback, boolean showViewImmediate) {
+
+        if (showViewImmediate) {
+            showView();
+        }
+    }
+
+    @Override
+    public void showView() {
         JFrame frame = wrap();
         frame.setVisible(true);
     }

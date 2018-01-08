@@ -92,6 +92,9 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         contentPane.add(splitPane, BorderLayout.CENTER)
 
         labelStatus = JLabel()
+        labelStatus?.isOpaque = true
+        labelStatus?.background = Color.decode("#2196F3")
+        labelStatus?.foreground = Color.WHITE
         labelStatus?.border = EmptyBorder(4, 4, 4, 4)
         contentPane.add(labelStatus, BorderLayout.SOUTH)
 
@@ -287,7 +290,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     override fun exposeRawClientDataObservable(observable: Observable<String>) {
         observable.subscribeOn(Schedulers.io()).subscribe {
             textAreaConsole?.append(it + "\n")
-            textAreaConsole?.caretPosition = textAreaConsole!!.document.length
+            textAreaConsole?.caretPosition = textAreaConsole?.document?.length ?: 0
         }
     }
 
@@ -296,7 +299,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         mnTools?.removeAll()
         tools.forEach { t ->
             val item = JMenuItem(t.name)
-            item.addActionListener { t.start(controller) }
+            item.addActionListener { t.start(controller, true) }
             mnTools?.add(item)
         }
     }

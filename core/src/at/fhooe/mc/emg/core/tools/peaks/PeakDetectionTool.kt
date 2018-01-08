@@ -8,12 +8,12 @@ import at.fhooe.mc.emg.core.util.PeakDetector
  * Author:  Mescht
  * Date:    04.07.2017
  */
-class PeakDetectionTool(var view: PeakDetectionView? = null) : Tool {
+class PeakDetectionTool(override var view: PeakDetectionView? = null) : Tool {
 
     override val name = "Peak detection"
 
-    override fun start(controller: EmgController) {
-        view?.setup(Unit)
+    override fun start(controller: EmgController, showViewImmediate: Boolean) {
+        view?.setup(Unit, showViewImmediate)
         calculatePeaks(controller.visualView.dataForFrequencyAnalysis)
     }
 

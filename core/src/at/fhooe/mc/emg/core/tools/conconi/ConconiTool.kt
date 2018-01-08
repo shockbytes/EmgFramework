@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  */
-class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
+class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCallback {
 
     private lateinit var controller: EmgController
     private var data: ConconiData = ConconiData()
@@ -27,10 +27,10 @@ class ConconiTool(var view: ConconiView? = null) : Tool, ConconiViewCallback {
     override val name: String
         get() = "Conconi Test"
 
-    override fun start(controller: EmgController) {
+    override fun start(controller: EmgController, showViewImmediate: Boolean) {
         this.controller = controller
 
-        view?.setup(this)
+        view?.setup(this, showViewImmediate)
 
         data = ConconiData()
         dataStartPointer = 0
