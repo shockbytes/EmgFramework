@@ -35,7 +35,10 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
 
     private val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
 
-    private val connectionErrorHandler: Consumer<Throwable> = Consumer { emgView?.showConnectionError(it) }
+    private val connectionErrorHandler: Consumer<Throwable> = Consumer {
+        disconnectFromClient()
+        emgView?.showConnectionError(it)
+    }
 
     private var rawDisposable: Disposable? = null
     private var channelDisposable: Disposable? = null
@@ -205,7 +208,6 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
             emgView?.lockDeviceControls(true)
 
         } catch (e: Exception) {
-            e.printStackTrace()
             connectionErrorHandler.accept(e)
         }
     }

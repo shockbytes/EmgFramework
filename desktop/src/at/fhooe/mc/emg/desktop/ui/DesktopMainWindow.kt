@@ -102,7 +102,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         textAreaConsole?.isEditable = false
         splitPane?.leftComponent = JScrollPane(textAreaConsole)
 
-        updateStatus("Status: Not connected")
+        updateStatus("Not connected")
     }
 
     private fun initializeMenu() {
@@ -363,11 +363,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     }
 
     override fun showConnectionError(throwable: Throwable) {
-        val icon = Toolkit.getDefaultToolkit()
-                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_error.png")
         val msg =  "${throwable.javaClass.simpleName}: ${throwable.localizedMessage}"
-        JOptionPane.showMessageDialog(this, msg, "ClientDriver connection error",
-                JOptionPane.ERROR_MESSAGE, ImageIcon(icon))
+        UiUtils.showErrorMessage(this, msg, "ClientDriver connection error")
     }
 
     override fun setVisualView(view: VisualView<JComponent>) {

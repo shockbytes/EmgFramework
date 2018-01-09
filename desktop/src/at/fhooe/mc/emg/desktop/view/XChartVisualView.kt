@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.view.VisualView
 import io.reactivex.Scheduler
 import org.knowm.xchart.XChartPanel
+import org.knowm.xchart.XYChartBuilder
 import org.knowm.xchart.style.Styler
 import java.awt.Color
 import javax.swing.JComponent
@@ -21,9 +22,14 @@ class XChartVisualView : VisualView<JComponent> {
     override val dataForFrequencyAnalysis: DoubleArray
         get() {
 
-            return if (realtimeChart.seriesMap.values.iterator().hasNext()) {
-                val first = realtimeChart.seriesMap.values.iterator().next()
-                first.yData.map{ it.toDouble() }.toDoubleArray()
+            return if (!realtimeChart.seriesMap.isEmpty()) {
+                if (realtimeChart.seriesMap.values.iterator().hasNext()) {
+                    val first = realtimeChart.seriesMap.values.iterator().next()
+                    first.yData.map{ it.toDouble() }.toDoubleArray()
+                } else {
+                    DoubleArray(0)
+                }
+
             } else {
                 DoubleArray(0)
             }
@@ -41,11 +47,7 @@ class XChartVisualView : VisualView<JComponent> {
 
     override fun initialize() {
 
-        realtimeChart = org.knowm.xchart.XYChartBuilder()
-                .width(800)
-                .height(600)
-                .theme(Styler.ChartTheme.GGPlot2)
-                .build()
+        realtimeChart = XYChartBuilder().width(800).height(600).theme(Styler.ChartTheme.GGPlot2).build()
 
         realtimeChart.styler.legendPosition = Styler.LegendPosition.OutsideE
         realtimeChart.styler.isPlotGridLinesVisible = false

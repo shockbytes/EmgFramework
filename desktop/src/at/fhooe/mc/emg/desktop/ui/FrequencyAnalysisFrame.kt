@@ -17,8 +17,8 @@ import javax.swing.border.EmptyBorder
 
 class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
 
-    private val contentPane: JPanel
-    private var chart: CategoryChart? = null
+    private val contentPanel: JPanel
+    private var chart: CategoryChart
 
     init {
 
@@ -28,32 +28,30 @@ class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
         title = "Frequency analysis"
         bounds = Rectangle(400, 200, 450, 300)
 
-        contentPane = JPanel()
-        contentPane.border = EmptyBorder(8, 8, 8, 8)
-        contentPane.background = Color.WHITE
-        contentPane.layout = BorderLayout(0, 0)
-        setContentPane(contentPane)
+        contentPanel = JPanel()
+        contentPanel.border = EmptyBorder(8, 8, 8, 8)
+        contentPanel.background = Color.WHITE
+        contentPanel.layout = BorderLayout(0, 0)
 
+        chart = CategoryChartBuilder().width(800).height(600).theme(ChartTheme.GGPlot2).build()
         initializeChart()
+
+        contentPane = contentPanel
         isVisible = true
     }
 
     private fun initializeChart() {
 
-        chart = CategoryChartBuilder().width(800).height(600).theme(ChartTheme.GGPlot2).build()
-        chart?.styler?.legendPosition = LegendPosition.InsideN
-        chart?.styler?.defaultSeriesRenderStyle = CategorySeriesRenderStyle.Stick
-        chart?.styler?.xAxisLabelRotation = 90
-        chart?.styler?.isToolTipsEnabled = true
-        chart?.styler?.toolTipType = ToolTipType.xAndYLabels
-        chart?.styler?.isXAxisTicksVisible = false
-        chart?.styler?.isPlotGridLinesVisible = false
-        chart?.styler?.plotBackgroundColor = Color.WHITE
-        chart?.styler?.chartBackgroundColor = Color.WHITE
-        chart?.styler?.xAxisDecimalPattern = "#0.00"
-
-        val chartWrapper = XChartPanel(chart)
-        contentPane.add(chartWrapper)
+        chart.styler.legendPosition = LegendPosition.InsideN
+        chart.styler.defaultSeriesRenderStyle = CategorySeriesRenderStyle.Stick
+        chart.styler.xAxisLabelRotation = 90
+        chart.styler.isToolTipsEnabled = true
+        chart.styler.toolTipType = ToolTipType.xAndYLabels
+        chart.styler.isXAxisTicksVisible = false
+        chart.styler.isPlotGridLinesVisible = false
+        chart.styler.plotBackgroundColor = Color.WHITE
+        chart.styler.chartBackgroundColor = Color.WHITE
+        chart.styler.xAxisDecimalPattern = "#0.00"
     }
 
     override fun showEvaluation(method: FrequencyAnalysisMethod.Method, xData: DoubleArray, yData: DoubleArray) {
@@ -72,8 +70,17 @@ class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
             }
         }
 
-        chart?.addSeries(name, xData, yData)
-                ?.setMarkerColor(color)?.lineColor = color
+        chart.addSeries(name, xData, yData).setMarkerColor(color)?.lineColor = color
+        contentPane.add(XChartPanel(chart))
+        contentPane.revalidate()
     }
+
+    override fun showError(error: Throwable) {
+        val msg =  "${error.javaClass.simpleName}: ${error.localizedMessage}"
+        UiUtils.showErrorMessage(this, msg, "Frequency Analysis error")
+
+        dispose()
+    }
+
 
 }

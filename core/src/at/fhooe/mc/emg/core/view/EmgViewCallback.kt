@@ -18,7 +18,7 @@ interface EmgViewCallback {
 
     fun connectToClient()
 
-    fun disconnectFromClient(writeFileOnDisconnectFileName: String?)
+    fun disconnectFromClient(writeFileOnDisconnectFileName: String? = null)
 
     fun exportData(filename: String, dataStorage: DataStorage)
 

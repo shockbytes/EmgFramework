@@ -1,6 +1,10 @@
 package at.fhooe.mc.emg.desktop.ui
 
-import javax.swing.*
+import java.awt.Component
+import java.awt.Toolkit
+import javax.swing.ImageIcon
+import javax.swing.JFileChooser
+import javax.swing.JOptionPane
 import javax.swing.filechooser.FileFilter
 import javax.swing.filechooser.FileNameExtensionFilter
 
@@ -24,7 +28,14 @@ object UiUtils {
                 ".ctf", false)
     }
 
-    private fun showDialog(title: String, filter: FileFilter, defaultExtension: String, isSaveDialog: Boolean): String? {
+    fun showErrorMessage(parentComponent: Component, msg: String, title: String) {
+        val icon = Toolkit.getDefaultToolkit()
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_error.png")
+        JOptionPane.showMessageDialog(parentComponent, msg, title, JOptionPane.ERROR_MESSAGE, ImageIcon(icon))
+    }
+
+    private fun showDialog(title: String, filter: FileFilter,
+                           defaultExtension: String, isSaveDialog: Boolean): String? {
 
         val fileChooser = JFileChooser()
         fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY

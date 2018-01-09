@@ -8,4 +8,6 @@ interface FrequencyAnalysisView {
 
     fun showEvaluation(method: FrequencyAnalysisMethod.Method,
                        xData: DoubleArray, yData: DoubleArray)
+
+    fun showError(error: Throwable)
 }

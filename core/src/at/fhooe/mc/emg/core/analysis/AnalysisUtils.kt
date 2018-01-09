@@ -9,10 +9,7 @@ import java.util.*
 object AnalysisUtils {
 
     fun fft(input: DoubleArray): Observable<DoubleArray> {
-
-        return if (input.isEmpty()) {
-            Observable.just(DoubleArray(0))
-        } else {
+        return if (!input.isEmpty()) {
             Observable.defer {
                 val fftDo = DoubleFFT_1D(input.size.toLong())
                 val fft = DoubleArray(input.size * 2)
@@ -20,14 +17,13 @@ object AnalysisUtils {
                 fftDo.realForwardFull(fft)
                 Observable.just(fft)
             }.subscribeOn(Schedulers.computation())
+        } else {
+            Observable.error(IllegalArgumentException("Input for FFT must not be empty!"))
         }
     }
 
     fun powerSpectrum(fft: DoubleArray, fs: Double): Observable<Pair<DoubleArray, DoubleArray>> {
-
-        return if (fft.isEmpty()) {
-            Observable.just(Pair(DoubleArray(0), DoubleArray(0)))
-        } else {
+        return if (!fft.isEmpty()) {
             Observable.defer {
                 val n = fft.size
                 val resolution = fs / n
@@ -39,6 +35,8 @@ object AnalysisUtils {
                 }
                 Observable.just(Pair(xData, spectrum))
             }.subscribeOn(Schedulers.computation())
+        } else {
+            Observable.error(IllegalArgumentException("Input for power spectrum must not be empty!"))
         }
     }
 
