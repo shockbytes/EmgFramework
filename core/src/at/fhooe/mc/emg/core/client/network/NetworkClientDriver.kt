@@ -58,7 +58,8 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
     }
 
     override fun disconnect() {
-        Observable.defer {
+        Completable.fromAction {
+
             // Send disconnect message before closing socket
             sendMessage("disconnect")
 
@@ -66,7 +67,6 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
             datagramSocket?.disconnect()
             datagramSocket?.close()
 
-            Observable.empty<Boolean>()
         }.subscribeOn(Schedulers.io()).subscribe()
     }
 
