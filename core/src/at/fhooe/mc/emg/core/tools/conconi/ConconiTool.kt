@@ -1,12 +1,13 @@
 package at.fhooe.mc.emg.core.tools.conconi
 
+import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.EmgController
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.CoreUtils
+import at.fhooe.mc.emg.core.util.PeakDetector
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -24,8 +25,7 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
     private var dataStartPointer: Int = 0
     private var dataStopPointer: Int = 0
 
-    override val name: String
-        get() = "Conconi Test"
+    override val name = "Conconi Test"
 
     override fun start(controller: EmgController, showViewImmediate: Boolean) {
         this.controller = controller
@@ -36,15 +36,9 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
         dataStartPointer = 0
         dataStopPointer = 0
     }
-
-    private fun playCountdownSound() {
-
-        val file = File(System.getProperty("user.dir") + "/data/sound/conconi_countdown.wav")
-        CoreUtils.playSound(file)
-    }
-
+    
     override fun onStartClicked() {
-        playCountdownSound()
+        view?.onPlayCountdownSound()
         startCountdown() // Start the countdown and then start the actual test
     }
 
@@ -94,7 +88,7 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
 
                     // Check if a new round starts in 5 seconds, and play a sound if it starts
                     if (tick + 5 == times[roundIdx]) {
-                        playCountdownSound()
+                        view?.onPlayCountdownSound()
                     }
                     // Store round data after a round has finished
                     if (tick == times[roundIdx]) {
@@ -112,7 +106,7 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
         val roundData = controller.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
         data.addRoundData(roundData)
-        view?.onRoundDataAvailable(roundData, index)
+        view?.onRoundDataAvailable(emg2ConconiRoundData(roundData, index), index)
 
         dataStartPointer = dataStopPointer
     }
@@ -130,13 +124,21 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
         return try {
             data = CoreUtils.deserializeFromFile(filename)
             (0 until data.roundCount).forEachIndexed { idx, _ ->
-                view?.onRoundDataAvailable(data.getRoundData(idx), idx)
+                view?.onRoundDataAvailable(emg2ConconiRoundData(data.getRoundData(idx), idx), idx)
             }
             true
         } catch (e: Exception) {
             e.printStackTrace()
             false
         }
+    }
+
+    private fun emg2ConconiRoundData(roundData: EmgData, round: Int): ConconiRoundData {
+        val speed = speeds[round]
+        val yData = roundData.plotData(0).map{ it.y }.toDoubleArray()
+        val peaks = PeakDetector.detectSimpleThresholdPeaks(yData, 200)
+        val avg = CoreUtils.roundDouble(yData.average(), 2)
+        return ConconiRoundData(speed, peaks, avg)
     }
 
     companion object {

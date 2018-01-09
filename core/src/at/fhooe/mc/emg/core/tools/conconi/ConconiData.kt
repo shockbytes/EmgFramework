@@ -5,7 +5,7 @@ import java.io.Serializable
 import java.util.*
 
 /**
- * Author:  Mescht
+ * Author:  Martin Macheiner
  * Date:    08.07.2017
  */
 internal class ConconiData : Serializable {

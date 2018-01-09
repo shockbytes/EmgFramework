@@ -1,13 +1,10 @@
 package at.fhooe.mc.emg.desktop.tools.conconi;
 
-import at.fhooe.mc.emg.clientdriver.model.EmgData;
-import at.fhooe.mc.emg.clientdriver.model.EmgPoint;
-import at.fhooe.mc.emg.core.tools.conconi.ConconiTool;
+import at.fhooe.mc.emg.core.tools.conconi.ConconiRoundData;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiView;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiViewCallback;
-import at.fhooe.mc.emg.core.util.CoreUtils;
-import at.fhooe.mc.emg.core.util.PeakDetector;
 import at.fhooe.mc.emg.desktop.ui.UiUtils;
+import at.fhooe.mc.emg.desktop.util.DesktopUtils;
 import org.jetbrains.annotations.NotNull;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
@@ -21,12 +18,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * Author:  Mescht
+ * Author:  Martin Macheiner
  * Date:    08.07.2017
  */
 public class SwingConconiView implements ActionListener, ConconiView {
@@ -83,17 +80,13 @@ public class SwingConconiView implements ActionListener, ConconiView {
     }
 
     @Override
-    public void onRoundDataAvailable(@NotNull EmgData data, int round) {
-
-        double speed = ConconiTool.Companion.getSpeeds()[round];
-        double[] yData = data.plotData(0).stream().mapToDouble(EmgPoint::getY).toArray();
-        int peaks = PeakDetector.INSTANCE.detectSimpleThresholdPeaks(yData, 200);
-        double avg = CoreUtils.INSTANCE.roundDouble(Arrays.stream(yData).average().orElse(-1), 2);
+    public void onRoundDataAvailable(@NotNull ConconiRoundData data, int round) {
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.addRow(new String[]{String.valueOf(speed), String.valueOf(avg), String.valueOf(peaks)});
+        model.addRow(new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getAvg()),
+                String.valueOf(data.getPeaks())});
 
-        updateCharts(avg, speed);
+        updateCharts(data.getAvg(), data.getSpeed());
     }
 
     @Override
@@ -182,5 +175,11 @@ public class SwingConconiView implements ActionListener, ConconiView {
             }
         });
         frame.setVisible(true);
+    }
+
+    @Override
+    public void onPlayCountdownSound() {
+        File file = new File(System.getProperty("user.dir") + "/data/sound/conconi_countdown.wav");
+        DesktopUtils.INSTANCE.playSound(file);
     }
 }
