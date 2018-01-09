@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import gnu.io.*
+import io.reactivex.functions.Consumer
 import java.io.*
 import java.util.*
 import kotlin.streams.toList
@@ -37,7 +38,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
     }
 
     @Throws(Exception::class)
-    override fun connect() {
+    override fun connect(errorHandler: Consumer<Throwable>) {
 
         connectionPort = getPortByName(portName).open(javaClass.name, timeout) as SerialPort
         dataRate = defaultDataRate

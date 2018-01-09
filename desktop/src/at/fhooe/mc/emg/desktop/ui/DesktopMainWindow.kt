@@ -362,6 +362,14 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         method.evaluate(FrequencyAnalysisFrame())
     }
 
+    override fun showConnectionError(throwable: Throwable) {
+        val icon = Toolkit.getDefaultToolkit()
+                .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_error.png")
+        val msg =  "${throwable.javaClass.simpleName}: ${throwable.localizedMessage}"
+        JOptionPane.showMessageDialog(this, msg, "ClientDriver connection error",
+                JOptionPane.ERROR_MESSAGE, ImageIcon(icon))
+    }
+
     override fun setVisualView(view: VisualView<JComponent>) {
         visualView = view
         splitPane?.rightComponent = visualView.view

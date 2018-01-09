@@ -3,6 +3,7 @@ package at.fhooe.mc.emg.clientdriver
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.clientdriver.model.EmgPoint
 import at.fhooe.mc.emg.messaging.EmgMessaging
+import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -43,7 +44,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
     abstract val protocolVersion: EmgMessaging.ProtocolVersion
 
     @Throws(Exception::class)
-    abstract fun connect()
+    abstract fun connect(errorHandler: Consumer<Throwable>)
 
     abstract fun disconnect()
 

@@ -3,10 +3,11 @@ package at.fhooe.mc.emg.core.client.simulation
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.messaging.EmgMessaging
 import at.fhooe.mc.emg.core.util.CoreUtils
+import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -57,12 +58,12 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val 
 
         // Select the default simulation source
         if (simulationSources.isNotEmpty()) {
-             simulationSource = simulationSources[simulationSources.size / 2 + 1]
+            simulationSource = simulationSources[simulationSources.size / 2 + 1]
         }
     }
 
     @Throws(Exception::class)
-    override fun connect() {
+    override fun connect(errorHandler: Consumer<Throwable>) {
 
         if (simulationSource == null) {
             throw IllegalStateException("Simulation source cannot be null!")
@@ -71,16 +72,15 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val 
         simulationData = prepareSimulationData()
 
         intervalDisposable = Observable.interval(millis, TimeUnit.MILLISECONDS, Schedulers.io())
-                .subscribe {
+                .subscribe(Consumer {
 
-                    val data: String? = simulationData!![simulationIndex]
+                    val data: String? = simulationData?.get(simulationIndex)
                     if (data != null) {
                         processMessage(data)
                     }
-
                     // Check for endless loop playback
                     checkEndlessLoopPlayback()
-                }
+                }, errorHandler)
     }
 
     override fun disconnect() {

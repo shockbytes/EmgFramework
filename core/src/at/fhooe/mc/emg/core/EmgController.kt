@@ -15,6 +15,7 @@ import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.util.*
@@ -27,23 +28,25 @@ import java.util.concurrent.TimeUnit
 abstract class EmgController(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
                              open var emgView: EmgView?, private val configStorage: EmgConfigStorage) : EmgViewCallback {
 
-    private lateinit var client: EmgClientDriver
-
-    private lateinit var config: EmgConfig
-
-    private lateinit var filters: List<Filter>
-
     abstract val visualView: VisualView<*>
 
+    val currentDataPointer: Int
+        get() = client.currentDataPointer
+
     private val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
+
+    private val connectionErrorHandler: Consumer<Throwable> = Consumer { emgView?.showConnectionError(it) }
 
     private var rawDisposable: Disposable? = null
     private var channelDisposable: Disposable? = null
 
     private var isVisualEnabled: Boolean = true
 
-    val currentDataPointer: Int
-        get() = client.currentDataPointer
+    private lateinit var client: EmgClientDriver
+
+    private lateinit var config: EmgConfig
+
+    private lateinit var filters: List<Filter>
 
     init {
         initialize()
@@ -178,7 +181,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
         try {
 
             emgView?.reset()
-            client.connect()
+            client.connect(connectionErrorHandler)
 
             rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
 
@@ -203,6 +206,7 @@ abstract class EmgController(private val clients: List<EmgClientDriver>, private
 
         } catch (e: Exception) {
             e.printStackTrace()
+            connectionErrorHandler.accept(e)
         }
     }
 

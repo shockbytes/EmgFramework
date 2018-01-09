@@ -4,7 +4,10 @@ import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
+import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.functions.Action
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -35,9 +38,8 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     private var isRunning = false
 
-    override fun connect() {
-
-        Observable.defer {
+    override fun connect(errorHandler: Consumer<Throwable>) {
+        Completable.fromAction {
 
             isRunning = true
             datagramSocket = DatagramSocket()
@@ -52,8 +54,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
                 processMessage(String(packet.data))
             }
 
-            Observable.empty<Boolean>()
-        }.subscribeOn(Schedulers.io()).subscribe()
+        }.subscribeOn(Schedulers.io()).subscribe(Action{}, errorHandler)
     }
 
     override fun disconnect() {
