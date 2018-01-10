@@ -12,6 +12,21 @@ import java.nio.file.Paths
 
 class DesktopFileStorage : FileStorage {
 
+    /**
+     * @param concatToBase is ignored, because Desktop searches everywhere and
+     * has no single directory scope
+     */
+    override fun listFiles(directory: String, concatToBase: Boolean, fileType: String?): Single<List<String>?> {
+        return Single.fromCallable {
+            val f = File(directory)
+            if (f.exists()) {
+                f.list { _, name -> if(fileType != null) name.endsWith(fileType) else true }.toList()
+            } else {
+                null
+            }
+        }.subscribeOn(Schedulers.io())
+    }
+
     override fun storeFile(fileName: String, content: String): Completable {
         return Completable.fromAction {
             CoreUtils.writeFile(File(fileName), content)

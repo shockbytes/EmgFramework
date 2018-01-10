@@ -7,6 +7,8 @@ import java.io.Serializable
 
 interface FileStorage {
 
+    fun listFiles(directory: String, concatToBase: Boolean = false, fileType: String? = null): Single<List<String>?>
+
     fun storeFile(fileName: String, content: String): Completable
 
     fun<T : Serializable> storeFileAsObject(obj: T, fileName: String): Completable
