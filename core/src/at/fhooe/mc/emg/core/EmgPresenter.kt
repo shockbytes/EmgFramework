@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit
  * Author:  Martin Macheiner
  * Date:    07.07.2017
  */
-abstract class EmgController(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
-                             open var emgView: EmgView?, private val configStorage: EmgConfigStorage) : EmgViewCallback {
+abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
+                            open var emgView: EmgView?, private val configStorage: EmgConfigStorage) : EmgViewCallback {
 
     abstract val visualView: VisualView<*>
 

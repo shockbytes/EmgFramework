@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.tools.fatigue
 
-import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.tools.Tool
 
 /**
@@ -14,7 +14,7 @@ class MuscleFatigueTool (override var view: MuscleFatigueView? = null) : Tool, M
 
     override val name = "Muscle Fatigue"
 
-    override fun start(controller: EmgController, showViewImmediate: Boolean) {
+    override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
         view?.setup(this, showViewImmediate)
     }
 

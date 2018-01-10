@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.desktop.core
 
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
-import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.view.VisualView
@@ -14,8 +14,8 @@ import javax.swing.JComponent
  * Date:    22.11.2017
  */
 
-class DesktopEmgController(c: List<EmgClientDriver>, t: List<Tool>, v: DesktopEmgView<JComponent>,
-                           cs: EmgConfigStorage) : EmgController(c, t, v, cs) {
+class DesktopEmgPresenter(c: List<EmgClientDriver>, t: List<Tool>, v: DesktopEmgView<JComponent>,
+                          cs: EmgConfigStorage) : EmgPresenter(c, t, v, cs) {
 
     override val visualView: VisualView<JComponent> = XChartVisualView()
 

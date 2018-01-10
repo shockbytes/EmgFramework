@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.desktop.ui
 
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
-import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
@@ -294,12 +294,12 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         }
     }
 
-    override fun setupToolsView(tools: List<Tool>, controller: EmgController) {
+    override fun setupToolsView(tools: List<Tool>, presenter: EmgPresenter) {
 
         mnTools?.removeAll()
         tools.forEach { t ->
             val item = JMenuItem(t.name)
-            item.addActionListener { t.start(controller, true) }
+            item.addActionListener { t.start(presenter, true) }
             mnTools?.add(item)
         }
     }

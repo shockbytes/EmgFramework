@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.tools
 
-import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.EmgPresenter
 
 /**
  * Author:  Martin Macheiner
@@ -12,5 +12,5 @@ interface Tool {
 
     val view: ToolView<*>?
 
-    fun start(controller: EmgController, showViewImmediate: Boolean)
+    fun start(presenter: EmgPresenter, showViewImmediate: Boolean)
 }

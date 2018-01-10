@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
-import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.CoreUtils
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 class ConconiTool(override var view: ConconiView? = null,
                   private var fileStorage: FileStorage) : Tool, ConconiViewCallback {
 
-    private lateinit var controller: EmgController
+    private lateinit var presenter: EmgPresenter
     private var data: ConconiData = ConconiData()
 
     private var timerDisposable: Disposable? = null
@@ -32,8 +32,8 @@ class ConconiTool(override var view: ConconiView? = null,
 
     override val name = "Conconi Test"
 
-    override fun start(controller: EmgController, showViewImmediate: Boolean) {
-        this.controller = controller
+    override fun start(controller: EmgPresenter, showViewImmediate: Boolean) {
+        this.presenter = controller
 
         view?.setup(this, showViewImmediate)
 
@@ -49,7 +49,7 @@ class ConconiTool(override var view: ConconiView? = null,
 
     override fun onStopClicked() {
         timerDisposable?.dispose()
-        controller.disconnectFromClient(null)
+        presenter.disconnectFromClient(null)
     }
 
     override fun onSaveClicked(filename: String?, errorHandler: Consumer<Throwable>) {
@@ -111,8 +111,8 @@ class ConconiTool(override var view: ConconiView? = null,
 
     private fun startTest() {
 
-        // TODO Handle somehow the case, that the controller cannot connect to the client
-        controller.connectToClient()
+        // TODO Handle somehow the case, that the presenter cannot connect to the client
+        presenter.connectToClient()
 
         // Start timer for Conconi test
         var tick = 0
@@ -139,8 +139,8 @@ class ConconiTool(override var view: ConconiView? = null,
 
     private fun storeRoundData(index: Int) {
 
-        dataStopPointer = controller.currentDataPointer
-        val roundData = controller.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
+        dataStopPointer = presenter.currentDataPointer
+        val roundData = presenter.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
         data.addRoundData(roundData)
         view?.onRoundDataAvailable(emg2ConconiRoundData(roundData, index), index)

@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.core.view
 
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
-import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.tools.Tool
@@ -28,7 +28,7 @@ interface EmgView {
 
     // ------------------ Utility list views -----------------
 
-    fun setupToolsView(tools: List<Tool>, controller: EmgController)
+    fun setupToolsView(tools: List<Tool>, presenter: EmgPresenter)
 
     fun setupFilterViews(filter: List<Filter>)
 
