@@ -103,7 +103,6 @@ class ConconiTool(override var view: ConconiView? = null,
             counter--
             view?.onCountdownTick(counter)
             if (counter == 0) {
-                controller.connectToClient()
                 startTest()
                 disposable?.dispose()
             }
@@ -112,6 +111,10 @@ class ConconiTool(override var view: ConconiView? = null,
 
     private fun startTest() {
 
+        // TODO Handle somehow the case, that the controller cannot connect to the client
+        controller.connectToClient()
+
+        // Start timer for Conconi test
         var tick = 0
         var roundIdx = 0
         timerDisposable = Observable.interval(1000, TimeUnit.MILLISECONDS)
@@ -132,7 +135,6 @@ class ConconiTool(override var view: ConconiView? = null,
                         roundIdx++
                     }
                 }
-
     }
 
     private fun storeRoundData(index: Int) {
