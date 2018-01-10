@@ -10,12 +10,14 @@ import java.io.Serializable
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * baseDirectory is ignored, because Desktop searches everywhere and
+ * has no single directory scope
+ */
 class DesktopFileStorage : FileStorage {
 
-    /**
-     * @param concatToBase is ignored, because Desktop searches everywhere and
-     * has no single directory scope
-     */
+    override val baseDirectory = ""
+
     override fun listFiles(directory: String, concatToBase: Boolean, fileType: String?): Single<List<String>?> {
         return Single.fromCallable {
             val f = File(directory)

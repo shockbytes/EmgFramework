@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.core.tools.ToolViewCallback
+import io.reactivex.Single
 import io.reactivex.functions.Consumer
 
 /**
@@ -16,5 +17,7 @@ interface ConconiViewCallback : ToolViewCallback {
     fun onSaveClicked(filename: String?, errorHandler: Consumer<Throwable>)
 
     fun onLoadClicked(filename: String?, errorHandler: Consumer<Throwable>)
+
+    fun requestStoredConconiFiles(directory: String, concatToBase: Boolean): Single<List<String>?>
 
 }

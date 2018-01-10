@@ -7,6 +7,7 @@ import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.CoreUtils
 import at.fhooe.mc.emg.core.util.PeakDetector
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -79,6 +80,14 @@ class ConconiTool(override var view: ConconiView? = null,
         } else {
             errorHandler.accept(NullPointerException("Filename must not be null!"))
         }
+    }
+
+    /**
+     * This method is only used on platforms where the fileStorage instance does not have access to the whole
+     * file system (mainly mobile applications)
+     */
+    override fun requestStoredConconiFiles(directory: String, concatToBase: Boolean): Single<List<String>?> {
+        return fileStorage.listFiles(directory, concatToBase, ".ctf")
     }
 
     override fun onViewClosed() {
