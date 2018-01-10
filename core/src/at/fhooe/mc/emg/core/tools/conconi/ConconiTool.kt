@@ -2,11 +2,14 @@ package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.EmgController
+import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.CoreUtils
 import at.fhooe.mc.emg.core.util.PeakDetector
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -15,7 +18,8 @@ import java.util.concurrent.TimeUnit
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  */
-class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCallback {
+class ConconiTool(override var view: ConconiView? = null,
+                  private var fileStorage: FileStorage) : Tool, ConconiViewCallback {
 
     private lateinit var controller: EmgController
     private var data: ConconiData = ConconiData()
@@ -36,7 +40,7 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
         dataStartPointer = 0
         dataStopPointer = 0
     }
-    
+
     override fun onStartClicked() {
         view?.onPlayCountdownSound()
         startCountdown() // Start the countdown and then start the actual test
@@ -47,12 +51,34 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
         controller.disconnectFromClient(null)
     }
 
-    override fun onSaveClicked(filename: String): Boolean {
-        return saveData(filename)
+    override fun onSaveClicked(filename: String?, errorHandler: Consumer<Throwable>) {
+
+        if (filename != null) {
+            // No action required if everything works fine
+            fileStorage.storeFileAsObject(data, filename).subscribe(Action {}, errorHandler)
+        } else {
+            errorHandler.accept(NullPointerException("Filename must not be null!"))
+        }
     }
 
-    override fun onLoadClicked(filename: String): Boolean {
-        return loadData(filename)
+    override fun onLoadClicked(filename: String?, errorHandler: Consumer<Throwable>) {
+
+        if (filename != null) {
+            fileStorage.loadFromFileAsObject<ConconiData>(filename).subscribe(Consumer {
+
+                if (it == null) {
+                    throw IOException("Cannot read data from $filename")
+                }
+
+                data = it
+                (0 until data.roundCount).forEachIndexed { idx, _ ->
+                    view?.onRoundDataAvailable(emg2ConconiRoundData(data.getRoundData(idx), idx), idx)
+                }
+
+            }, errorHandler)
+        } else {
+            errorHandler.accept(NullPointerException("Filename must not be null!"))
+        }
     }
 
     override fun onViewClosed() {
@@ -111,31 +137,9 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
         dataStartPointer = dataStopPointer
     }
 
-    private fun saveData(filename: String): Boolean {
-        return try {
-            CoreUtils.serializeToFile(data, filename)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    private fun loadData(filename: String): Boolean {
-        return try {
-            data = CoreUtils.deserializeFromFile(filename)
-            (0 until data.roundCount).forEachIndexed { idx, _ ->
-                view?.onRoundDataAvailable(emg2ConconiRoundData(data.getRoundData(idx), idx), idx)
-            }
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
     private fun emg2ConconiRoundData(roundData: EmgData, round: Int): ConconiRoundData {
         val speed = speeds[round]
-        val yData = roundData.plotData(0).map{ it.y }.toDoubleArray()
+        val yData = roundData.plotData(0).map { it.y }.toDoubleArray()
         val peaks = PeakDetector.detectSimpleThresholdPeaks(yData, 200)
         val avg = CoreUtils.roundDouble(yData.average(), 2)
         return ConconiRoundData(speed, peaks, avg)
@@ -143,9 +147,11 @@ class ConconiTool(override var view: ConconiView? = null) : Tool, ConconiViewCal
 
     companion object {
 
-        val times = intArrayOf(72, 69, 65, 63, 60, 58, 55, 53, 51, 50, 48, 46, 45, 44, 42, 41, 40, 39, 38, 37, 36)
+        val times = intArrayOf(72, 69, 65, 63, 60, 58, 55, 53, 51, 50,
+                48, 46, 45, 44, 42, 41, 40, 39, 38, 37, 36)
 
-        val speeds = doubleArrayOf(10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0, 16.5, 17.0, 17.5, 18.0, 18.5, 19.0, 19.5, 20.0)
+        val speeds = doubleArrayOf(10.0, 10.5, 11.0, 11.5, 12.0, 12.5,
+                13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0, 16.5, 17.0, 17.5, 18.0, 18.5, 19.0, 19.5, 20.0)
     }
 
 }

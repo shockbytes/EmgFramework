@@ -43,4 +43,12 @@ object CoreUtils {
         throw IOException("Cannot read value from file or invalid cast of ${T::class.java.simpleName}")
     }
 
+    @Throws(Exception::class)
+    @Suppress("UNCHECKED_CAST")
+    fun <T> unsafeDeserializeFromFile(filename: String): T? {
+        ObjectInputStream(FileInputStream(filename)).use {
+            return it.readObject() as? T
+        }
+    }
+
 }

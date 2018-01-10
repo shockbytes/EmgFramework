@@ -19,6 +19,7 @@ sourceCompatibility = rootProject.java_source_compat
 
 repositories {
     mavenCentral()
+    maven { url "http://maven.geotoolkit.org/" }
 }
 
 dependencies {
@@ -29,7 +30,10 @@ dependencies {
     implementation project(':core')
     implementation project(':messaging')
 
-    implementation group: 'org.rxtx', name: 'rxtx', version: '2.1.7'
+    // If serial communication is not working, then revert to version 2.1.7, because it works at least with this version
+    //implementation group: 'org.rxtx', name: 'rxtx', version: '2.1.7'
+    implementation group: 'org.rxtx', name: 'rxtxcomm', version: '2.2pre2'
+
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation group: 'org.knowm.xchart', name: 'xchart', version: '3.3.1'
     implementation group: 'com.github.wendykierp', name: 'JTransforms', version: '3.1'

@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.core.tools.conconi.ConconiView;
 import at.fhooe.mc.emg.core.tools.conconi.ConconiViewCallback;
 import at.fhooe.mc.emg.desktop.ui.UiUtils;
 import at.fhooe.mc.emg.desktop.util.DesktopUtils;
+import io.reactivex.functions.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
@@ -45,13 +46,20 @@ public class SwingConconiView implements ActionListener, ConconiView {
     private List<Double> xVals;
     private List<Double> yAvg;
 
+    private Consumer<Throwable> errorHandler = new Consumer<Throwable>() {
+        @Override
+        public void accept(Throwable throwable) {
+            JOptionPane.showMessageDialog(panelMain, throwable.getLocalizedMessage());
+        }
+    };
+
     public SwingConconiView() {
         btnStart.addActionListener(this);
         btnStop.addActionListener(this);
         btnSave.addActionListener(this);
         btnLoad.addActionListener(this);
 
-        setButtonsEnabled(true);
+        updateButtonStates(true);
 
         setupCharts();
     }
@@ -74,7 +82,6 @@ public class SwingConconiView implements ActionListener, ConconiView {
 
     @Override
     public void onTick(int seconds, int goal) {
-
         String out = seconds + " / " + goal + " seconds";
         labelTime.setText(out);
     }
@@ -94,21 +101,17 @@ public class SwingConconiView implements ActionListener, ConconiView {
 
         if (e.getSource() == btnStart) {
             viewCallback.onStartClicked();
-            setButtonsEnabled(false);
+            updateButtonStates(false);
         } else if (e.getSource() == btnStop) {
             viewCallback.onStopClicked();
             labelTime.setText("Test finished!");
+            updateButtonStates(true);
         } else if (e.getSource() == btnSave) {
             String saveFileName = UiUtils.INSTANCE.showConconiSaveDialog();
-            if (saveFileName != null && !viewCallback.onSaveClicked(saveFileName)) {
-                JOptionPane.showMessageDialog(panelMain, "Cannot save Conconi data!");
-            }
+            viewCallback.onSaveClicked(saveFileName, errorHandler);
         } else if (e.getSource() == btnLoad) {
-
             String loadFileName = UiUtils.INSTANCE.showConconiLoadDialog();
-            if (loadFileName != null && !viewCallback.onLoadClicked(loadFileName)) {
-                JOptionPane.showMessageDialog(panelMain, "Cannot load file!");
-            }
+            viewCallback.onLoadClicked(loadFileName, errorHandler);
         }
     }
 
@@ -143,11 +146,10 @@ public class SwingConconiView implements ActionListener, ConconiView {
         panelAverageVisual.add(chartAverageWrapper);
     }
 
-    private void setButtonsEnabled(boolean isEnabled) {
+    private void updateButtonStates(boolean isEnabled) {
 
         btnStart.setEnabled(isEnabled);
         btnLoad.setEnabled(isEnabled);
-        btnSave.setEnabled(!isEnabled);
         btnStop.setEnabled(!isEnabled);
     }
 

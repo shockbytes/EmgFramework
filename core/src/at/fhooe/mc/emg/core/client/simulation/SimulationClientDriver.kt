@@ -17,7 +17,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
-class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val simulationFolder: String) : EmgClientDriver(cv) {
+class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
+                             private val simulationFolder: String) : EmgClientDriver(cv) {
 
     private var millis: Long = 0
 
@@ -41,9 +42,9 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null, private val 
     override val name: String
         get() = if (simulationSource == null) shortName else "Simulator /w " + simulationSource?.name
 
-    override val shortName: String = "Simulator"
+    override val shortName = "Simulator"
 
-    override val isDataStorageEnabled: Boolean = false
+    override val isDataStorageEnabled = false
 
     override var samplingFrequency: Double
         get() = super.samplingFrequency

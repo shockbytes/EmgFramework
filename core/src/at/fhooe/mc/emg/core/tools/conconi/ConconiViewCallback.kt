@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.core.tools.ToolViewCallback
+import io.reactivex.functions.Consumer
 
 /**
  * Author:  Mescht
@@ -12,8 +13,8 @@ interface ConconiViewCallback : ToolViewCallback {
 
     fun onStopClicked()
 
-    fun onSaveClicked(filename: String): Boolean
+    fun onSaveClicked(filename: String?, errorHandler: Consumer<Throwable>)
 
-    fun onLoadClicked(filename: String): Boolean
+    fun onLoadClicked(filename: String?, errorHandler: Consumer<Throwable>)
 
 }
