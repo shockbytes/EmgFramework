@@ -90,10 +90,10 @@ public class SwingConconiView implements ActionListener, ConconiView {
     public void onRoundDataAvailable(@NotNull ConconiRoundData data, int round) {
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.addRow(new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getAvg()),
+        model.addRow(new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getRms()),
                 String.valueOf(data.getPeaks())});
 
-        updateCharts(data.getAvg(), data.getSpeed());
+        updateCharts(data.getRms(), data.getSpeed());
     }
 
     @Override
@@ -154,7 +154,7 @@ public class SwingConconiView implements ActionListener, ConconiView {
     }
 
     private void createUIComponents() {
-        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "Average", "Peaks"}));
+        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "RMS", "Peaks"}));
     }
 
     @Override

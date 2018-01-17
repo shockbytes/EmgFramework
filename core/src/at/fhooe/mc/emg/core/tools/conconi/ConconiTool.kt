@@ -32,8 +32,8 @@ class ConconiTool(override var view: ConconiView? = null,
 
     override val name = "Conconi Test"
 
-    override fun start(controller: EmgPresenter, showViewImmediate: Boolean) {
-        this.presenter = controller
+    override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
+        this.presenter = presenter
 
         view?.setup(this, showViewImmediate)
 
@@ -152,8 +152,13 @@ class ConconiTool(override var view: ConconiView? = null,
         val speed = speeds[round]
         val yData = roundData.plotData(0).map { it.y }.toDoubleArray()
         val peaks = PeakDetector.detectSimpleThresholdPeaks(yData, 200)
-        val avg = CoreUtils.roundDouble(yData.average(), 2)
-        return ConconiRoundData(speed, peaks, avg)
+        val rms = CoreUtils.roundDouble(yData.rms(), 2)
+        return ConconiRoundData(speed, peaks, rms)
+    }
+
+    private fun DoubleArray.rms(): Double {
+        val sum = sumByDouble { it * it }
+        return Math.sqrt(sum / this.size)
     }
 
     companion object {
