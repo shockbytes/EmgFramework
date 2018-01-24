@@ -14,11 +14,11 @@ abstract class EmgClient {
 
     protected var period: Long = 10
 
-    init {
-        setup()
-    }
-
-    private fun setup() {
+    /**
+     * Sets up all the necessary stuff for auto connection. If a connection is acquired it automatically
+     * calls the #startTransmission() method from the inside
+     */
+    fun start() {
         setupTransmission()
     }
 
@@ -26,10 +26,14 @@ abstract class EmgClient {
         period = delayMillis
 
         timerDisposable?.dispose()
-        start()
+        startTransmission()
     }
 
-    fun start() {
+    /**
+     * Starts the transmission. This means, that the client must already be connected to the sink! Therefore
+     * this method is private and can just be called inside when the connection is established
+     */
+    private fun startTransmission() {
         timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.computation())
                 .subscribe {
@@ -37,6 +41,9 @@ abstract class EmgClient {
         }
     }
 
+    /**
+     * Tears down all the connection specific stuff and kills the transmission, if there was one already established
+     */
     fun stop() {
         timerDisposable?.dispose()
         tearDown()
