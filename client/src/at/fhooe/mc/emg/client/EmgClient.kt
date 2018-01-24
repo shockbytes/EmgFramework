@@ -33,7 +33,7 @@ abstract class EmgClient {
      * Starts the transmission. This means, that the client must already be connected to the sink! Therefore
      * this method is private and can just be called inside when the connection is established
      */
-    private fun startTransmission() {
+    protected fun startTransmission() {
         timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.computation())
                 .subscribe {
