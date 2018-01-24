@@ -97,7 +97,9 @@ object EmgMessaging {
             return if (values.isNotEmpty()) values else null
 
         } else {
-            if (Character.isDigit(msg[0])) arrayListOf(msg.toDouble()) else arrayListOf(Double.MIN_VALUE)
+            if (Character.isDigit(msg[0]) && msg.count { it == '.' } == 1){
+                arrayListOf(msg.toDouble())
+            } else arrayListOf(Double.MIN_VALUE)
         }
     }
 

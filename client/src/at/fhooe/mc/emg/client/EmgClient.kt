@@ -3,6 +3,7 @@ package at.fhooe.mc.emg.client
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 abstract class EmgClient {
@@ -11,7 +12,7 @@ abstract class EmgClient {
 
     private var timerDisposable: Disposable? = null
 
-    private var period: Long = 10
+    protected var period: Long = 10
 
     init {
         setup()
@@ -29,7 +30,9 @@ abstract class EmgClient {
     }
 
     fun start() {
-        timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS).subscribe {
+        timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.computation())
+                .subscribe {
             send(EmgMessaging.buildClientMessage(provideData(), System.currentTimeMillis(), protocolVersion))
         }
     }
