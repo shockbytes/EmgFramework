@@ -69,7 +69,8 @@ class EmgData(private val maxAmount: Int = defaultMaxAmount,
         // To avoid IndexOutOfBounds exceptions just take the smallest channel size
         // This code is legacy from ChannelData and should not occur in EmgData
         val minSize = Collections
-                .min(channels, Comparator.comparingInt({ it.size }))
+                .min(channels, {o1, o2 -> Integer.compare(o1.size, o2.size)})
+                //.min(channels, Comparator.comparingInt({ it.size }))
                 .size
 
         for (i in 0 until minSize) {

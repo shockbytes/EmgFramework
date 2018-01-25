@@ -20,8 +20,8 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 
 def kotlin_version = "1.2.20"
-def java_source_compat = 1.8
-def kotlin_jvm_target = "1.8"
+def java_source_compat = 1.6
+def kotlin_jvm_target = "1.6"
 
 ext.kotlin_version = kotlin_version
 ext.java_source_compat = java_source_compat

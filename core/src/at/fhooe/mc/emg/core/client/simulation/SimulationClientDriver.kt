@@ -13,9 +13,7 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
-import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.streams.toList
 
 class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                              private val simulationFolder: String) : EmgClientDriver(cv) {
@@ -70,7 +68,9 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
             throw IllegalStateException("Simulation source cannot be null!")
         }
         disconnect() // Reset connection first
-        simulationData = prepareSimulationData()
+
+        prepareSimulationData()
+        prepareSamplingFrequency()
 
         intervalDisposable = Observable.interval(millis, TimeUnit.MILLISECONDS, Schedulers.io())
                 .subscribe(Consumer {
@@ -98,18 +98,16 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
         // Do nothing here, simulator client runs local
     }
 
-    fun addFileAsSimulationSource(srcPath: String) {
+    fun addFileAsSimulationSource(srcPath: String, fsOfRecording: Double) {
 
         val srcFile = File(srcPath)
-        val destinationFile = File(simulationFolder + "/" + srcFile.name)
+        val destinationFile = File("$simulationFolder/${srcPath}_$fsOfRecording")
 
         try {
 
-            FileUtils.copyFile(srcFile, destinationFile)
-
-            val modified = FileUtils.readLines(destinationFile, Charset.forName("UTF-8"))
+            val modified = FileUtils.readLines(srcFile, Charset.forName("UTF-8"))
                     .filter { s -> !s.isEmpty() && Character.isDigit(s[0]) }
-                    .toList().joinToString("\n")
+                    .joinToString("\n") { line -> line.replace(',', ':') }
             CoreUtils.writeFile(destinationFile, modified)
 
         } catch (e: IOException) {
@@ -124,20 +122,29 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     private fun loadSimulationSources(): List<SimulationSource> {
 
         val simulationFiles = File(simulationFolder).listFiles()
-        return Arrays.stream(Optional.ofNullable(simulationFiles).orElse(arrayOf()))
-                .map { f -> SimulationSource(f.name.substring(0, f.name.lastIndexOf(".")), f.absolutePath) }
-                .toList()
+        return simulationFiles
+                .map { f ->
+                    val shortName = f.name.substring(0, f.name.lastIndexOf("_"))
+                    val fsStr = f.name.substring(f.name.lastIndexOf("_") + 1, f.name.lastIndexOf("."))
+                    // Fallback to 100 Hz if parsing is not possible
+                    val fs = if (fsStr.toDoubleOrNull() != null) fsStr.toDouble() else DEFAULT_FS
+                    SimulationSource(shortName, f.absolutePath, fs)
+                }
     }
 
-    private fun prepareSimulationData(): List<String> {
+    private fun prepareSimulationData() {
 
-        return try {
+        simulationData = try {
             FileUtils.readLines(File(simulationSource?.filePath), Charset.forName("UTF-8"))
-                    .filter { it.isNotEmpty() }.toList()
+                    .filter { it.isNotEmpty() }
         } catch (e: IOException) {
             e.printStackTrace()
             arrayListOf()
         }
+    }
+
+    private fun prepareSamplingFrequency() {
+        samplingFrequency = simulationSource?.fs ?: 100.0
     }
 
     private fun checkEndlessLoopPlayback() {
@@ -149,6 +156,11 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                 disconnect()
             }
         }
+    }
+
+    companion object {
+
+        const val DEFAULT_FS = 100.0
     }
 
 }

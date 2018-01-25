@@ -37,8 +37,8 @@ abstract class EmgClient {
         timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.computation())
                 .subscribe {
-            send(EmgMessaging.buildClientMessage(provideData(), System.currentTimeMillis(), protocolVersion))
-        }
+                    send(EmgMessaging.buildClientMessage(provideData(), System.currentTimeMillis(), protocolVersion))
+                }
     }
 
     /**

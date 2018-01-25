@@ -107,14 +107,14 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
         return false
     }
 
-    private fun tryCopySimulationData(filename: String) {
+    private fun tryCopySimulationData(filename: String, fsOfRecording: Double) {
 
         if (hasClient(ClientCategory.SIMULATION)
                 && config.isCopyToSimulationEnabled
                 && client.category !== ClientCategory.SIMULATION) {
             val simulationClient: SimulationClientDriver? = getClient(ClientCategory.SIMULATION) as? SimulationClientDriver
             if (simulationClient != null) {
-                simulationClient.addFileAsSimulationSource(filename)
+                simulationClient.addFileAsSimulationSource(filename, fsOfRecording)
                 simulationClient.reloadSources()
             }
         }
@@ -154,7 +154,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
         // because then the simulationSource is already stored in the directory
         val success = dataStorage.store(filename, client.data)
         if (success) {
-            tryCopySimulationData(filename)
+            tryCopySimulationData(filename, client.samplingFrequency)
         }
     }
 

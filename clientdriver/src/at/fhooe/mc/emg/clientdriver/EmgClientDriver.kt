@@ -14,8 +14,10 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     open var samplingFrequency: Double = 100.toDouble()
         set(fs) {
-            field = fs
-            sendSamplingFrequencyToClient()
+            if (fs > 0) {
+                field = fs
+                sendSamplingFrequencyToClient()
+            }
         }
 
     var currentDataPointer: Int = 0
