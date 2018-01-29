@@ -18,6 +18,11 @@ apply plugin: 'idea'
 sourceCompatibility = rootProject.java_source_compat
 
 repositories {
+
+    flatDir {
+        dirs 'libs'
+    }
+
     mavenCentral()
     maven { url "http://maven.geotoolkit.org/" }
 }
@@ -38,6 +43,9 @@ dependencies {
     implementation group: 'org.knowm.xchart', name: 'xchart', version: '3.3.1'
     implementation group: 'com.github.wendykierp', name: 'JTransforms', version: '3.1'
     implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.6'
+
+    //implementation group: 'net.sf.bluecove', name: 'bluecove', version: '2.1.0'
+    implementation name: 'bluecove-2.1.1'
 }
 
 sourceSets {

@@ -7,6 +7,8 @@ import at.fhooe.mc.emg.core.tools.conconi.ConconiTool
 import at.fhooe.mc.emg.core.tools.fatigue.MuscleFatigueTool
 import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionTool
 import at.fhooe.mc.emg.core.util.config.JsonEmgConfigStorage
+import at.fhooe.mc.emg.desktop.client.bluetooth.DesktopBluetoothClientDriver
+import at.fhooe.mc.emg.desktop.client.bluetooth.DesktopBluetoothClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.network.DesktopNetworkClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.SerialClientDriver
@@ -34,7 +36,8 @@ object Main {
                             SerialClientDriver(DesktopSerialClientDriverConfigView()),
                             SimulationClientDriver(DesktopSimulationClientDriverConfigView(),
                                     System.getProperty("user.dir") + "/data/simulation"),
-                            NetworkClientDriver(DesktopNetworkClientDriverConfigView())),
+                            NetworkClientDriver(DesktopNetworkClientDriverConfigView()),
+                            DesktopBluetoothClientDriver(DesktopBluetoothClientDriverConfigView())),
                     listOf(
                             ConconiTool(SwingConconiView(), DesktopFileStorage()),
                             PeakDetectionTool(SwingPeakDetectionView()),
