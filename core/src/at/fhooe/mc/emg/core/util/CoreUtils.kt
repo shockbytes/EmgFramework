@@ -3,8 +3,15 @@ package at.fhooe.mc.emg.core.util
 import java.io.*
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.regex.Pattern
 
 object CoreUtils {
+
+    private val macAddressRegex = Pattern.compile("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})\$")
+
+    fun validateMacAddress(mac: String): Boolean {
+        return macAddressRegex.matcher(mac).matches()
+    }
 
     fun roundDouble(value: Double, digits: Int): Double {
 

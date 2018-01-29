@@ -6,9 +6,8 @@ data sources (called clients) and later on analyze the data.
 Supported clients are:
 * SerialClient,
 * SimulationClient,
-* NetworkClient.
-
-A Bluetooth(LE)Client for Android is planned at a later point
+* NetworkClient,
+* BluetoothClient (for Android and for Desktop).
 
 This project is part of my master thesis about smart EMG-enabled textiles. 
 
@@ -24,6 +23,13 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 
 ## Versions
 
+### 0.9.7
+* Bluetooth Client
+* Introduction of working Client module
+* Store sampling rate in file name of simulation data
+* Backwards compatibility to Java 1.6
+* Various code improvements
+
 ### 0.8.4
 * First build with working client module
 * View encapsulation for peak detection
@@ -37,8 +43,8 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 
 ### Major
 * Support Peak detection
-* Support **BluetoothClient**
 * Support **Muscle Fatigue detection** as a Tool
+* ~~Support **BluetoothClient**~~
 * ~~Refactor Analysis views like Tool views~~
 * ~~Refactor with **MVC/MVP pattern** to separate logic from views~~
 * ~~Refactor Config views for Clients~~
@@ -51,9 +57,8 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 
 ### Minor
 * VisualView Bug when reconnecting to client (View not emptied on Desktop)
-* Pack Analysis tools also in list with a setup() method in EmgView
-* Store sampling rate in file name of simulation data
 * Support .ARFF files as data storage (for machine learning approaches)
+* ~~Store sampling rate in file name of simulation data~~
 * ~~Write communication library for clients (Arduino)~~
 * ~~Remove .jars in /libs and provide dependencies via Gradle~~
 
