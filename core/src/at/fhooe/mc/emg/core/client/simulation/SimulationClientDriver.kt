@@ -7,6 +7,7 @@ import at.fhooe.mc.emg.core.util.CoreUtils
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.io.FileUtils
@@ -62,7 +63,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     }
 
     @Throws(Exception::class)
-    override fun connect(errorHandler: Consumer<Throwable>) {
+    override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
 
         if (simulationSource == null) {
             throw IllegalStateException("Simulation source cannot be null!")
@@ -82,6 +83,9 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                     // Check for endless loop playback
                     checkEndlessLoopPlayback()
                 }, errorHandler)
+
+        // Everything set up
+        successHandler.run()
     }
 
     override fun disconnect() {

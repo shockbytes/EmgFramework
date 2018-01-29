@@ -2,6 +2,7 @@ package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.EmgPresenter
+import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.tools.Tool
 import at.fhooe.mc.emg.core.util.CoreUtils
@@ -12,6 +13,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import org.apache.commons.io.FilenameUtils
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -54,9 +56,16 @@ class ConconiTool(override var view: ConconiView? = null,
 
     override fun onSaveClicked(filename: String?, errorHandler: Consumer<Throwable>) {
 
-        if (filename != null) {
+        // Remove extension, because 2 different types are necessary
+        val nameWoExt = FilenameUtils.removeExtension(filename)
+        if (nameWoExt != null) {
+
+            val fileNameConconi = "$nameWoExt.ctf"
+            val fileNameRaw = "$nameWoExt.csv"
+
             // No action required if everything works fine
-            fileStorage.storeFileAsObject(data, filename).subscribe(Action {}, errorHandler)
+            fileStorage.storeFileAsObject(data, fileNameConconi).subscribe(Action {}, errorHandler)
+            presenter.exportData(fileNameRaw, CsvDataStorage())
         } else {
             errorHandler.accept(NullPointerException("Filename must not be null!"))
         }

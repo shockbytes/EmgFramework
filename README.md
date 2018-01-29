@@ -28,6 +28,7 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * Introduction of working Client module
 * Store sampling rate in file name of simulation data
 * Backwards compatibility to Java 1.6
+* Refactor connection logic
 * Various code improvements
 
 ### 0.8.4
