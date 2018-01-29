@@ -42,6 +42,13 @@ abstract class EmgClient {
     }
 
     /**
+     * Stops the reading of the sensor and disposes the sending of the messages
+     */
+    protected fun stopTransmission() {
+        timerDisposable?.dispose()
+    }
+
+    /**
      * Tears down all the connection specific stuff and kills the transmission, if there was one already established
      */
     fun stop() {

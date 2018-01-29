@@ -19,7 +19,6 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -67,7 +66,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
         client = clients[clients.size / 2]
 
         // Initialize filter
-        filters = Arrays.asList(
+        filters = listOf(
                 NoFilter(),
                 BandstopFilter(),
                 LowpassFilter(),
@@ -188,7 +187,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
 
             emgView?.reset()
 
-            client.connect(Action{
+            client.connect(Action {
 
                 rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
 

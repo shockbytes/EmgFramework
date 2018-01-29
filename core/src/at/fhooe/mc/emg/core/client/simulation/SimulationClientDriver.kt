@@ -11,6 +11,7 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
@@ -105,7 +106,9 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     fun addFileAsSimulationSource(srcPath: String, fsOfRecording: Double) {
 
         val srcFile = File(srcPath)
-        val destinationFile = File("$simulationFolder/${srcPath}_$fsOfRecording")
+        val srcPathExt = FilenameUtils.getExtension(srcPath)
+        val modSrcPath = FilenameUtils.removeExtension(srcPath)
+        val destinationFile = File("$simulationFolder/${modSrcPath}_$fsOfRecording.$srcPathExt")
 
         try {
 
