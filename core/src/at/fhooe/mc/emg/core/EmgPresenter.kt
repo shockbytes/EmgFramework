@@ -15,6 +15,7 @@ import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
@@ -107,11 +108,16 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
         return false
     }
 
+    /**
+     * Only copy to folder if copy to simulation is enabled and the client isn't the simulation client
+     * because then the simulationSource is already stored in the directory
+     */
     private fun tryCopySimulationData(filename: String, fsOfRecording: Double) {
 
         if (hasClient(ClientCategory.SIMULATION)
                 && config.isCopyToSimulationEnabled
-                && client.category !== ClientCategory.SIMULATION) {
+                && client.category !== ClientCategory.SIMULATION
+                && client.isDataStorageEnabled) {
             val simulationClient: SimulationClientDriver? = getClient(ClientCategory.SIMULATION) as? SimulationClientDriver
             if (simulationClient != null) {
                 simulationClient.addFileAsSimulationSource(filename, fsOfRecording)
@@ -149,9 +155,6 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
     // -------------------------------------- EmgViewCallback methods -------------------------------------
 
     override fun exportData(filename: String, dataStorage: DataStorage) {
-
-        // Only copy to folder if copy to simulation is enabled and the client isn't the simulation client
-        // because then the simulationSource is already stored in the directory
         val success = dataStorage.store(filename, client.data)
         if (success) {
             tryCopySimulationData(filename, client.samplingFrequency)
@@ -184,28 +187,31 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
         try {
 
             emgView?.reset()
-            client.connect(connectionErrorHandler)
 
-            rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
+            client.connect(Action{
 
-            if (isVisualEnabled) {
-                var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
-                if (visualView.requestScheduler) {
-                    channelCallback = channelCallback.observeOn(visualView.scheduler)
-                    channelDisposable = if (visualView.requestBufferedUpdates) {
-                        channelCallback
-                                .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                                .subscribe { it.forEach { visualView.update(it, filters) } }
+                rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
+
+                if (isVisualEnabled) {
+                    var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
+                    if (visualView.requestScheduler) {
+                        channelCallback = channelCallback.observeOn(visualView.scheduler)
+                        channelDisposable = if (visualView.requestBufferedUpdates) {
+                            channelCallback
+                                    .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
+                                    .subscribe { it.forEach { visualView.update(it, filters) } }
+                        } else {
+                            channelCallback.subscribe { visualView.update(it, filters) }
+                        }
                     } else {
-                        channelCallback.subscribe { visualView.update(it, filters) }
+                        channelDisposable = channelCallback.subscribe { visualView.update(it, filters) }
                     }
-                } else {
-                    channelDisposable = channelCallback.subscribe { visualView.update(it, filters) }
                 }
-            }
 
-            updateStatus(true)
-            emgView?.lockDeviceControls(true)
+                updateStatus(true)
+                emgView?.lockDeviceControls(true)
+
+            }, connectionErrorHandler)
 
         } catch (e: Exception) {
             connectionErrorHandler.accept(e)
@@ -231,6 +237,8 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
     override fun setVisualViewEnabled(visualEnabled: Boolean) {
         this.isVisualEnabled = visualEnabled
     }
+
+    override fun isDataStorageEnabled() = client.isDataStorageEnabled
 
     // ----------------------------------------------------------------------------------------------------
 

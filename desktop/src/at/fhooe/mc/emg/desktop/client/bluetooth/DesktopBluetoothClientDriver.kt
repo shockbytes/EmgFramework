@@ -9,6 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.io.*
@@ -46,7 +47,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     private var reader: BufferedReader? = null
     private var readerDisposable: Disposable? = null
 
-    override fun connect(errorHandler: Consumer<Throwable>) {
+    override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
 
         Single.fromCallable {
 
@@ -57,6 +58,9 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
                 writer = PrintWriter(BufferedWriter(OutputStreamWriter(connection?.openOutputStream())))
                 reader = BufferedReader(InputStreamReader(connection?.openInputStream()))
                 subscribeToDataTransfer(errorHandler)
+
+                // At this point every async call is executed
+                successHandler.run()
 
             } catch (e: Exception) {
                 e.printStackTrace()

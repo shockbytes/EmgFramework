@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import gnu.io.*
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import java.io.*
 import java.util.*
@@ -38,7 +39,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
     }
 
     @Throws(Exception::class)
-    override fun connect(errorHandler: Consumer<Throwable>) {
+    override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
 
         connectionPort = getPortByName(portName).open(javaClass.name, timeout) as SerialPort
         dataRate = defaultDataRate
@@ -48,6 +49,9 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
         outputWriter = BufferedWriter(OutputStreamWriter(connectionPort?.outputStream))
         connectionPort?.addEventListener(this)
         connectionPort?.notifyOnDataAvailable(true)
+
+        // Everything up and running
+        successHandler.run()
     }
 
     override fun disconnect() {

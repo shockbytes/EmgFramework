@@ -9,15 +9,13 @@ import java.io.PrintWriter
 class CsvDataStorage : DataStorage {
 
     override fun store(path: String, data: EmgData): Boolean {
-
-        try {
+        return try {
             PrintWriter(BufferedWriter(FileWriter(path))).use { writer -> writer.println(data.asCsv()) }
+            true
         } catch (e: IOException) {
             e.printStackTrace()
-            return false
+            false
         }
-
-        return true
     }
 
 }

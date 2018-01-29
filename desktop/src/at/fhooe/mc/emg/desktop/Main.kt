@@ -34,10 +34,10 @@ object Main {
             DesktopEmgPresenter(
                     listOf(
                             SerialClientDriver(DesktopSerialClientDriverConfigView()),
+                            DesktopBluetoothClientDriver(DesktopBluetoothClientDriverConfigView()),
                             SimulationClientDriver(DesktopSimulationClientDriverConfigView(),
                                     System.getProperty("user.dir") + "/data/simulation"),
-                            NetworkClientDriver(DesktopNetworkClientDriverConfigView()),
-                            DesktopBluetoothClientDriver(DesktopBluetoothClientDriverConfigView())),
+                            NetworkClientDriver(DesktopNetworkClientDriverConfigView())),
                     listOf(
                             ConconiTool(SwingConconiView(), DesktopFileStorage()),
                             PeakDetectionTool(SwingPeakDetectionView()),

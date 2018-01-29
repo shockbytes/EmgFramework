@@ -151,7 +151,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuClient?.add(JSeparator())
 
         menuItemConnect = JMenuItem("Connect")
-        menuItemConnect?.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_F10, InputEvent.SHIFT_MASK)
+        menuItemConnect?.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK + InputEvent.SHIFT_MASK)
         menuItemConnect?.addActionListener(this)
         menuClient?.add(menuItemConnect)
 
@@ -222,7 +222,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private fun disconnectFromDevice() {
 
         var logFilename: String? = null
-        if (cbMenuItemLogging?.isSelected!!) {
+        if (cbMenuItemLogging?.isSelected!! && viewCallback.isDataStorageEnabled()) {
             logFilename = UiUtils.showCsvSaveDialog()
         }
         viewCallback.disconnectFromClient(logFilename)

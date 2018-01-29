@@ -38,7 +38,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     private var isRunning = false
 
-    override fun connect(errorHandler: Consumer<Throwable>) {
+    override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
         Completable.fromAction {
 
             isRunning = true
@@ -47,6 +47,9 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
             // Initialize by sending sampling frequency
             sendSamplingFrequencyToClient()
+
+            // Everything should be working here
+            successHandler.run()
 
             while (isRunning) {
                 val packet = DatagramPacket(buffer, buffer.size)
