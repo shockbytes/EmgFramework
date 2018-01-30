@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.core.tools.peaks
 
 import at.fhooe.mc.emg.core.tools.ToolView
-import java.awt.geom.Point2D
 
 /**
  * Author:  Mescht
@@ -18,7 +17,7 @@ interface PeakDetectionView : ToolView<PeakDetectionViewCallback> {
      */
     fun showPlotData(xValues: DoubleArray, yValues: DoubleArray, xValuesPeaks: DoubleArray, yValuesPeaks: DoubleArray)
 
-    fun showPeaksDetail(peaks: List<Point2D.Double>)
+    fun showPeaksDetail(peaks: List<Peak>)
 
     fun showError(cause: String, title: String)
 

@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.desktop.tools.peaks
 
+import at.fhooe.mc.emg.core.tools.peaks.Peak
 import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionView
 import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionViewCallback
 import at.fhooe.mc.emg.core.tools.peaks.PeakDetector
@@ -12,7 +13,6 @@ import org.knowm.xchart.style.Styler
 import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.awt.geom.Point2D
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
@@ -139,8 +139,8 @@ class SwingPeakDetectionView : PeakDetectionView {
         JOptionPane.showMessageDialog(contentPanel, cause, title, JOptionPane.ERROR_MESSAGE)
     }
 
-    override fun showPeaksDetail(peaks: List<Point2D.Double>) {
-        val data = peaks.map { p -> p.x.toInt().toString() + ", " + p.y }.toTypedArray()
+    override fun showPeaksDetail(peaks: List<Peak>) {
+        val data = peaks.map { it.toPrettyString() }.toTypedArray()
         list.setListData(data)
 
         labelPeaksFound.text = "${peaks.size} peaks detected"

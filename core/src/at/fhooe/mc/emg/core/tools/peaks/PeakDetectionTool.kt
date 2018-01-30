@@ -2,7 +2,6 @@ package at.fhooe.mc.emg.core.tools.peaks
 
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.tools.Tool
-import java.awt.geom.Point2D
 
 /**
  * Author:  Mescht
@@ -35,7 +34,7 @@ class PeakDetectionTool(override var view: PeakDetectionView? = null) : Tool, Pe
                 view?.showPlotData(xValues, yValues, xValuesPeaks, yValuesPeaks)
 
                 // Additionally show the peaks in a ListView
-                view?.showPeaksDetail(xValuesPeaks.mapIndexed { idx, it -> Point2D.Double(it, yValuesPeaks[idx]) })
+                view?.showPeaksDetail(xValuesPeaks.mapIndexed { idx, it -> Peak(it, yValuesPeaks[idx]) })
 
             }, {
                 view?.showError(it.localizedMessage, it.javaClass.simpleName)
