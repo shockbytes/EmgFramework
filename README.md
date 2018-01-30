@@ -62,12 +62,12 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * ~~Improve performance by replacing/rewriting chart library (decouple chart with interface for easy replacement)~~
 
 ### Minor
-* Support .ARFF files as data storage (for machine learning approaches)
 * ~~VisualView Bug when reconnecting to client (View not emptied on Desktop)~~
 * ~~Store sampling rate in file name of simulation data~~
 * ~~Write communication library for clients (Arduino)~~
 * ~~Remove .jars in /libs and provide dependencies via Gradle~~
 
 ### Experimental
+* Support .ARFF files as data storage (for machine learning approaches)
 * Compile module **EmgClient** with Kotlin Native to run on all client platform
 * Detect serial driver and install files automatically, if not installed
