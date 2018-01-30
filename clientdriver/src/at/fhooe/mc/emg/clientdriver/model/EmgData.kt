@@ -33,6 +33,10 @@ class EmgData(private val maxAmount: Int = defaultMaxAmount,
         channels[channel].add(point)
     }
 
+    fun reset() {
+        channels.clear()
+    }
+
     // --------------------------------------------
 
     override fun plotData(channel: Int): List<EmgPoint> {
@@ -100,7 +104,7 @@ class EmgData(private val maxAmount: Int = defaultMaxAmount,
 
     companion object {
 
-        val defaultMaxAmount = 512
+        const val defaultMaxAmount = 512
     }
 
 }

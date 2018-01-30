@@ -23,6 +23,11 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 
 ## Versions
 
+### 0.9.8
+* Core stability improvements (EmgData, EmgPresenter, EmgClientDriver)
+* Support for Peak detection
+* VisualView Bug when reconnecting
+
 ### 0.9.7
 * Bluetooth Client
 * Introduction of working Client module
@@ -43,8 +48,8 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 ## Open points
 
 ### Major
-* Support Peak detection
 * Support **Muscle Fatigue detection** as a Tool
+* ~~Support Peak detection~~
 * ~~Support **BluetoothClient**~~
 * ~~Refactor Analysis views like Tool views~~
 * ~~Refactor with **MVC/MVP pattern** to separate logic from views~~
@@ -57,8 +62,8 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * ~~Improve performance by replacing/rewriting chart library (decouple chart with interface for easy replacement)~~
 
 ### Minor
-* VisualView Bug when reconnecting to client (View not emptied on Desktop)
 * Support .ARFF files as data storage (for machine learning approaches)
+* ~~VisualView Bug when reconnecting to client (View not emptied on Desktop)~~
 * ~~Store sampling rate in file name of simulation data~~
 * ~~Write communication library for clients (Arduino)~~
 * ~~Remove .jars in /libs and provide dependencies via Gradle~~

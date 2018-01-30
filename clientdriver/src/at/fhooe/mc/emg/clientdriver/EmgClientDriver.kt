@@ -58,6 +58,11 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
         data = EmgData(channelWindowWidth)
     }
 
+    fun clearData() {
+        data.reset()
+        currentDataPointer = 0
+    }
+
     fun processMessage(msg: String) {
 
         // Always increment x counter value

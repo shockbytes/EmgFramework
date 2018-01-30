@@ -5,6 +5,7 @@ import javax.sound.sampled.AudioSystem
 
 object DesktopUtils {
 
+    @JvmStatic
     fun playSound(file: File) {
 
         Thread {

@@ -5,8 +5,8 @@ import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.tools.Tool
+import at.fhooe.mc.emg.core.tools.peaks.PeakDetector
 import at.fhooe.mc.emg.core.util.CoreUtils
-import at.fhooe.mc.emg.core.util.PeakDetector
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -160,7 +160,7 @@ class ConconiTool(override var view: ConconiView? = null,
     private fun emg2ConconiRoundData(roundData: EmgData, round: Int): ConconiRoundData {
         val speed = speeds[round]
         val yData = roundData.plotData(0).map { it.y }.toDoubleArray()
-        val peaks = PeakDetector.detectSimpleThresholdPeaks(yData, 200)
+        val peaks = PeakDetector.detectSimpleThresholdPeaks(yData)
         val rms = CoreUtils.roundDouble(yData.rms(), 2)
         return ConconiRoundData(speed, peaks, rms)
     }

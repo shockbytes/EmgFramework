@@ -147,7 +147,6 @@ public class SwingConconiView implements ActionListener, ConconiView {
     }
 
     private void updateButtonStates(boolean isEnabled) {
-
         btnStart.setEnabled(isEnabled);
         btnLoad.setEnabled(isEnabled);
         btnStop.setEnabled(!isEnabled);
@@ -182,6 +181,6 @@ public class SwingConconiView implements ActionListener, ConconiView {
     @Override
     public void onPlayCountdownSound() {
         File file = new File(System.getProperty("user.dir") + "/data/sound/conconi_countdown.wav");
-        DesktopUtils.INSTANCE.playSound(file);
+        DesktopUtils.playSound(file);
     }
 }

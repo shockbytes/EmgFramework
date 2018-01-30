@@ -92,11 +92,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     override fun disconnect() {
 
         simulationIndex = 0
-        currentDataPointer = 0
-
-        if (intervalDisposable?.isDisposed == false) {
-            intervalDisposable?.dispose()
-        }
+        intervalDisposable?.dispose()
     }
 
     override fun sendSamplingFrequencyToClient() {

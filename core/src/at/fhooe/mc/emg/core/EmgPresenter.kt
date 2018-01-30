@@ -187,6 +187,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
 
             emgView?.reset()
 
+            client.clearData() // Clear data storage, before new data is added
             client.connect(Action {
 
                 rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
