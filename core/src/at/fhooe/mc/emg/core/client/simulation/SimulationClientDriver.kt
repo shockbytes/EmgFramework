@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.core.util.CoreUtils
 import at.fhooe.mc.emg.messaging.EmgMessaging
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
@@ -63,30 +64,29 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
         }
     }
 
-    @Throws(Exception::class)
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
+        Completable.fromAction {
 
-        if (simulationSource == null) {
-            throw IllegalStateException("Simulation source cannot be null!")
-        }
-        disconnect() // Reset connection first
+            if (simulationSource == null) {
+                throw IllegalStateException("Simulation source cannot be null!")
+            }
+            disconnect() // Reset connection first
 
-        prepareSimulationData()
-        prepareSamplingFrequency()
+            prepareSimulationData()
+            prepareSamplingFrequency()
 
-        intervalDisposable = Observable.interval(millis, TimeUnit.MILLISECONDS, Schedulers.io())
-                .subscribe(Consumer {
+            intervalDisposable = Observable.interval(millis, TimeUnit.MILLISECONDS, Schedulers.io())
+                    .subscribe(Consumer {
 
-                    val data: String? = simulationData?.get(simulationIndex)
-                    if (data != null) {
-                        processMessage(data)
-                    }
-                    // Check for endless loop playback
-                    checkEndlessLoopPlayback()
-                }, errorHandler)
+                        val data: String? = simulationData?.get(simulationIndex)
+                        if (data != null) {
+                            processMessage(data)
+                        }
+                        // Check for endless loop playback
+                        checkEndlessLoopPlayback()
+                    }, errorHandler)
 
-        // Everything set up
-        successHandler.run()
+        }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
     override fun disconnect() {

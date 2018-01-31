@@ -5,15 +5,16 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import com.intel.bluetooth.MicroeditionConnector
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.io.*
 import javax.bluetooth.RemoteDevice
+import javax.bluetooth.UUID
 import javax.microedition.io.StreamConnection
 
 /**
@@ -39,6 +40,8 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     // This property can be changed in the ConfigView, therefore it isn't private
     var remoteDeviceMacAddress: String = "D4:63:C6:39:DD:23" // TODO Change default to RP3
+    var uuid: UUID = UUID("5f77cdab8f4847849958d2736f4727c5", false)
+    var channel: String = "2"
     // ----------------------------------
 
     private var remoteDevice: RemoteDevice? = null
@@ -48,27 +51,15 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     private var readerDisposable: Disposable? = null
 
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
+        Completable.fromAction {
 
-        Single.fromCallable {
+            remoteDevice = EmgBluetoothRemoteDevice(normalizedMac())
+            connection = MicroeditionConnector.open(buildUrl()) as StreamConnection
+            writer = PrintWriter(BufferedWriter(OutputStreamWriter(connection?.openOutputStream())))
+            reader = BufferedReader(InputStreamReader(connection?.openInputStream()))
+            subscribeToDataTransfer(errorHandler)
 
-            try {
-
-                remoteDevice = EmgBluetoothRemoteDevice(normalizedMac())
-                connection = MicroeditionConnector.open(buildUrl()) as StreamConnection
-                writer = PrintWriter(BufferedWriter(OutputStreamWriter(connection?.openOutputStream())))
-                reader = BufferedReader(InputStreamReader(connection?.openInputStream()))
-                subscribeToDataTransfer(errorHandler)
-
-                // At this point every async call is executed
-                successHandler.run()
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                errorHandler.accept(e)
-            }
-
-        }.subscribeOn(Schedulers.io()).subscribe()
-
+        }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
     override fun disconnect() {
@@ -87,7 +78,6 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
         val scheme = "btspp"
         val params = "authenticate=false;encrypt=false;master=false"
-        val channel = "2"
         return "$scheme://${normalizedMac()}:$channel;$params"
     }
 
@@ -105,7 +95,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
             e.onComplete()
         }.subscribeOn(Schedulers.io()).subscribe({
             processMessage(it)
-        }, {errorHandler.accept(it)})
+        }, { errorHandler.accept(it) })
 
     }
 

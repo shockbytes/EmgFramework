@@ -5,8 +5,10 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import gnu.io.*
+import io.reactivex.Completable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import io.reactivex.schedulers.Schedulers
 import java.io.*
 import java.util.*
 import kotlin.streams.toList
@@ -38,20 +40,19 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
         initializePorts()
     }
 
-    @Throws(Exception::class)
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
+        Completable.fromAction {
 
-        connectionPort = getPortByName(portName).open(javaClass.name, timeout) as SerialPort
-        dataRate = defaultDataRate
-        setupConnectionParams()
+            connectionPort = getPortByName(portName).open(javaClass.name, timeout) as SerialPort
+            dataRate = defaultDataRate
+            setupConnectionParams()
 
-        inputReader = BufferedReader(InputStreamReader(connectionPort?.inputStream))
-        outputWriter = BufferedWriter(OutputStreamWriter(connectionPort?.outputStream))
-        connectionPort?.addEventListener(this)
-        connectionPort?.notifyOnDataAvailable(true)
+            inputReader = BufferedReader(InputStreamReader(connectionPort?.inputStream))
+            outputWriter = BufferedWriter(OutputStreamWriter(connectionPort?.outputStream))
+            connectionPort?.addEventListener(this)
+            connectionPort?.notifyOnDataAvailable(true)
 
-        // Everything up and running
-        successHandler.run()
+        }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
     override fun disconnect() {

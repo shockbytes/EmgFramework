@@ -46,7 +46,6 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     abstract val protocolVersion: EmgMessaging.ProtocolVersion
 
-    @Throws(Exception::class)
     abstract fun connect(successHandler: Action, errorHandler: Consumer<Throwable>)
 
     abstract fun disconnect()

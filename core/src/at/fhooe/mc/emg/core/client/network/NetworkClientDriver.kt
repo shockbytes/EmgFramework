@@ -57,7 +57,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
                 processMessage(String(packet.data))
             }
 
-        }.subscribeOn(Schedulers.io()).subscribe(Action{}, errorHandler)
+        }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
     override fun disconnect() {

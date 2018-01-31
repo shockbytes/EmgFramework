@@ -45,20 +45,11 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
 
     private var isVisualEnabled: Boolean = true
 
-    private lateinit var client: EmgClientDriver
-
-    private lateinit var config: EmgConfig
-
-    private lateinit var filters: List<Filter>
+    private var client: EmgClientDriver
+    private var config: EmgConfig
+    private val filters: List<Filter>
 
     init {
-        initialize()
-    }
-
-    // ------------------------------------------ Private methods ------------------------------------------
-
-    private fun initialize() {
-
         // Load configuration
         config = configStorage.load()
 
@@ -73,6 +64,8 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
                 RunningAverageFilter(config.runningAverageWindowSize),
                 SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
     }
+
+    // ------------------------------------------ Private methods ------------------------------------------
 
     private fun setupEmgView() {
         emgView?.setupView(this, config)
@@ -182,40 +175,37 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
         }
     }
 
-    override fun connectToClient() {
-        try {
+    override fun connectToClient(successHandler: Action?) {
 
-            emgView?.reset()
+        emgView?.reset()
 
-            client.clearData() // Clear data storage, before new data is added
-            client.connect(Action {
+        client.clearData() // Clear data storage, before new data is added
+        client.connect(Action {
 
-                rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
+            rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
 
-                if (isVisualEnabled) {
-                    var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
-                    if (visualView.requestScheduler) {
-                        channelCallback = channelCallback.observeOn(visualView.scheduler)
-                        channelDisposable = if (visualView.requestBufferedUpdates) {
-                            channelCallback
-                                    .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                                    .subscribe { it.forEach { visualView.update(it, filters) } }
-                        } else {
-                            channelCallback.subscribe { visualView.update(it, filters) }
-                        }
+            if (isVisualEnabled) {
+                var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
+                if (visualView.requestScheduler) {
+                    channelCallback = channelCallback.observeOn(visualView.scheduler)
+                    channelDisposable = if (visualView.requestBufferedUpdates) {
+                        channelCallback
+                                .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
+                                .subscribe { it.forEach { visualView.update(it, filters) } }
                     } else {
-                        channelDisposable = channelCallback.subscribe { visualView.update(it, filters) }
+                        channelCallback.subscribe { visualView.update(it, filters) }
                     }
+                } else {
+                    channelDisposable = channelCallback.subscribe { visualView.update(it, filters) }
                 }
+            }
+            updateStatus(true)
+            emgView?.lockDeviceControls(true)
 
-                updateStatus(true)
-                emgView?.lockDeviceControls(true)
+            // Tell the caller that the connection is established
+            successHandler?.run()
 
-            }, connectionErrorHandler)
-
-        } catch (e: Exception) {
-            connectionErrorHandler.accept(e)
-        }
+        }, connectionErrorHandler)
     }
 
     override fun disconnectFromClient(writeFileOnDisconnectFileName: String?) {

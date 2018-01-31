@@ -112,17 +112,17 @@ class ConconiTool(override var view: ConconiView? = null,
             counter--
             view?.onCountdownTick(counter)
             if (counter == 0) {
-                startTest()
+                connectAndStart()
                 disposable?.dispose()
             }
         }
     }
 
-    private fun startTest() {
+    private fun connectAndStart() {
+        presenter.connectToClient(Action { startTimer() })
+    }
 
-        // TODO Handle somehow the case, that the presenter cannot connect to the client
-        presenter.connectToClient()
-
+    private fun startTimer() {
         // Start timer for Conconi test
         var tick = 0
         var roundIdx = 0
@@ -144,6 +144,7 @@ class ConconiTool(override var view: ConconiView? = null,
                         roundIdx++
                     }
                 }
+
     }
 
     private fun storeRoundData(index: Int) {
