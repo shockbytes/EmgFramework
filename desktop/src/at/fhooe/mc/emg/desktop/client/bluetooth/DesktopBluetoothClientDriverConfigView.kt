@@ -79,7 +79,7 @@ class DesktopBluetoothClientDriverConfigView : EmgClientDriverConfigView, ListSe
         frameDevices.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
         frameDevices.layout = BorderLayout()
 
-        listDevices = JList()
+        listDevices = JList(Vector())
         listDevices.border = EmptyBorder(4, 4, 4, 4)
         listDevices.removeListSelectionListener(this)
         listDevices.addListSelectionListener(this)
@@ -105,6 +105,7 @@ class DesktopBluetoothClientDriverConfigView : EmgClientDriverConfigView, ListSe
                 client.uuid = UUID(textFieldUuid.text.toString().trim(), false)
                 client.channel = textFieldChannel.text
                 frame.dispose()
+                frameDevices.dispose()
             } else {
                 JOptionPane.showMessageDialog(frame, "$remoteMac is not a valid MAC address format!")
             }
@@ -115,16 +116,19 @@ class DesktopBluetoothClientDriverConfigView : EmgClientDriverConfigView, ListSe
 
     override fun valueChanged(e: ListSelectionEvent?) {
 
-        val mac = listDevices.selectedValue.split("-")[1].trim()
-        // Add the : between a pair of 2 digits
-        val validMac = StringBuilder()
-        for (i in 2..mac.length step 2) {
-            validMac.append(mac.subSequence(i - 2, i))
-            if (i < mac.length - 1) {
-                validMac.append(":")
+        if (listDevices.selectedIndex > -1) {
+
+            val mac = listDevices.selectedValue.split("-")[1].trim()
+            // Add the : between a pair of 2 digits
+            val validMac = StringBuilder()
+            for (i in 2..mac.length step 2) {
+                validMac.append(mac.subSequence(i - 2, i))
+                if (i < mac.length - 1) {
+                    validMac.append(":")
+                }
             }
+            textFieldRemoteMac.text = validMac.toString()
         }
-        textFieldRemoteMac.text = validMac.toString()
     }
 
 

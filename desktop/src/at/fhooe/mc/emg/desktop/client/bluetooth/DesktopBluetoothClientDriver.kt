@@ -85,14 +85,20 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
         readerDisposable = Observable.create { e: ObservableEmitter<String> ->
 
-            if (reader != null) {
-                reader?.lines()?.forEach {
-                    e.onNext(it)
+            try {
+                if (reader != null) {
+                    reader?.lines()?.forEach {
+                        e.onNext(it)
+                    }
+                } else {
+                    e.onError(Throwable("Reader is not present!"))
                 }
-            } else {
-                e.onError(Throwable("Reader is not present!"))
+                e.onComplete()
+            } catch (ex: InterruptedIOException) {
+                ex.printStackTrace()
+                errorHandler.accept(ex)
             }
-            e.onComplete()
+
         }.subscribeOn(Schedulers.io()).subscribe({
             processMessage(it)
         }, { errorHandler.accept(it) })
