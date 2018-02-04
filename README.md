@@ -23,6 +23,10 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 
 ## Versions
 
+### 1.0.0 (WIP)
+-[ ] Implement muscle fatigue detection algorithms
+-[-] Various bug fixes
+
 ### 0.9.8
 * Core stability improvements (EmgData, EmgPresenter, EmgClientDriver)
 * Support for Peak detection

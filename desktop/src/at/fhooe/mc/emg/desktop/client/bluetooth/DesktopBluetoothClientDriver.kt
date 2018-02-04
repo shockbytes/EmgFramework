@@ -21,8 +21,6 @@ import javax.microedition.io.StreamConnection
  * @author Martin Macheiner
  * Date: 26.01.2018
  *
- * StreamConnection conn = (StreamConnection) Connector.open("btspp://<mac>:1;authenticate=true;encrypt=tue;master=false;"
- *
  */
 
 class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
@@ -38,8 +36,8 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     override val protocolVersion = EmgMessaging.ProtocolVersion.V1
 
-    // This property can be changed in the ConfigView, therefore it isn't private
-    var remoteDeviceMacAddress: String = "D4:63:C6:39:DD:23" // TODO Change default to RP3
+    // This property can be changed in the ConfigView, therefore they aren't private
+    var remoteDeviceMacAddress: String = "22:22:20:E8:93:47"
     var uuid: UUID = UUID("5f77cdab8f4847849958d2736f4727c5", false)
     var channel: String = "2"
     // ----------------------------------

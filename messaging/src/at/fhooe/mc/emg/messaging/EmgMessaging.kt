@@ -37,33 +37,28 @@ object EmgMessaging {
     fun buildClientMessage(emgData: List<Double>, timestamp: Long, protocolVersion: ProtocolVersion): String {
 
         return when (protocolVersion) {
-
             ProtocolVersion.V1 -> buildV1(emgData)
             ProtocolVersion.V2 -> buildV2(emgData, timestamp)
         }
     }
 
     private fun buildV1(emgData: List<Double>): String {
-
-        var msg = ""
-        for (i in emgData.indices) {
-            msg = msg.plus(emgData[i])
-            if (i < emgData.size - 1) msg = msg.plus(channelDelimiter)
-        }
-        return msg
+        return emgData.joinToString(channelDelimiter)
     }
 
     private fun buildV2(emgData: List<Double>, timestamp: Long): String {
-
-        val msg = timestamp.toString().plus(paramDelimiter)
-        return msg.plus(buildV1(emgData))
+        val builder = StringBuilder()
+        builder.append(timestamp)
+        builder.append(paramDelimiter)
+        builder.append(buildV1(emgData))
+        return builder.toString()
     }
 
     // ----------------------------------------------------------------------------------------------------
 
     fun buildFrequencyMessage(fs: Double): String {
         val millis = (1.0 / fs * 1000).toInt()
-        return "delay=" + millis + "\r\n"
+        return "delay=$millis\r\n"
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -80,26 +75,24 @@ object EmgMessaging {
     fun parseClientMessage(msg: String, protocolVersion: ProtocolVersion): List<Double>? {
 
         return when (protocolVersion) {
-
             ProtocolVersion.V1 -> parseV1(msg)
             ProtocolVersion.V2 -> parseV2(msg)
         }
     }
 
     private fun parseV1(msg: String): List<Double>? {
-        return if (msg.contains(",")) { // > than 1 channel
 
+        // > than 1 channel
+        return if (msg.contains(",")) {
             val values = msg.split(channelDelimiter.toRegex())
-                    .dropLastWhile { it.trim().isEmpty() }.toTypedArray()
+                    .dropLastWhile { it.trim().isEmpty() }
                     .map { v -> v.trim().toDouble() }
-
             // Do not process damaged packages
             return if (values.isNotEmpty()) values else null
-
         } else {
-            if (Character.isDigit(msg[0]) && msg.count { it == '.' } == 1){
-                arrayListOf(msg.toDouble())
-            } else arrayListOf(Double.MIN_VALUE)
+            if (Character.isDigit(msg[0]) && msg.count { it == '.' } == 1) {
+                listOf(msg.toDouble())
+            } else null
         }
     }
 

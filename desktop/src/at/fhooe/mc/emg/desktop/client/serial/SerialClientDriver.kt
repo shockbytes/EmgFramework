@@ -11,7 +11,6 @@ import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.io.*
 import java.util.*
-import kotlin.streams.toList
 
 class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv), SerialPortEventListener {
 
@@ -24,7 +23,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
     private var portName: String? = null
 
     override val name: String
-        get() = if (portName == null) shortName else "Serial device @ " + portName!!
+        get() = if (portName == null) shortName else "Serial device @ $portName"
 
     override val shortName: String = "Serial"
 
@@ -57,16 +56,13 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
 
     override fun disconnect() {
 
-        synchronized(this) {
+        connectionPort?.removeEventListener()
+        connectionPort?.close()
 
-            connectionPort?.removeEventListener()
-            connectionPort?.close()
+        inputReader?.close()
+        outputWriter?.close()
 
-            inputReader?.close()
-            outputWriter?.close()
-
-            connectionPort = null
-        }
+        connectionPort = null
     }
 
     override fun serialEvent(event: SerialPortEvent) {
@@ -106,7 +102,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
         ports = Collections.list<CommPortIdentifier>(CommPortIdentifier.getPortIdentifiers()
                 as Enumeration<CommPortIdentifier>?)
 
-        if (ports!!.isNotEmpty()) {
+        if (ports?.isNotEmpty() == true) {
             setSerialPortSelected(ports!![0].name)
         }
     }
@@ -121,14 +117,10 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
     }
 
     fun getAvailablePortNames(forceUpdate: Boolean): List<String> {
-
         if (forceUpdate) {
             initializePorts()
         }
-        if (ports != null) {
-            return ports!!.stream().map<String>({ it.name }).toList()
-        }
-        return arrayListOf()
+        return ports?.map { it.name } ?: listOf()
     }
 
     fun setSerialPortSelected(port: String) {
@@ -137,8 +129,8 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
 
     companion object {
 
-        private val timeout = 5000
-        val defaultDataRate = 115200
+        private const val timeout = 5000
+        const val defaultDataRate = 115200
 
         val supportedDataRates = intArrayOf(4800, 9600, 19200, 57600, 115200, 230400)
     }
