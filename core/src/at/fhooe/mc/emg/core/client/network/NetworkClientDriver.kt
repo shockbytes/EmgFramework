@@ -5,7 +5,6 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.messaging.EmgMessaging
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -74,9 +73,8 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
     }
 
     override fun sendSamplingFrequencyToClient() {
-        Observable.defer {
+        Completable.fromAction {
             sendMessage(EmgMessaging.buildFrequencyMessage(samplingFrequency))
-            Observable.empty<Boolean>()
         }.subscribeOn(Schedulers.io()).subscribe()
     }
 

@@ -83,21 +83,11 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
     }
 
     private fun getClient(category: ClientCategory): EmgClientDriver? {
-        clients.forEach {
-            if (it.category === category) {
-                return it
-            }
-        }
-        return null
+        return clients.find { it.category == category }
     }
 
     private fun hasClient(category: ClientCategory): Boolean {
-        clients.forEach {
-            if (it.category === category) {
-                return true
-            }
-        }
-        return false
+        return clients.find { (it.category === category) } != null
     }
 
     /**

@@ -22,14 +22,13 @@ class RunningAverageFilter(private val size: Int) : Filter() {
 
     override fun step(x: Double): Double {
 
-        if (buffer.size == size) {
+        if (buffer.size >= size) {
             sum -= buffer.removeFirst()
         }
 
         sum += x
         buffer.addLast(x)
         rAvg = sum / buffer.size
-
         return rAvg
     }
 

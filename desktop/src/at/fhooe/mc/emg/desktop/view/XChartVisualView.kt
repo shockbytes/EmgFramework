@@ -3,9 +3,12 @@ package at.fhooe.mc.emg.desktop.view
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.view.VisualView
+import io.reactivex.Flowable
 import io.reactivex.Scheduler
+import io.reactivex.schedulers.Schedulers
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.XYChartBuilder
+import org.knowm.xchart.XYSeries
 import org.knowm.xchart.style.Styler
 import java.awt.Color
 import javax.swing.JComponent
@@ -25,7 +28,7 @@ class XChartVisualView : VisualView<JComponent> {
             return if (!realtimeChart.seriesMap.isEmpty()) {
                 if (realtimeChart.seriesMap.values.iterator().hasNext()) {
                     val first = realtimeChart.seriesMap.values.iterator().next()
-                    first.yData.map{ it.toDouble() }.toDoubleArray()
+                    first.yData.map { it }.toDoubleArray()
                 } else {
                     DoubleArray(0)
                 }
@@ -59,21 +62,30 @@ class XChartVisualView : VisualView<JComponent> {
     }
 
     override fun update(data: EmgData, filters: List<Filter>) {
+        Flowable.fromCallable {
+             (0 until data.channelCount)
+                    .flatMap { i ->
+                        val plotData = data.plotData(i)
+                        val x = plotData.map { it.x }
+                        filters.filter { it.isEnabled }
+                                .map { filter ->
+                                    val name = (i + 1).toString() + "." + filter.shortName
+                                    val y = plotData.map { filter.step(it.y) }
+                                    VisualViewChannel(x, y, name)
+                                }
+                    }
+        }.subscribeOn(Schedulers.computation()).subscribe({
 
-        if (!addChannelsIfNecessary(data, filters)) {
-            for (i in 0 until data.channelCount) {
-                filters
-                        .filter { it.isEnabled }
-                        .forEach { filter ->
-                            val plotData = data.plotData(i)
-                            realtimeChart.updateXYSeries((i + 1).toString() + "." + filter.shortName,
-                                    plotData.map { it.x },
-                                    plotData.map({ filter.step(it.y) }),
-                                    null)
-                        }
+            it.forEach {
+                if (isChannelAvailable(it.name)) {
+                    realtimeChart.updateXYSeries(it.name, it.x, it.y, null)
+                } else {
+                    realtimeChart.addSeries(it.name, it.x, it.y)
+                            .xySeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Line
+                }
             }
-        }
-        chartWrapper.repaint()
+            chartWrapper.repaint()
+        }, { throwable -> println(throwable.message) })
     }
 
     override fun setYMaximum(maximum: Double) {
@@ -84,6 +96,8 @@ class XChartVisualView : VisualView<JComponent> {
         initialize()
         chartWrapper.invalidate()
     }
+
+    private fun isChannelAvailable(channel: String) = realtimeChart.seriesMap.containsKey(channel)
 
     private fun addChannelsIfNecessary(data: EmgData, filters: List<Filter>): Boolean {
 
@@ -104,5 +118,25 @@ class XChartVisualView : VisualView<JComponent> {
         }
         return addSeries
     }
+
+    @Deprecated("It's not efficient, but it works. Use the reactive way instead.")
+    private fun updateDeprecated(data: EmgData, filters: List<Filter>) {
+        if (!addChannelsIfNecessary(data, filters)) {
+            for (i in 0 until data.channelCount) {
+                filters
+                        .filter { it.isEnabled }
+                        .forEach { filter ->
+                            val plotData = data.plotData(i)
+                            realtimeChart.updateXYSeries((i + 1).toString() + "." + filter.shortName,
+                                    plotData.map { it.x },
+                                    plotData.map({ filter.step(it.y) }),
+                                    null)
+                        }
+            }
+        }
+        chartWrapper.repaint()
+    }
+
+    data class VisualViewChannel(val x: List<Double>, val y: List<Double>, val name: String)
 
 }
