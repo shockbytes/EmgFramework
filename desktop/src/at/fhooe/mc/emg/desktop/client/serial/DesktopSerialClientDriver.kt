@@ -3,7 +3,9 @@ package at.fhooe.mc.emg.desktop.client.serial
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.messaging.EmgMessaging
+import at.fhooe.mc.emg.messaging.EmgMessageParser
+import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.model.EmgPacket
 import gnu.io.*
 import io.reactivex.Completable
 import io.reactivex.functions.Action
@@ -12,7 +14,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.*
 import java.util.*
 
-class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv), SerialPortEventListener {
+class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv), SerialPortEventListener {
 
     private var ports: List<CommPortIdentifier>? = null
 
@@ -29,7 +31,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
 
     override val isDataStorageEnabled: Boolean = true
 
-    override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V1
+    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(EmgMessageParser.ProtocolVersion.V1)
 
     override val category: ClientCategory = ClientCategory.SERIAL
 
@@ -82,7 +84,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
 
     override fun sendSamplingFrequencyToClient() {
         try {
-            outputWriter?.write(EmgMessaging.buildFrequencyMessage(samplingFrequency))
+            outputWriter?.write(msgParser.buildFrequencyMessage(samplingFrequency))
             outputWriter?.flush()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -103,7 +105,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
                 as Enumeration<CommPortIdentifier>?)
 
         if (ports?.isNotEmpty() == true) {
-            setSerialPortSelected(ports!![0].name)
+            selectSerialPort(ports!![0].name)
         }
     }
 
@@ -123,7 +125,7 @@ class SerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDrive
         return ports?.map { it.name } ?: listOf()
     }
 
-    fun setSerialPortSelected(port: String) {
+    fun selectSerialPort(port: String) {
         setPortName(port)
     }
 

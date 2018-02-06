@@ -23,10 +23,15 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 
 ## Versions
 
-### 1.0.0 (WIP)
--[ ] Implement muscle fatigue detection algorithms
-* Various bug fixes
+### 1.0.0 
+- [ ]  Implement muscle fatigue detection algorithms
 
+### 0.9.9 (WIP)
+- [x] Various bug fixes
+- [x] Improve message handling
+- [ ] introduce v3 message in order transfer heart rate
+- [x] Refactor client specific parts from implementation project to client module (EmgSensor, EmgConnection)
+ 
 ### 0.9.8
 * Core stability improvements (EmgData, EmgPresenter, EmgClientDriver)
 * Support for Peak detection

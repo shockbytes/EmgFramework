@@ -4,7 +4,9 @@ import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.core.util.CoreUtils
-import at.fhooe.mc.emg.messaging.EmgMessaging
+import at.fhooe.mc.emg.messaging.EmgMessageParser
+import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -36,7 +38,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
 
     var isEndlessLoopEnabled = false
 
-    override val protocolVersion: EmgMessaging.ProtocolVersion = EmgMessaging.ProtocolVersion.V2
+    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(EmgMessageParser.ProtocolVersion.V2)
 
     override val category: ClientCategory = ClientCategory.SIMULATION
 
@@ -103,16 +105,14 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
 
         val srcFile = File(srcPath)
         val srcPathExt = FilenameUtils.getExtension(srcPath)
-        val modSrcPath = FilenameUtils.removeExtension(srcPath)
-        val destinationFile = File("$simulationFolder/${modSrcPath}_$fsOfRecording.$srcPathExt")
+        val modSrcPath = FilenameUtils.removeExtension(File(srcPath).name)
+        val destinationFile = File("$simulationFolder/${modSrcPath}_${fsOfRecording.toInt()}.$srcPathExt")
 
         try {
-
             val modified = FileUtils.readLines(srcFile, Charset.forName("UTF-8"))
-                    .filter { s -> !s.isEmpty() && Character.isDigit(s[0]) }
-                    .joinToString("\n") { line -> line.replace(',', ':') }
+                    .filter {!it.isEmpty() && Character.isDigit(it[0]) }
+                    .joinToString("\n") { it.replace(',', ':') }
             CoreUtils.writeFile(destinationFile, modified)
-
         } catch (e: IOException) {
             e.printStackTrace()
         }

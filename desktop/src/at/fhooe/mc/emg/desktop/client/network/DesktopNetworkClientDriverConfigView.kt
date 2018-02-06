@@ -9,7 +9,7 @@ import javax.swing.*
 import javax.swing.border.EmptyBorder
 
 /**
- * Author:  Mescht
+ * Author:  Martin Macheiner
  * Date:    27.11.2017
  */
 
