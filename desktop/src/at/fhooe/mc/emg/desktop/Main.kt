@@ -11,7 +11,7 @@ import at.fhooe.mc.emg.desktop.client.bluetooth.DesktopBluetoothClientDriver
 import at.fhooe.mc.emg.desktop.client.bluetooth.DesktopBluetoothClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.network.DesktopNetworkClientDriverConfigView
 import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriverConfigView
-import at.fhooe.mc.emg.desktop.client.serial.SerialClientDriver
+import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriver
 import at.fhooe.mc.emg.desktop.client.simulation.DesktopSimulationClientDriverConfigView
 import at.fhooe.mc.emg.desktop.core.DesktopEmgPresenter
 import at.fhooe.mc.emg.desktop.storage.DesktopFileStorage
@@ -33,7 +33,7 @@ object Main {
 
             DesktopEmgPresenter(
                     listOf(
-                            SerialClientDriver(DesktopSerialClientDriverConfigView()),
+                            DesktopSerialClientDriver(DesktopSerialClientDriverConfigView()),
                             DesktopBluetoothClientDriver(DesktopBluetoothClientDriverConfigView()),
                             SimulationClientDriver(DesktopSimulationClientDriverConfigView(),
                                     System.getProperty("user.dir") + "/data/simulation"),

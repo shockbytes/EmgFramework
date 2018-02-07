@@ -1,32 +1,64 @@
 package at.fhooe.mc.emg.client
 
-import at.fhooe.mc.emg.messaging.EmgMessaging
+import at.fhooe.mc.emg.client.connection.EmgConnection
+import at.fhooe.mc.emg.client.sensing.EmgSensor
+import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.model.EmgPacket
+import at.fhooe.mc.emg.messaging.model.ServerMessage
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
+/**
+ * @author Martin Macheiner
+ * Date: 24.01.2018.
+ **
+ */
 abstract class EmgClient {
 
-    abstract val protocolVersion: EmgMessaging.ProtocolVersion
+    abstract var msgParser: MessageParser<EmgPacket>
+    abstract val emgSensor: EmgSensor
+    abstract val connection: EmgConnection
 
     private var timerDisposable: Disposable? = null
+    private var msgDisposable: Disposable? = null
 
     protected var period: Long = 10
-
-    /**
-     * Sets up all the necessary stuff for auto connection. If a connection is acquired it automatically
-     * calls the #startTransmission() method from the inside
-     */
-    fun start() {
-        setupTransmission()
-    }
 
     private fun updateDelay(delayMillis: Long) {
         period = delayMillis
 
         timerDisposable?.dispose()
         startTransmission()
+    }
+
+    private fun send(data: String) {
+        connection.sendMessage(data)
+    }
+
+    private fun provideData(): List<Double> {
+        return emgSensor.provideEmgValues()
+    }
+
+    private fun closeConnectionAfterDisconnect() {
+        stopTransmission()
+        connection.cleanupAfterDisconnect()
+        msgDisposable?.dispose()
+        cleanupAfterDisconnect()
+    }
+
+    private fun startDataTransfer() {
+        startTransmission()
+
+        // If connected request read access and integrate #handleMessage()
+        msgDisposable = connection.subscribeToIncomingMessages().subscribe({
+            handleMessage(it)
+        }, {
+            it.printStackTrace()
+            closeConnectionAfterDisconnect()
+        })
     }
 
     /**
@@ -37,7 +69,7 @@ abstract class EmgClient {
         timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.computation())
                 .subscribe {
-                    send(EmgMessaging.buildClientMessage(provideData(), System.currentTimeMillis(), protocolVersion))
+                    send(msgParser.buildClientMessage(EmgPacket(provideData(), System.currentTimeMillis())))
                 }
     }
 
@@ -48,29 +80,68 @@ abstract class EmgClient {
         timerDisposable?.dispose()
     }
 
+
+    /**
+     * Sets up all the necessary stuff for auto connection.
+     */
+    fun start() {
+        emgSensor.setup()
+        connection.setup(Consumer {
+            onConnected(it)
+            startDataTransfer()
+        }, Consumer {
+            onConnectionFailed(it)
+        })
+
+        setup()
+    }
+
     /**
      * Tears down all the connection specific stuff and kills the transmission, if there was one already established
      */
     fun stop() {
         timerDisposable?.dispose()
-        tearDown()
+        msgDisposable?.dispose()
+
+        emgSensor.tearDown()
+        connection.tearDown()
+        cleanup()
     }
 
-    fun handleMessage(data: String) {
+    private fun handleMessage(data: String) {
 
-        when (EmgMessaging.parseServerMessage(data)) {
+        when (msgParser.parseServerMessage(data)?.type) {
 
-            EmgMessaging.ServerMessageType.DELAY -> updateDelay(EmgMessaging.parseFrequencyMessage(data))
-            EmgMessaging.ServerMessageType.NA -> println("Cannot identify server message type!")
+            ServerMessage.MessageType.FREQUENCY -> updateDelay(msgParser.parseFrequencyMessage(data))
+            ServerMessage.MessageType.NA -> println("Cannot identify server message type!")
         }
     }
 
-    abstract fun setupTransmission()
+    /**
+     * Setup all device and platform specific components. Connection and sensor is already set up at this moment.
+     */
+    abstract fun setup()
 
-    abstract fun send(data: String)
+    /**
+     * Counter method of #setup(). This method cleans up all device and platform specific logic.
+     */
+    abstract fun cleanup()
 
-    abstract fun provideData(): List<Double>
+    /**
+     * Cleans up all resources after a device disconnects from the client. NOTE: This method cleans up temporary
+     * resources and keeps resources which are needed for a later reconnect of another client. For example: This
+     * method should not free resources which are either necessary for sensing or sending data via the connection.
+     */
+    abstract fun cleanupAfterDisconnect()
 
-    abstract fun tearDown()
+    /**
+     * Callback method for a successful connection to a remote device.
+     */
+    abstract fun onConnected(device: String)
+
+    /**
+     * Callback method for an exception, which occurred while trying to connect to a remote device.
+     */
+    abstract fun onConnectionFailed(t: Throwable)
 
 }

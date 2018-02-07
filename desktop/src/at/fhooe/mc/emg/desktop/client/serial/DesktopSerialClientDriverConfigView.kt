@@ -32,8 +32,8 @@ class DesktopSerialClientDriverConfigView : EmgClientDriverConfigView {
         frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
 
         comboBoxPorts = JComboBox()
-        comboBoxDatarates = JComboBox(SerialClientDriver.supportedDataRates.map { i -> i.toString() }.toTypedArray())
-        comboBoxDatarates.selectedItem = SerialClientDriver.defaultDataRate.toString()
+        comboBoxDatarates = JComboBox(DesktopSerialClientDriver.supportedDataRates.map { i -> i.toString() }.toTypedArray())
+        comboBoxDatarates.selectedItem = DesktopSerialClientDriver.defaultDataRate.toString()
         btnReload = JButton("RELOAD")
         btnApply = JButton("APPLY CHANGES")
 
@@ -51,7 +51,7 @@ class DesktopSerialClientDriverConfigView : EmgClientDriverConfigView {
 
     override fun show(client: EmgClientDriver) {
 
-        client as SerialClientDriver
+        client as DesktopSerialClientDriver
 
         btnReload.addActionListener {
             comboBoxPorts.removeAllItems()
@@ -68,7 +68,7 @@ class DesktopSerialClientDriverConfigView : EmgClientDriverConfigView {
             // Set selected port
             val port: String? = comboBoxPorts.selectedItem?.toString()
             if (port != null) {
-                client.setSerialPortSelected(port)
+                client.selectSerialPort(port)
             }
             // Set data rate
             client.dataRate = comboBoxDatarates.selectedItem.toString().toInt()

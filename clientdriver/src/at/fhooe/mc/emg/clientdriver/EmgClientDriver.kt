@@ -2,7 +2,8 @@ package at.fhooe.mc.emg.clientdriver
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.clientdriver.model.EmgPoint
-import at.fhooe.mc.emg.messaging.EmgMessaging
+import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
@@ -44,7 +45,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     abstract val category: ClientCategory
 
-    abstract val protocolVersion: EmgMessaging.ProtocolVersion
+    abstract val msgParser: MessageParser<EmgPacket>
 
     abstract fun connect(successHandler: Action, errorHandler: Consumer<Throwable>)
 
@@ -67,8 +68,8 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
         // Always increment x counter value
         currentDataPointer++
 
-        val channels = EmgMessaging.parseClientMessage(msg, protocolVersion)
-        channels?.forEachIndexed { idx, value ->
+        val packet = msgParser.parseClientMessage(msg)
+        packet?.channels?.forEachIndexed { idx, value ->
             data.updateChannel(idx, EmgPoint(currentDataPointer.toDouble(), value))
         }
 

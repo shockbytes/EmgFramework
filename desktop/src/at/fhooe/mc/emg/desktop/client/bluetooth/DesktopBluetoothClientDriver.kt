@@ -3,7 +3,9 @@ package at.fhooe.mc.emg.desktop.client.bluetooth
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.messaging.EmgMessaging
+import at.fhooe.mc.emg.messaging.EmgMessageParser
+import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.model.EmgPacket
 import com.intel.bluetooth.MicroeditionConnector
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -34,7 +36,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     override val category = ClientCategory.BLUETOOTH
 
-    override val protocolVersion = EmgMessaging.ProtocolVersion.V1
+    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(EmgMessageParser.ProtocolVersion.V1)
 
     // This property can be changed in the ConfigView, therefore they aren't private
     var remoteDeviceMacAddress: String = "22:22:20:E8:93:47"
@@ -68,7 +70,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     }
 
     override fun sendSamplingFrequencyToClient() {
-        writer?.print(EmgMessaging.buildFrequencyMessage(samplingFrequency))
+        writer?.print(msgParser.buildFrequencyMessage(samplingFrequency))
         writer?.flush()
     }
 
