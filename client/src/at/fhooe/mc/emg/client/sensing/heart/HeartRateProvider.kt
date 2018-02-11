@@ -4,4 +4,7 @@ interface HeartRateProvider {
 
     fun provideHeartRate(): Int
 
+    fun setup()
+
+    fun tearDown()
 }

@@ -14,6 +14,7 @@ import at.fhooe.mc.emg.core.util.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
+import at.fhooe.mc.emg.messaging.MessageParser
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -59,8 +60,8 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
         // Initialize filter
         filters = listOf(
                 NoFilter(),
-                BandstopFilter(),
-                LowpassFilter(),
+                BandStopFilter(),
+                LowPassFilter(),
                 RunningAverageFilter(config.runningAverageWindowSize),
                 SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
     }
@@ -201,6 +202,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
     override fun disconnectFromClient(writeFileOnDisconnectFileName: String?) {
         client.disconnect()
         storeData(writeFileOnDisconnectFileName)
+        filters.forEach { it.reset() }
 
         rawDisposable?.dispose()
         channelDisposable?.dispose()
@@ -219,6 +221,10 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
     }
 
     override fun isDataStorageEnabled() = client.isDataStorageEnabled
+
+    override fun isHeartRateSensingSupported(): Boolean {
+        return clients.any { it.msgParser.protocolVersion == MessageParser.ProtocolVersion.V3 }
+    }
 
     // ----------------------------------------------------------------------------------------------------
 

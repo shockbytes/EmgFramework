@@ -20,7 +20,7 @@ import java.net.InetAddress
  */
 class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
-    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(EmgMessageParser.ProtocolVersion.V1)
+    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
 
     override val category: ClientCategory = ClientCategory.NETWORK
 

@@ -6,23 +6,14 @@ class RunningAverageFilter(private val size: Int) : Filter() {
 
     private var sum: Double = 0.0
     private var rAvg: Double = 0.0
-    private val buffer: LinkedList<Double>
+    private var buffer: LinkedList<Double> = LinkedList()
 
-    override val name: String
-        get() = "Running average"
-
-    override val shortName: String
-        get() = "rAvg"
-
-    init {
-        sum = 0.0
-        rAvg = 0.0
-        buffer = LinkedList()
-    }
+    override val name = "Running average"
+    override val shortName = "rAvg"
 
     override fun step(x: Double): Double {
 
-        if (buffer.size >= size) {
+        if (buffer.size == size) {
             sum -= buffer.removeFirst()
         }
 
@@ -30,6 +21,13 @@ class RunningAverageFilter(private val size: Int) : Filter() {
         buffer.addLast(x)
         rAvg = sum / buffer.size
         return rAvg
+    }
+
+    override fun reset() {
+        buffer = LinkedList()
+        sum = 0.0
+        rAvg = 0.0
+        buffer.clear()
     }
 
 }

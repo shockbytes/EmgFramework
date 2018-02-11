@@ -26,13 +26,8 @@ class XChartVisualView : VisualView<JComponent> {
         get() {
 
             return if (!realtimeChart.seriesMap.isEmpty()) {
-                if (realtimeChart.seriesMap.values.iterator().hasNext()) {
-                    val first = realtimeChart.seriesMap.values.iterator().next()
-                    first.yData.map { it }.toDoubleArray()
-                } else {
-                    DoubleArray(0)
-                }
-
+                val first = realtimeChart.seriesMap.values.firstOrNull()
+                first?.yData ?: DoubleArray(0)
             } else {
                 DoubleArray(0)
             }
@@ -63,15 +58,17 @@ class XChartVisualView : VisualView<JComponent> {
 
     override fun update(data: EmgData, filters: List<Filter>) {
         Flowable.fromCallable {
-             (0 until data.channelCount)
+            (0 until data.channelCount)
                     .flatMap { i ->
                         val plotData = data.plotData(i)
                         val x = plotData.map { it.x }
                         filters.filter { it.isEnabled }
                                 .map { filter ->
-                                    val name = (i + 1).toString() + "." + filter.shortName
-                                    val y = plotData.map { filter.step(it.y) }
-                                    VisualViewChannel(x, y, name)
+                                    synchronized(this) {
+                                        val name = (i + 1).toString() + "." + filter.shortName
+                                        val y = plotData.map { filter.step(it.y) }
+                                        VisualViewChannel(x, y, name)
+                                    }
                                 }
                     }
         }.subscribeOn(Schedulers.computation()).subscribe({
@@ -85,7 +82,7 @@ class XChartVisualView : VisualView<JComponent> {
                 }
             }
             chartWrapper.repaint()
-        }, { throwable -> println(throwable.message) })
+        }, { throwable: Throwable -> println("${throwable.javaClass.name} ${throwable.message}") })
     }
 
     override fun setYMaximum(maximum: Double) {

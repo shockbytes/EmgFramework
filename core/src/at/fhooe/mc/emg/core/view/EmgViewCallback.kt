@@ -32,4 +32,6 @@ interface EmgViewCallback {
     fun setVisualViewEnabled(visualEnabled: Boolean)
 
     fun isDataStorageEnabled(): Boolean
+
+    fun isHeartRateSensingSupported(): Boolean
 }

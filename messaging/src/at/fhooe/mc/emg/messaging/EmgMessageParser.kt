@@ -3,24 +3,11 @@ package at.fhooe.mc.emg.messaging
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import at.fhooe.mc.emg.messaging.model.ServerMessage
 
-class EmgMessageParser(private val protocolVersion: ProtocolVersion) : MessageParser<EmgPacket> {
+class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersion) : MessageParser<EmgPacket> {
 
     private val paramDelimiter = ":"
     private val channelDelimiter = ","
     private val serverMessageDelimiter = "="
-
-    enum class ProtocolVersion {
-        // Easiest protocol, just multiple channel values divided by the channel delimiter.
-        // Example: 1,2,3
-        V1,
-        // Incorporates timestamp. This version should tackle the problem of latencies. Now every packet has is stamped.
-        // Example: 687801928:1,2,3
-        V2,
-        // Adds the possibility to measure and send heart rate as well. This is especially useful when a Conconi test
-        // should be conducted. Because of the data overhead it is not recommended to use this, when it is not necessary.
-        // Example: 687801928:1,2,3:65
-        V3
-    }
 
     /**
      * @param packet Packet which contains all the information which should be transferred and at least the channels
@@ -31,9 +18,9 @@ class EmgMessageParser(private val protocolVersion: ProtocolVersion) : MessagePa
     override fun buildClientMessage(packet: EmgPacket): String {
 
         return when (protocolVersion) {
-            ProtocolVersion.V1 -> buildV1(packet)
-            ProtocolVersion.V2 -> buildV2(packet)
-            ProtocolVersion.V3 -> buildV3(packet)
+            MessageParser.ProtocolVersion.V1 -> buildV1(packet)
+            MessageParser.ProtocolVersion.V2 -> buildV2(packet)
+            MessageParser.ProtocolVersion.V3 -> buildV3(packet)
         }
     }
 
@@ -68,9 +55,9 @@ class EmgMessageParser(private val protocolVersion: ProtocolVersion) : MessagePa
 
         val params = msg.split(paramDelimiter).dropLastWhile { it.isBlank() }
         return when (protocolVersion) {
-            ProtocolVersion.V1 -> parseV1(params[0])
-            ProtocolVersion.V2 -> parseV2(params)
-            ProtocolVersion.V3 -> parseV3(params)
+            MessageParser.ProtocolVersion.V1 -> parseV1(params[0])
+            MessageParser.ProtocolVersion.V2 -> parseV2(params)
+            MessageParser.ProtocolVersion.V3 -> parseV3(params)
         }
     }
 

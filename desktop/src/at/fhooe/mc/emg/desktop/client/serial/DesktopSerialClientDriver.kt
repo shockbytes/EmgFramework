@@ -31,7 +31,7 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
 
     override val isDataStorageEnabled: Boolean = true
 
-    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(EmgMessageParser.ProtocolVersion.V1)
+    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
 
     override val category: ClientCategory = ClientCategory.SERIAL
 

@@ -5,13 +5,10 @@ import java.util.*
 
 class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {
 
-    private val buffer: LinkedList<Double> = LinkedList()
+    private var buffer: LinkedList<Double> = LinkedList()
 
-    override val name: String
-        get() = "Savitzky Golay Filter"
-
-    override val shortName: String
-        get() = "SG"
+    override val name = "Savitzky Golay Filter"
+    override val shortName = "SG"
 
     override fun step(x: Double): Double {
 
@@ -26,6 +23,11 @@ class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {
         } else {
             0.0
         }
+    }
+
+    override fun reset() {
+        buffer = LinkedList()
+        buffer.clear()
     }
 
 }

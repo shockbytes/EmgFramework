@@ -2,6 +2,7 @@ package at.fhooe.mc.emg.client
 
 import at.fhooe.mc.emg.client.connection.EmgConnection
 import at.fhooe.mc.emg.client.sensing.EmgSensor
+import at.fhooe.mc.emg.client.sensing.heart.HeartRateProvider
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import at.fhooe.mc.emg.messaging.model.ServerMessage
@@ -18,14 +19,15 @@ import java.util.concurrent.TimeUnit
  */
 abstract class EmgClient {
 
-    abstract var msgParser: MessageParser<EmgPacket>
+    abstract val msgParser: MessageParser<EmgPacket>
     abstract val emgSensor: EmgSensor
     abstract val connection: EmgConnection
+    abstract val heartRateProvider: HeartRateProvider
 
     private var timerDisposable: Disposable? = null
     private var msgDisposable: Disposable? = null
 
-    protected var period: Long = 10
+    protected open var period: Long = 10
 
     private fun updateDelay(delayMillis: Long) {
         period = delayMillis
@@ -69,7 +71,9 @@ abstract class EmgClient {
         timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.computation())
                 .subscribe {
-                    send(msgParser.buildClientMessage(EmgPacket(provideData(), System.currentTimeMillis())))
+                    send(msgParser.buildClientMessage(EmgPacket(provideData(),
+                            System.currentTimeMillis(),
+                            heartRateProvider.provideHeartRate())))
                 }
     }
 
@@ -92,6 +96,7 @@ abstract class EmgClient {
         }, Consumer {
             onConnectionFailed(it)
         })
+        heartRateProvider.setup()
 
         setup()
     }
@@ -105,6 +110,7 @@ abstract class EmgClient {
 
         emgSensor.tearDown()
         connection.tearDown()
+        heartRateProvider.tearDown()
         cleanup()
     }
 
