@@ -73,6 +73,10 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
             data.updateChannel(idx, EmgPoint(currentDataPointer.toDouble(), value))
         }
 
+        // TODO Do something with heart rate
+        val hr = packet?.heartRate ?: -1
+        println("HeartRate: $hr")
+
         rawCallbackSubject.onNext(msg)
         channeledCallbackSubject.onNext(data)
     }

@@ -2,9 +2,16 @@ package at.fhooe.mc.emg.client.sensing.heart
 
 interface HeartRateProvider {
 
-    fun provideHeartRate(): Int
+    enum class ConnectionState {
+        CONNECTED, DISCONNECTED
+    }
 
-    fun setup()
+    fun subscribeForHeartRateUpdates(callback: (Int) -> Unit)
 
-    fun tearDown()
+    fun subscribeForConnectionChanges(callback: (ConnectionState) -> Unit)
+
+    fun start()
+
+    fun stop()
+
 }

@@ -79,14 +79,14 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
     private fun parseV2(params: List<String>): EmgPacket? {
         return if (params.size == 2) {
-            val timestamp = params[0].toLongOrNull()
+            val timestamp = params[0].toLongOrNull() ?: System.currentTimeMillis()
             parseV1(params[1])?.setTimestamp(timestamp)
         } else null
     }
 
     private fun parseV3(params: List<String>): EmgPacket? {
         return if (params.size == 3) {
-            val heartRate = params[2].toIntOrNull()
+            val heartRate = params[2].toIntOrNull() ?: 0
             parseV2(params)?.setHeartRate(heartRate)
         } else null
     }

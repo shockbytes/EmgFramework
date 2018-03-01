@@ -96,6 +96,7 @@ class XChartVisualView : VisualView<JComponent> {
 
     private fun isChannelAvailable(channel: String) = realtimeChart.seriesMap.containsKey(channel)
 
+    @Deprecated("This method is used internally in the also deprecated method #updateDeprecated()")
     private fun addChannelsIfNecessary(data: EmgData, filters: List<Filter>): Boolean {
 
         val series = realtimeChart.seriesMap.entries.size

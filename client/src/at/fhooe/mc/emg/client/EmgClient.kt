@@ -27,6 +27,8 @@ abstract class EmgClient {
     private var timerDisposable: Disposable? = null
     private var msgDisposable: Disposable? = null
 
+    private var currentHeartRate: Int = -1
+
     protected open var period: Long = 10
 
     private fun updateDelay(delayMillis: Long) {
@@ -73,7 +75,7 @@ abstract class EmgClient {
                 .subscribe {
                     send(msgParser.buildClientMessage(EmgPacket(provideData(),
                             System.currentTimeMillis(),
-                            heartRateProvider.provideHeartRate())))
+                            currentHeartRate)))
                 }
     }
 
@@ -96,7 +98,8 @@ abstract class EmgClient {
         }, Consumer {
             onConnectionFailed(it)
         })
-        heartRateProvider.setup()
+        heartRateProvider.start()
+        heartRateProvider.subscribeForHeartRateUpdates { currentHeartRate = it }
 
         setup()
     }
@@ -110,7 +113,7 @@ abstract class EmgClient {
 
         emgSensor.tearDown()
         connection.tearDown()
-        heartRateProvider.tearDown()
+        heartRateProvider.stop()
         cleanup()
     }
 
