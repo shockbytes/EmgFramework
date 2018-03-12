@@ -6,20 +6,21 @@ import java.io.Serializable
 import java.util.*
 
 class EmgData(private val maxAmount: Int = defaultMaxAmount,
-              private var channels: MutableList<MutableList<EmgPoint>> = ArrayList()) : Csvable, Plotable, Serializable {
+              private val channels: MutableList<MutableList<EmgPoint>> = ArrayList(),
+              val heartRateData: MutableList<Int> = mutableListOf()) : Csvable, Plotable, Serializable {
 
     val channelCount: Int
         get() = channels.size
 
     fun section(start: Int, stop: Int, channel: Int): EmgData {
-
-        return if ((channel <= 0 && channel >= channels.size) ||
-                (start < 0 || stop > channels[0].size)) {
+        return if ((channel <= 0 && channel >= channels.size) || (start < 0 || stop > channels[0].size)) {
             throw IllegalArgumentException("Channel $channel or interval [$start, $stop] out of range!")
         } else {
-            val chSize = channels[channel].size
-            val subSection = channels[channel].drop(start).dropLast(chSize-stop).toMutableList()
-            EmgData(channels = mutableListOf(subSection))
+            val channelSize = channels[channel].size
+            // Maybe use .takeLast()
+            val emgSection = channels[channel].drop(start).dropLast(channelSize - stop).toMutableList()
+            val hrSection = heartRateData.drop(start).dropLast(channelSize - stop).toMutableList()
+            EmgData(defaultMaxAmount, mutableListOf(emgSection), hrSection)
         }
     }
 
@@ -33,14 +34,18 @@ class EmgData(private val maxAmount: Int = defaultMaxAmount,
         channels[channel].add(point)
     }
 
+    fun updateHeartRate(hr: Int) {
+        heartRateData.add(hr)
+    }
+
     fun reset() {
         channels.clear()
+        heartRateData.clear()
     }
 
     // --------------------------------------------
 
     override fun plotData(channel: Int): List<EmgPoint> {
-
         return if (channel < channelCount) {
             // Drop the first entries and just receive The last in the window of
             // maxAmount, but this will preserve the X value when entering the plot
@@ -73,7 +78,7 @@ class EmgData(private val maxAmount: Int = defaultMaxAmount,
         // To avoid IndexOutOfBounds exceptions just take the smallest channel size
         // This code is legacy from ChannelData and should not occur in EmgData
         val minSize = Collections
-                .min(channels, {o1, o2 -> Integer.compare(o1.size, o2.size)})
+                .min(channels, { o1, o2 -> Integer.compare(o1.size, o2.size) })
                 //.min(channels, Comparator.comparingInt({ it.size }))
                 .size
 

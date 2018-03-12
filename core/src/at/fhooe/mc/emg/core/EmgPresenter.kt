@@ -175,6 +175,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
 
             rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
 
+            // TODO Refactor this!!!
             if (isVisualEnabled) {
                 var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
                 if (visualView.requestScheduler) {

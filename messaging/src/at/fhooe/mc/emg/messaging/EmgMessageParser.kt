@@ -86,7 +86,7 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
     private fun parseV3(params: List<String>): EmgPacket? {
         return if (params.size == 3) {
-            val heartRate = params[2].toIntOrNull() ?: 0
+            val heartRate = params[2].toIntOrNull() ?: -1
             parseV2(params)?.setHeartRate(heartRate)
         } else null
     }

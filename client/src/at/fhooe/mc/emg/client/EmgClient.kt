@@ -31,6 +31,8 @@ abstract class EmgClient {
 
     protected open var period: Long = 10
 
+    var debugDataListener: ((EmgPacket) -> Unit)? = null
+
     private fun updateDelay(delayMillis: Long) {
         period = delayMillis
 
@@ -73,9 +75,9 @@ abstract class EmgClient {
         timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.computation())
                 .subscribe {
-                    send(msgParser.buildClientMessage(EmgPacket(provideData(),
-                            System.currentTimeMillis(),
-                            currentHeartRate)))
+                    val packet = EmgPacket(provideData(), System.currentTimeMillis(), currentHeartRate)
+                    send(msgParser.buildClientMessage(packet))
+                    debugDataListener?.invoke(packet)
                 }
     }
 

@@ -289,7 +289,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     override fun exposeRawClientDataObservable(observable: Observable<String>) {
         observable.subscribeOn(Schedulers.io()).subscribe {
-            textAreaConsole?.append(it + "\n")
+            textAreaConsole?.append("$it\n")
             textAreaConsole?.caretPosition = textAreaConsole?.document?.length ?: 0
         }
     }

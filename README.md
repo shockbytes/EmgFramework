@@ -25,7 +25,7 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 
 ### 1.0.0 
 - [ ] Implement muscle fatigue detection algorithms
-- [ ] Handle heart rate messages and relay it to Tools
+- [x] Handle heart rate messages and relay it to Tools
 
 ### 0.9.9
 * Various bug fixes

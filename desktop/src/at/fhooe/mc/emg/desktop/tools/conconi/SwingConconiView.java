@@ -45,6 +45,7 @@ public class SwingConconiView implements ActionListener, ConconiView {
 
     private List<Double> xVals;
     private List<Double> yAvg;
+    private List<Integer> yHr;
 
     private Consumer<Throwable> errorHandler = new Consumer<Throwable>() {
         @Override
@@ -89,11 +90,12 @@ public class SwingConconiView implements ActionListener, ConconiView {
     @Override
     public void onRoundDataAvailable(@NotNull ConconiRoundData data, int round) {
 
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.addRow(new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getRms()),
-                String.valueOf(data.getPeaks())});
+        System.out.println("onRoundDataAvailable");
+        ((DefaultTableModel) table.getModel()).addRow(
+                new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getRms()),
+                        String.valueOf(data.getHeartRate()), String.valueOf(data.getPeaks())});
 
-        updateCharts(data.getRms(), data.getSpeed());
+        updateCharts(data.getRms(), data.getSpeed(), data.getHeartRate());
     }
 
     @Override
@@ -115,23 +117,26 @@ public class SwingConconiView implements ActionListener, ConconiView {
         }
     }
 
-    private void updateCharts(double avg, double speed) {
+    private void updateCharts(double avg, double speed, int heartRate) {
 
         if (xVals == null) {
             xVals = new ArrayList<>();
             yAvg = new ArrayList<>();
+            yHr = new ArrayList<>();
         }
 
         xVals.add(speed);
         yAvg.add(avg);
+        yHr.add(heartRate);
 
         if (chartAverage.getSeriesMap().size() == 0) {
             chartAverage.addSeries("Average", xVals, yAvg);
+            chartAverage.addSeries("Heart rate", xVals, yHr);
         } else {
             chartAverage.updateXYSeries("Average", xVals, yAvg, null);
+            chartAverage.updateXYSeries("Heart rate", xVals, yHr, null);
         }
         chartAverageWrapper.repaint();
-
     }
 
     private void setupCharts() {
@@ -140,7 +145,7 @@ public class SwingConconiView implements ActionListener, ConconiView {
         chartAverage.getStyler().setLegendVisible(false);
         chartAverage.getStyler().setPlotGridLinesVisible(false);
         chartAverage.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chartAverage.setXAxisTitle("km/h");
+        chartAverage.setXAxisTitle("km/h | Heart rate");
 
         chartAverageWrapper = new XChartPanel<>(chartAverage);
         panelAverageVisual.add(chartAverageWrapper);
@@ -153,7 +158,7 @@ public class SwingConconiView implements ActionListener, ConconiView {
     }
 
     private void createUIComponents() {
-        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "RMS", "Peaks"}));
+        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "RMS", "Heart rate", "Peaks"}));
     }
 
     @Override

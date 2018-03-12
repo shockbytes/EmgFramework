@@ -8,7 +8,7 @@ interface MessageParser<T> {
         // Easiest protocol, just multiple channel values divided by the channel delimiter.
         // Example: 1,2,3
         V1,
-        // Incorporates timestamp. This version should tackle the problem of latencies. Now every packet has is stamped.
+        // Incorporates timestamp. This version should tackle the problem of latencies. Now every packet has its stamp.
         // Example: 687801928:1,2,3
         V2,
         // Adds the possibility to measure and send heart rate as well. This is especially useful when a Conconi test
@@ -17,7 +17,7 @@ interface MessageParser<T> {
         V3
     }
 
-    abstract val protocolVersion: ProtocolVersion
+    val protocolVersion: ProtocolVersion
 
     // --------------- Methods called from the driver side ---------------
 
