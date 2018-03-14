@@ -24,7 +24,16 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 ## Modules
 
 ### client
-TODO...
+This part of the framework is designed to run exclusively on the client platform. This module
+only contains abstract classes or interface definitions, due to the simple fact, that most 
+code running on the client is device specific. But why is it necessary then to encapsulate
+this in an own module? Because the scaffold is the same for every client device. The code
+for connection (whether it is a Bluetooth, Wifi or Serial connection), the actual 
+data sensing (depending on the used sensing hardware) and the heart rate provider (usually
+not on-device, either smart watch or chest belt) are dependant on the actual target platform.
+For example a client using Bluetooth, running on Android Things, connected with a BLE chest
+belt, sensing with a specific EMG sensor has different implementation details, than a Wifi
+client running on an Arduino platform.
 
 ### clientdriver
 TODO...
