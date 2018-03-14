@@ -36,13 +36,48 @@ belt, sensing with a specific EMG sensor has different implementation details, t
 client running on an Arduino platform.
 
 ### clientdriver
-TODO...
+Counter part of the *client* module. While the client module is deployed on the client platform,
+this module is essential in order to communicate with the connected client. The utilized
+MessageParser version is crucial, as the protocol versions are backwards compatible, but not the
+other way round. A V3 client driver cannot parse V1 message, but a V3 client can send data which
+a V1 driver can interpret. Each driver will have some parameters to configure. This configuration
+is done via the *ClientDriverConfigView*. So each implementing platform can offer a UI in order
+to adjust those parameters. These parameters are usually ports,data sources, ip addresses
+or MAC addresses. Client driver must be implemented according to their target platform. 
+For example: the Desktop implementation needs an own Bluetooth implementation, while the Android
+implementation needs an own as well. ClientDriver which are not platform dependent come already
+packed in the *core* module.
 
 ### core
-TODO...
+The code that holds everything together. The module which connects all other modules. In a perfect
+case UI implementations (Android/Desktop) only depend on this module. All code is completely
+platform independent, in order to assure it is safe to run it on any target platform. The core
+implementation comes with two out-of-the-box supported driver: a *network driver* and a 
+*simulation driver*. The simulation driver is a special case of driver, because there is no real
+client on the other side. It simulates the client by reading from a file. It provides frequency
+analysis methods, namely a Fast-Fourier-Transform and a Spectrum Analysis. The supported filter
+are implemented here as well. Tools provide a unique interface to do whatever developer wants
+to do with the data. They are a very powerful component. For now the core module offers full
+support of the Conconi Test as a tool, a peak detection tool and in near future the muscle fatigue
+detection as a tool. All of these tools are completely implemented, but without a corresponding
+view. UI modules only have to create the views in order to be capable to use these tools. The
+core also provides a way to store recorded data in different formats (for now only csv is possible),
+and a way to store other data onto the file system. All of this functionality is very slim and
+only needs some hundred of kB as a library.
 
 ### desktop
-TODO...
+Next to an Android user interface implementation there is also exists a 
+Desktop implementation. Usually the Android application is the preferred way to use
+the framework as it offers the support to be fully mobile while testing the system. 
+But for debugging and testing purposes the Desktop version offers an easier approach.
+Especially when it comes down to bug tracking and system testing, it is easier to search
+for those systematic bugs on the Desktop. It also provides a more capable hardware to run on.
+The *desktop* module basically contains no business logic code. It mostly contains UI specific
+code, which is due to the fact, that the architectural concept behind is a Model-View-Presenter
+pattern. MVP completely encapsulates views from the business logic. This made a port to Android
+really easy. The only business logic is driver logic. The desktop module comes with an own
+driver for serial communication and for Bluetooth on Desktop devices (Android comes with an own
+bluetooth implementation).
 
 ### messaging
 The *messaging* module is the base layer of communication. It contains the interface
@@ -59,6 +94,7 @@ versioning.
 ## Versions
 
 ### 1.0.0 
+- [ ] Introduce a Test template class
 - [ ] Implement muscle fatigue detection algorithms
 - [x] Handle heart rate messages and relay it to Tools
 
@@ -92,7 +128,18 @@ versioning.
 
 ## Open points
 
+#### Test class (Experimental)
+During a meeting there came the need for a test class. This is just an experimental feature.
+An abstract base class, which provides name of the test subject with a date as well (maybe
+some more advanced details of the subject). A pipes-and-filters architecture is exerted.
+People should be capable to easily create new test cases by just drag and drop items of a 
+predefined category (filtering (different filter in row), transformation (also in the 
+frequency domain, resample item), data sink (send the data somewhere, 
+plot or file, or algorithm)).
+The UI is not mandatory, but it would be an impressive detail.
+
 ### Major
+* Support for **Test classes**
 * Support **Muscle Fatigue detection** as a Tool
 * ~~Support Peak detection~~
 * ~~Support **BluetoothClient**~~

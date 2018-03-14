@@ -153,34 +153,20 @@ class ConconiTool(override var view: ConconiView? = null,
         val roundData = presenter.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
         data.addRoundData(roundData)
-        println("Handover round data!")
         val crd = emg2ConconiRoundData(roundData, index)
-        println("Conconi round data created!")
         view?.onRoundDataAvailable(crd, index)
 
-        println("Everything fine\n--------------------------------")
         dataStartPointer = dataStopPointer
     }
 
     private fun emg2ConconiRoundData(roundData: EmgData, round: Int): ConconiRoundData {
 
-        try {
-            println("Here we go again!")
-            println("$round")
-            println("${speeds[round]}")
-            val speed = speeds[round]
-            val yData = roundData.plotData(0).map { it.y }.toDoubleArray()
-            val peaks = PeakDetector.detectSimpleThresholdPeaks(yData)
-            println("Peaks: $peaks")
-            val rms = CoreUtils.roundDouble(yData.rms(), 2)
-            println("RMS: $rms")
-            val hr = roundData.heartRateData.average().toInt()
-            println("HR: $hr")
-            return ConconiRoundData(speed, peaks, rms, hr)
-        } catch(e: Exception) {
-            e.printStackTrace()
-            return ConconiRoundData(0.0,0,0.0,0)
-        }
+        val speed = speeds[round]
+        val yData = roundData.plotData(0).map { it.y }.toDoubleArray()
+        val peaks = PeakDetector.detectSimpleThresholdPeaks(yData)
+        val rms = CoreUtils.roundDouble(yData.rms(), 2)
+        val hr = roundData.heartRateData.average().toInt()
+        return ConconiRoundData(speed, peaks, rms, hr)
     }
 
     private fun DoubleArray.rms(): Double {

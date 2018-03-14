@@ -23,6 +23,7 @@ package at.fhooe.mc.emg.core.tools.peaks
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 object PeakDetector {
 
@@ -48,7 +49,9 @@ object PeakDetector {
                                    threshold: Double = defaultThreshold,
                                    decayRate: Double = defaultDecayRate,
                                    isRelative: Boolean = defaultIsRelative): Int {
-        return detectPeakLocations(data, width, threshold, decayRate, isRelative).blockingFirst().size
+        return detectPeakLocations(data, width, threshold, decayRate, isRelative)
+                .timeout(200, TimeUnit.MILLISECONDS, Observable.just(intArrayOf())) // allow 200ms of delay, otherwise cancel
+                .blockingFirst().size
     }
 
 

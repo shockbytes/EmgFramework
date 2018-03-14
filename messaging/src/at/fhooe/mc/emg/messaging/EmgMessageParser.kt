@@ -66,7 +66,6 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
     }
 
     private fun parseV1(msg: String): EmgPacket? {
-
         // > than 1 channel
         return if (msg.contains(",")) {
             val values = msg.split(channelDelimiter)
@@ -85,8 +84,8 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
     private fun parseV2(params: List<String>): EmgPacket? {
         return if (params.size >= 2) {
-            val timestamp = params[0].toLongOrNull() ?: System.currentTimeMillis()
-            parseV1(params[1])?.setTimestamp(timestamp)
+            val timestamp = params[1].toLongOrNull() ?: System.currentTimeMillis()
+            parseV1(params[0])?.setTimestamp(timestamp)
         } else null
     }
 
