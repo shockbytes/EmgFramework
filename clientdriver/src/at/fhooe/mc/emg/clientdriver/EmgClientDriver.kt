@@ -69,7 +69,6 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
         currentDataPointer++
 
         val packet = msgParser.parseClientMessage(msg)
-
         packet?.let {
             packet.channels.forEachIndexed { idx, value ->
                 data.updateChannel(idx, EmgPoint(currentDataPointer.toDouble(), value))

@@ -36,10 +36,10 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     override val category = ClientCategory.BLUETOOTH
 
-    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
+    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V3)
 
     // This property can be changed in the ConfigView, therefore they aren't private
-    var remoteDeviceMacAddress: String = "22:22:20:E8:93:47"
+    var remoteDeviceMacAddress: String = "D4:63:C6:39:DD:23"//"22:22:20:E8:93:47" // TODO Change back
     var uuid: UUID = UUID("5f77cdab8f4847849958d2736f4727c5", false)
     var channel: String = "2"
     // ----------------------------------

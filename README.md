@@ -21,6 +21,32 @@ This project is part of my master thesis about smart EMG-enabled textiles.
 * Store recorded data in csv-file
 * Conconi Test Tool
 
+## Modules
+
+### client
+TODO...
+
+### clientdriver
+TODO...
+
+### core
+TODO...
+
+### desktop
+TODO...
+
+### messaging
+The *messaging* module is the base layer of communication. It contains the interface
+for *MessageParser*, which defines the basic message flow between client and server. 
+Because of its interface characteristic and its generic data type approach, it is 
+theoretically possible to change the message format and its message wrapper class.
+Practically the framework uses the concrete implementation *EmgMessageParser*, which
+utilizes the class *EmgPacket* as the data container, which is transferred between the 
+two sides. EmgPacket enables the transmission of a list of Emg data (introduced in protocol
+version V1), a timestamp (V2) and the heart rate (V3) of the test subject. Nevertheless of the
+data format, all concrete implementations of *MessageParser* must adhere to the protocol
+versioning.
+
 ## Versions
 
 ### 1.0.0 

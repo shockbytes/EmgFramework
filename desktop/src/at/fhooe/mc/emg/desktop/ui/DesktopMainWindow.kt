@@ -65,7 +65,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     private fun initialize() {
         isResizable = true
-        setBounds(100, 150, 450, 300)
+        setBounds(100, 150, 650, 350)
         title = "Emg Desktop"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
@@ -88,7 +88,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         contentPane.background = Color.WHITE
 
         splitPane = JSplitPane()
-        splitPane?.resizeWeight = 0.3
+        splitPane?.resizeWeight = 0.4
         contentPane.add(splitPane, BorderLayout.CENTER)
 
         labelStatus = JLabel()

@@ -3,18 +3,29 @@ package at.fhooe.mc.emg.messaging
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import at.fhooe.mc.emg.messaging.model.ServerMessage
 
+
+/**
+ * @author  Martin Macheiner
+ * Date:    24.01.2018
+ * <p>
+ * Concrete implementation of {@link MessageParser} for the data class {@link EmgPacket}, which adhere to a really
+ * lightweight protocol scheme.
+ *
+ */
+
+/**
+ * Primary constructor of EmgMessageParser
+ *
+ * @param protocolVersion abstract member implementation of super class, indicating the highest supported protocol version
+ */
 class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersion) : MessageParser<EmgPacket> {
 
+    // Delimiters of supported protocol
     private val paramDelimiter = ":"
     private val channelDelimiter = ","
     private val serverMessageDelimiter = "="
 
-    /**
-     * @param packet Packet which contains all the information which should be transferred and at least the channels
-     * with the EMG data
-     *
-     * @return String representation of the different channels which are transferred
-     */
+
     override fun buildClientMessage(packet: EmgPacket): String {
 
         return when (protocolVersion) {
@@ -45,15 +56,8 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
     // ----------------------------------------------------------------------------------------------------
 
-    /**
-     * @param msg The message which contains the EMG data, this message packet SHOULD be built
-     * with the {@link #buildClientMessage(List<Double>, Long, ProtocolVersion)} method, to ensure,
-     * that the data is consistent.
-     * @return List of all available channels.
-     */
     override fun parseClientMessage(msg: String): EmgPacket? {
-
-        val params = msg.split(paramDelimiter).dropLastWhile { it.isBlank() }
+        val params = msg.split(paramDelimiter).dropWhile { it.isBlank() }
         return when (protocolVersion) {
             MessageParser.ProtocolVersion.V1 -> parseV1(params[0])
             MessageParser.ProtocolVersion.V2 -> parseV2(params)
@@ -71,28 +75,29 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
             // Do not process damaged packages
             return if (values.isNotEmpty()) EmgPacket(values) else null
         } else {
-            if (Character.isDigit(msg[0]) && msg.count { it == '.' } == 1) {
-                EmgPacket(listOf(msg.toDouble()))
+            // Ensure that single channel has a valid format
+            val singleChannel = msg.toDoubleOrNull()
+            if (singleChannel != null) {
+                EmgPacket(listOf(singleChannel))
             } else null
         }
     }
 
     private fun parseV2(params: List<String>): EmgPacket? {
-        return if (params.size == 2) {
+        return if (params.size >= 2) {
             val timestamp = params[0].toLongOrNull() ?: System.currentTimeMillis()
             parseV1(params[1])?.setTimestamp(timestamp)
         } else null
     }
 
     private fun parseV3(params: List<String>): EmgPacket? {
-        return if (params.size == 3) {
+        return if (params.size >= 3) {
             val heartRate = params[2].toIntOrNull() ?: -1
             parseV2(params)?.setHeartRate(heartRate)
         } else null
     }
 
     // ----------------------------------------------------------------------------------------------------
-
 
     override fun parseServerMessage(msg: String): ServerMessage? {
         val params = msg.split(serverMessageDelimiter)
@@ -101,13 +106,13 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
         } else null
     }
 
+    override fun parseFrequencyMessage(msg: String): Long = msg.trim().split(serverMessageDelimiter)[1].toLong()
+
     private fun getServerMessageForTypeType(type: String, data: String): ServerMessage {
         return when (type) {
             "delay" -> ServerMessage(ServerMessage.MessageType.FREQUENCY, data.toLong())
             else -> ServerMessage(ServerMessage.MessageType.NA, data)
         }
     }
-
-    override fun parseFrequencyMessage(msg: String): Long = msg.trim().split(serverMessageDelimiter)[1].toLong()
 
 }
