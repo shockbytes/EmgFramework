@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.desktop.ui.dialog
 
-import at.fhooe.mc.emg.core.util.config.EmgConfig
+import at.fhooe.mc.emg.core.util.EmgConfig
 
 import javax.swing.*
 import javax.swing.border.CompoundBorder

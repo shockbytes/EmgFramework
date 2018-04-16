@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
+import at.fhooe.mc.emg.core.EmgComponent
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.FileStorage
@@ -21,8 +22,9 @@ import java.util.concurrent.TimeUnit
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  */
-class ConconiTool(override var view: ConconiView? = null,
-                  private var fileStorage: FileStorage) : Tool, ConconiViewCallback {
+@EmgComponent
+class ConconiTool(override var toolView: ConconiToolView? = null,
+                  private var fileStorage: FileStorage? = null) : Tool, ConconiToolViewCallback {
 
     private lateinit var presenter: EmgPresenter
     private var data: ConconiData = ConconiData()
@@ -37,7 +39,7 @@ class ConconiTool(override var view: ConconiView? = null,
     override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
         this.presenter = presenter
 
-        view?.setup(this, showViewImmediate)
+        toolView?.setup(this, showViewImmediate)
 
         data = ConconiData()
         dataStartPointer = 0
@@ -45,7 +47,7 @@ class ConconiTool(override var view: ConconiView? = null,
     }
 
     override fun onStartClicked() {
-        view?.onPlayCountdownSound()
+        toolView?.onPlayCountdownSound()
         startCountdown() // Start the countdown and then start the actual test
     }
 
@@ -64,7 +66,7 @@ class ConconiTool(override var view: ConconiView? = null,
             val fileNameRaw = "$nameWoExt.csv"
 
             // No action required if everything works fine
-            fileStorage.storeFileAsObject(data, fileNameConconi).subscribe(Action {}, errorHandler)
+            fileStorage?.storeFileAsObject(data, fileNameConconi)?.subscribe(Action {}, errorHandler)
             presenter.exportData(fileNameRaw, CsvDataStorage())
         } else {
             errorHandler.accept(NullPointerException("Filename must not be null!"))
@@ -74,7 +76,7 @@ class ConconiTool(override var view: ConconiView? = null,
     override fun onLoadClicked(filename: String?, errorHandler: Consumer<Throwable>) {
 
         if (filename != null) {
-            fileStorage.loadFromFileAsObject<ConconiData>(filename).subscribe(Consumer {
+            fileStorage?.loadFromFileAsObject<ConconiData>(filename)?.subscribe(Consumer {
 
                 if (it == null) {
                     throw IOException("Cannot read data from $filename")
@@ -82,7 +84,7 @@ class ConconiTool(override var view: ConconiView? = null,
 
                 data = it
                 (0 until data.roundCount).forEachIndexed { idx, _ ->
-                    view?.onRoundDataAvailable(emg2ConconiRoundData(data.getRoundData(idx), idx), idx)
+                    toolView?.onRoundDataAvailable(emg2ConconiRoundData(data.getRoundData(idx), idx), idx)
                 }
 
             }, errorHandler)
@@ -96,7 +98,8 @@ class ConconiTool(override var view: ConconiView? = null,
      * file system (mainly mobile applications)
      */
     override fun requestStoredConconiFiles(directory: String, concatToBase: Boolean): Single<List<String>?> {
-        return fileStorage.listFiles(directory, concatToBase, ".ctf")
+        return fileStorage?.listFiles(directory, concatToBase, ".ctf")
+                ?: Single.error(Throwable("FileStorage not present!"))
     }
 
     override fun onViewClosed() {
@@ -110,7 +113,7 @@ class ConconiTool(override var view: ConconiView? = null,
         disposable = Observable.interval(1, TimeUnit.SECONDS).subscribe {
 
             counter--
-            view?.onCountdownTick(counter)
+            toolView?.onCountdownTick(counter)
             if (counter == 0) {
                 connectAndStart()
                 disposable?.dispose()
@@ -131,11 +134,11 @@ class ConconiTool(override var view: ConconiView? = null,
                 .subscribe {
 
                     tick++
-                    view?.onTick(tick, times[roundIdx])
+                    toolView?.onTick(tick, times[roundIdx])
 
                     // Check if a new round starts in 5 seconds, and play a sound if it starts
                     if (tick + 5 == times[roundIdx]) {
-                        view?.onPlayCountdownSound()
+                        toolView?.onPlayCountdownSound()
                     }
                     // Store round data after a round has finished
                     if (tick == times[roundIdx]) {
@@ -154,7 +157,7 @@ class ConconiTool(override var view: ConconiView? = null,
 
         data.addRoundData(roundData)
         val crd = emg2ConconiRoundData(roundData, index)
-        view?.onRoundDataAvailable(crd, index)
+        toolView?.onRoundDataAvailable(crd, index)
 
         dataStartPointer = dataStopPointer
     }

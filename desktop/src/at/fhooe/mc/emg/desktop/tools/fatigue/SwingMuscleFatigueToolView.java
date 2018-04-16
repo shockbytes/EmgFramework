@@ -1,16 +1,16 @@
 package at.fhooe.mc.emg.desktop.tools.fatigue;
 
-import at.fhooe.mc.emg.core.tools.fatigue.MuscleFatigueView;
-import at.fhooe.mc.emg.core.tools.fatigue.MuscleFatigueViewCallback;
+import at.fhooe.mc.emg.core.tools.fatigue.MuscleFatigueToolView;
+import at.fhooe.mc.emg.core.tools.fatigue.MuscleFatigueToolViewCallback;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class SwingMuscleFatigueView implements MuscleFatigueView {
+public class SwingMuscleFatigueToolView implements MuscleFatigueToolView {
 
-    private MuscleFatigueViewCallback viewCallback;
+    private MuscleFatigueToolViewCallback viewCallback;
 
     private JPanel mainPanel;
 
@@ -26,7 +26,7 @@ public class SwingMuscleFatigueView implements MuscleFatigueView {
     }
 
     @Override
-    public void setup(MuscleFatigueViewCallback viewCallback, boolean showViewImmediate) {
+    public void setup(MuscleFatigueToolViewCallback viewCallback, boolean showViewImmediate) {
         this.viewCallback = viewCallback;
 
         if (showViewImmediate) {

@@ -6,7 +6,7 @@ import at.fhooe.mc.emg.core.tools.ToolView
  * Author:  Mescht
  * Date:    20.11.2017
  */
-interface PeakDetectionView : ToolView<PeakDetectionViewCallback> {
+interface PeakDetectionToolView : ToolView<PeakDetectionToolViewCallback> {
 
     /**
      * @param xValues x values of data from 0..n

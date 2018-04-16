@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.desktop.tools.peaks
 
 import at.fhooe.mc.emg.core.tools.peaks.Peak
-import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionView
-import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionViewCallback
+import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionToolView
+import at.fhooe.mc.emg.core.tools.peaks.PeakDetectionToolViewCallback
 import at.fhooe.mc.emg.core.tools.peaks.PeakDetector
 import at.fhooe.mc.emg.desktop.util.chart.PeakChartMarker
 import org.knowm.xchart.XChartPanel
@@ -16,16 +16,16 @@ import java.awt.event.WindowEvent
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-class SwingPeakDetectionView : PeakDetectionView {
+class SwingPeakDetectionToolView : PeakDetectionToolView {
 
-    private var viewCallback: PeakDetectionViewCallback? = null
+    private var toolViewCallback: PeakDetectionToolViewCallback? = null
 
     private lateinit var contentPanel: JPanel
 
     private lateinit var chartPeaks: XYChart
     private lateinit var chartPeaksWrapper: XChartPanel<XYChart>
 
-    // For peaks detail view
+    // For peaks detail toolView
     private lateinit var list: JList<String>
     private lateinit var labelPeaksFound: JLabel
 
@@ -98,7 +98,7 @@ class SwingPeakDetectionView : PeakDetectionView {
             if (decayRate < 0.0 || decayRate > 1.0) {
                 throw NumberFormatException("Decay Rate must be in range [0, 1]")
             }
-            viewCallback?.compute(width, threshold, decayRate, isRelative)
+            toolViewCallback?.compute(width, threshold, decayRate, isRelative)
         } catch (nfe: NumberFormatException) {
             showError(nfe.localizedMessage, nfe.javaClass.simpleName)
         }
@@ -116,8 +116,8 @@ class SwingPeakDetectionView : PeakDetectionView {
         chartPeaksWrapper.repaint()
     }
 
-    override fun setup(viewCallback: PeakDetectionViewCallback, showViewImmediate: Boolean) {
-        this.viewCallback = viewCallback
+    override fun setup(toolViewCallback: PeakDetectionToolViewCallback, showViewImmediate: Boolean) {
+        this.toolViewCallback = toolViewCallback
 
         if (showViewImmediate) {
             showView()
@@ -129,7 +129,7 @@ class SwingPeakDetectionView : PeakDetectionView {
         frame.addWindowListener(object : WindowAdapter() {
             override fun windowClosed(e: WindowEvent?) {
                 super.windowClosed(e)
-                viewCallback?.onViewClosed()
+                toolViewCallback?.onViewClosed()
             }
         })
         frame.isVisible = true

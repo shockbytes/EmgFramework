@@ -1,4 +1,6 @@
-package at.fhooe.mc.emg.core.util.config
+package at.fhooe.mc.emg.core.storage.config
+
+import at.fhooe.mc.emg.core.util.EmgConfig
 
 /**
  * Author:  Mescht
@@ -6,7 +8,7 @@ package at.fhooe.mc.emg.core.util.config
  */
 interface EmgConfigStorage {
 
-    fun load(): EmgConfig
+    val emgConfig: EmgConfig
 
     fun store(config: EmgConfig)
 

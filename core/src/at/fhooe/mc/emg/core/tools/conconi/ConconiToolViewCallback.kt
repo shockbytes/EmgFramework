@@ -8,7 +8,7 @@ import io.reactivex.functions.Consumer
  * Author:  Mescht
  * Date:    08.07.2017
  */
-interface ConconiViewCallback : ToolViewCallback {
+interface ConconiToolViewCallback : ToolViewCallback {
 
     fun onStartClicked()
 

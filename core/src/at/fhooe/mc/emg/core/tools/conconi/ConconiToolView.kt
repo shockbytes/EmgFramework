@@ -7,7 +7,7 @@ import at.fhooe.mc.emg.core.tools.ToolView
  * Date:    20.11.2017
  */
 
-interface ConconiView : ToolView<ConconiViewCallback> {
+interface ConconiToolView : ToolView<ConconiToolViewCallback> {
 
     fun onCountdownTick(seconds: Int)
 

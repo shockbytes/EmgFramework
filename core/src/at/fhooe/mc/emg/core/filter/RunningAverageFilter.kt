@@ -1,8 +1,10 @@
 package at.fhooe.mc.emg.core.filter
 
+import at.fhooe.mc.emg.core.EmgComponent
 import java.util.*
 
-class RunningAverageFilter(private val size: Int) : Filter() {
+@EmgComponent
+class RunningAverageFilter(private val size: Int = 30) : Filter() {
 
     private var sum: Double = 0.0
     private var rAvg: Double = 0.0

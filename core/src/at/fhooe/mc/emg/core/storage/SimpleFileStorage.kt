@@ -1,6 +1,5 @@
-package at.fhooe.mc.emg.desktop.storage
+package at.fhooe.mc.emg.core.storage
 
-import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.util.CoreUtils
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -14,7 +13,7 @@ import java.nio.file.Paths
  * baseDirectory is ignored, because Desktop searches everywhere and
  * has no single directory scope
  */
-class DesktopFileStorage : FileStorage {
+class SimpleFileStorage : FileStorage {
 
     override val baseDirectory = ""
 

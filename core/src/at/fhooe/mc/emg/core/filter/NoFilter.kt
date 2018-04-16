@@ -1,5 +1,8 @@
 package at.fhooe.mc.emg.core.filter
 
+import at.fhooe.mc.emg.core.EmgComponent
+
+@EmgComponent
 class NoFilter : Filter() {
 
     override val name = "Raw"

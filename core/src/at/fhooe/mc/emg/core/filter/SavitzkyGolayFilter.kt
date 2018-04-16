@@ -1,9 +1,11 @@
 package at.fhooe.mc.emg.core.filter
 
+import at.fhooe.mc.emg.core.EmgComponent
 import at.fhooe.mc.emg.core.util.filter.sg.CurveSmooth
 import java.util.*
 
-class SavitzkyGolayFilter(private val sgFilterWidth: Int) : Filter() {
+@EmgComponent
+class SavitzkyGolayFilter(private val sgFilterWidth: Int = 10) : Filter() {
 
     private var buffer: LinkedList<Double> = LinkedList()
 

@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.core.util.config
+package at.fhooe.mc.emg.core.util
 
 /**
  * Author:  Mescht

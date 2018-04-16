@@ -1,8 +1,8 @@
 package at.fhooe.mc.emg.desktop.tools.conconi;
 
 import at.fhooe.mc.emg.core.tools.conconi.ConconiRoundData;
-import at.fhooe.mc.emg.core.tools.conconi.ConconiView;
-import at.fhooe.mc.emg.core.tools.conconi.ConconiViewCallback;
+import at.fhooe.mc.emg.core.tools.conconi.ConconiToolView;
+import at.fhooe.mc.emg.core.tools.conconi.ConconiToolViewCallback;
 import at.fhooe.mc.emg.desktop.ui.UiUtils;
 import at.fhooe.mc.emg.desktop.util.DesktopUtils;
 import io.reactivex.functions.Consumer;
@@ -27,7 +27,7 @@ import java.util.List;
  * Author:  Martin Macheiner
  * Date:    08.07.2017
  */
-public class SwingConconiView implements ActionListener, ConconiView {
+public class SwingConconiToolView implements ConconiToolView {
 
     private JPanel panelMain;
     private JButton btnStart;
@@ -41,7 +41,7 @@ public class SwingConconiView implements ActionListener, ConconiView {
     private XYChart chartAverage;
     private XChartPanel<XYChart> chartAverageWrapper;
 
-    private ConconiViewCallback viewCallback;
+    private ConconiToolViewCallback viewCallback;
 
     private List<Double> xVals;
     private List<Double> yAvg;
@@ -54,11 +54,34 @@ public class SwingConconiView implements ActionListener, ConconiView {
         }
     };
 
-    public SwingConconiView() {
-        btnStart.addActionListener(this);
-        btnStop.addActionListener(this);
-        btnSave.addActionListener(this);
-        btnLoad.addActionListener(this);
+    private ActionListener actionListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            if (e.getSource() == btnStart) {
+                viewCallback.onStartClicked();
+                updateButtonStates(false);
+            } else if (e.getSource() == btnStop) {
+                viewCallback.onStopClicked();
+                labelTime.setText("Test finished!");
+                updateButtonStates(true);
+            } else if (e.getSource() == btnSave) {
+                String saveFileName = UiUtils.INSTANCE.showConconiSaveDialog();
+                viewCallback.onSaveClicked(saveFileName, errorHandler);
+            } else if (e.getSource() == btnLoad) {
+                String loadFileName = UiUtils.INSTANCE.showConconiLoadDialog();
+                viewCallback.onLoadClicked(loadFileName, errorHandler);
+            }
+        }
+    };
+
+
+    public SwingConconiToolView() {
+        btnStart.addActionListener(actionListener);
+        btnStop.addActionListener(actionListener);
+        btnSave.addActionListener(actionListener);
+        btnLoad.addActionListener(actionListener);
 
         updateButtonStates(true);
 
@@ -96,25 +119,6 @@ public class SwingConconiView implements ActionListener, ConconiView {
                         String.valueOf(data.getHeartRate()), String.valueOf(data.getPeaks())});
 
         updateCharts(data.getRms(), data.getSpeed(), data.getHeartRate());
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        if (e.getSource() == btnStart) {
-            viewCallback.onStartClicked();
-            updateButtonStates(false);
-        } else if (e.getSource() == btnStop) {
-            viewCallback.onStopClicked();
-            labelTime.setText("Test finished!");
-            updateButtonStates(true);
-        } else if (e.getSource() == btnSave) {
-            String saveFileName = UiUtils.INSTANCE.showConconiSaveDialog();
-            viewCallback.onSaveClicked(saveFileName, errorHandler);
-        } else if (e.getSource() == btnLoad) {
-            String loadFileName = UiUtils.INSTANCE.showConconiLoadDialog();
-            viewCallback.onLoadClicked(loadFileName, errorHandler);
-        }
     }
 
     private void updateCharts(double avg, double speed, int heartRate) {
@@ -162,7 +166,7 @@ public class SwingConconiView implements ActionListener, ConconiView {
     }
 
     @Override
-    public void setup(@NotNull ConconiViewCallback viewCallback, boolean showViewImmediate) {
+    public void setup(@NotNull ConconiToolViewCallback viewCallback, boolean showViewImmediate) {
         this.viewCallback = viewCallback;
 
         if (showViewImmediate) {

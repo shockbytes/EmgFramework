@@ -1,6 +1,7 @@
-package at.fhooe.mc.emg.core.util.config
+package at.fhooe.mc.emg.core.storage.config
 
 import at.fhooe.mc.emg.core.util.CoreUtils
+import at.fhooe.mc.emg.core.util.EmgConfig
 import com.google.gson.Gson
 import java.io.File
 import java.io.IOException
@@ -15,21 +16,18 @@ class JsonEmgConfigStorage(private val file: File) : EmgConfigStorage {
 
     private val gson: Gson = Gson()
 
-    override fun load(): EmgConfig {
+    override val emgConfig: EmgConfig by lazy {
 
+        var config = EmgConfig()  // Return default values if it cannot be loaded
         try {
-
-            if (!file.exists()) {
-                return EmgConfig() // File does not exist yet, return default instance
+            if (file.exists()) {
+                val jsonString = Files.readAllLines(Paths.get(file.absolutePath)).joinToString("\n")
+                config = gson.fromJson(jsonString, EmgConfig::class.java)
             }
-
-            val jsonString = Files.readAllLines(Paths.get(file.absolutePath)).joinToString("\n")
-            return gson.fromJson(jsonString, EmgConfig::class.java)
-
         } catch (e: Exception) {
             println(e.message)
         }
-        return EmgConfig() // Return default values if it cannot be loaded
+        config
     }
 
     override fun store(config: EmgConfig) {
@@ -40,6 +38,7 @@ class JsonEmgConfigStorage(private val file: File) : EmgConfigStorage {
                 file.createNewFile()
             }
 
+            println(gson.toJson(config))
             CoreUtils.writeFile(file, gson.toJson(config))
 
         } catch (e: IOException) {

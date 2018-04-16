@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.core.tools.fatigue
 
+import at.fhooe.mc.emg.core.EmgComponent
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.tools.Tool
 
@@ -9,13 +10,14 @@ import at.fhooe.mc.emg.core.tools.Tool
  */
 
 // TODO Implement Tool for Muscle Fatigue Detection
-class MuscleFatigueTool (override var view: MuscleFatigueView? = null) : Tool, MuscleFatigueViewCallback {
+@EmgComponent
+class MuscleFatigueTool (override var toolView: MuscleFatigueToolView? = null) : Tool, MuscleFatigueToolViewCallback {
 
 
     override val name = "Muscle Fatigue"
 
     override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
-        view?.setup(this, showViewImmediate)
+        toolView?.setup(this, showViewImmediate)
     }
 
     override fun onViewClosed() {

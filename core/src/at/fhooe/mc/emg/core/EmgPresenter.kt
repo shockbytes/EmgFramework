@@ -5,12 +5,12 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
-import at.fhooe.mc.emg.core.filter.*
+import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.DataStorage
+import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.tools.Tool
-import at.fhooe.mc.emg.core.util.config.EmgConfig
-import at.fhooe.mc.emg.core.util.config.EmgConfigStorage
+import at.fhooe.mc.emg.core.util.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
@@ -26,8 +26,11 @@ import java.util.concurrent.TimeUnit
  * Author:  Martin Macheiner
  * Date:    07.07.2017
  */
-abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private val tools: List<Tool>,
-                            open var emgView: EmgView?, private val configStorage: EmgConfigStorage) : EmgViewCallback {
+abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
+                            private val tools: List<Tool>,
+                            private val filters: List<Filter>,
+                            private val configStorage: EmgConfigStorage,
+                            open var emgView: EmgView?) : EmgViewCallback {
 
     abstract val visualView: VisualView<*>
 
@@ -48,22 +51,13 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>, private 
 
     private var client: EmgClientDriver
     private var config: EmgConfig
-    private val filters: List<Filter>
 
     init {
         // Load configuration
-        config = configStorage.load()
+        config = configStorage.emgConfig
 
         // Set default client
         client = clients[clients.size / 2]
-
-        // Initialize filter
-        filters = listOf(
-                NoFilter(),
-                BandStopFilter(),
-                LowPassFilter(),
-                RunningAverageFilter(config.runningAverageWindowSize),
-                SavitzkyGolayFilter(config.savitzkyGolayFilterWidth))
     }
 
     // ------------------------------------------ Private methods ------------------------------------------

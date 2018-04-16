@@ -10,7 +10,7 @@ interface Tool {
 
     val name: String
 
-    val view: ToolView<*>?
+    val toolView: ToolView<*>?
 
     fun start(presenter: EmgPresenter, showViewImmediate: Boolean)
 }

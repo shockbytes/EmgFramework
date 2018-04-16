@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.core.tools.peaks
 
+import at.fhooe.mc.emg.core.EmgComponent
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.tools.Tool
 
@@ -7,14 +8,16 @@ import at.fhooe.mc.emg.core.tools.Tool
  * Author:  Mescht
  * Date:    04.07.2017
  */
-class PeakDetectionTool(override var view: PeakDetectionView? = null) : Tool, PeakDetectionViewCallback {
+
+@EmgComponent
+class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : Tool, PeakDetectionToolViewCallback {
 
     override val name = "Peak detection"
 
     private var presenter: EmgPresenter? = null
 
     override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
-        view?.setup(this, showViewImmediate)
+        toolView?.setup(this, showViewImmediate)
         this.presenter = presenter
     }
 
@@ -31,16 +34,16 @@ class PeakDetectionTool(override var view: PeakDetectionView? = null) : Tool, Pe
                 val xValues = DoubleArray(yValues.size) { it.toDouble() + xStart }
 
                 // Add xStart to the xValues the stay in sync with the received data in the main window
-                view?.showPlotData(xValues, yValues, xValuesPeaks, yValuesPeaks)
+                toolView?.showPlotData(xValues, yValues, xValuesPeaks, yValuesPeaks)
 
                 // Additionally show the peaks in a ListView
-                view?.showPeaksDetail(xValuesPeaks.mapIndexed { idx, it -> Peak(it, yValuesPeaks[idx]) })
+                toolView?.showPeaksDetail(xValuesPeaks.mapIndexed { idx, it -> Peak(it, yValuesPeaks[idx]) })
 
             }, {
-                view?.showError(it.localizedMessage, it.javaClass.simpleName)
+                toolView?.showError(it.localizedMessage, it.javaClass.simpleName)
             })
         } else {
-            view?.showError("There is no data provided! yValues = null", "Empty data")
+            toolView?.showError("There is no data provided! yValues = null", "Empty data")
         }
     }
 

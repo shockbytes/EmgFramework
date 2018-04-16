@@ -3,7 +3,7 @@ package at.fhooe.mc.emg.core.view
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.storage.DataStorage
-import at.fhooe.mc.emg.core.util.config.EmgConfig
+import at.fhooe.mc.emg.core.util.EmgConfig
 import io.reactivex.functions.Action
 
 /**
