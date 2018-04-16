@@ -3,6 +3,8 @@ package at.fhooe.mc.emg.desktop.client.serial
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
+import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.EmgComponentType
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -14,6 +16,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.*
 import java.util.*
 
+@EmgComponent(type = EmgComponentType.DEVICE)
 class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv), SerialPortEventListener {
 
     private var ports: List<CommPortIdentifier>? = null

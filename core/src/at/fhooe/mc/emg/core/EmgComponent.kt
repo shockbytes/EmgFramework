@@ -6,4 +6,4 @@ package at.fhooe.mc.emg.core
  * private components. Not all components must be exposed if not desired.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
-annotation class EmgComponent
+annotation class EmgComponent(val type: EmgComponentType)

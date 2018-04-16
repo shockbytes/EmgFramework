@@ -36,9 +36,11 @@ interface EmgView {
 
     fun setupEmgClientDriverConfigViews(clients: List<EmgClientDriver>)
 
+    fun setupFrequencyAnalysisMethods(methods: List<FrequencyAnalysisMethod>)
+
     // -------------------------------------------------------
 
-    fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod)
+    fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod, data: DoubleArray, fs: Double)
 
     fun showConnectionError(throwable: Throwable)
 

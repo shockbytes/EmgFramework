@@ -3,6 +3,8 @@ package at.fhooe.mc.emg.core.client.simulation
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
+import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.EmgComponentType
 import at.fhooe.mc.emg.core.util.CoreUtils
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
@@ -20,6 +22,7 @@ import java.io.IOException
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
+@EmgComponent(type = EmgComponentType.DEVICE)
 class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                              private val simulationFolder: String) : EmgClientDriver(cv) {
 

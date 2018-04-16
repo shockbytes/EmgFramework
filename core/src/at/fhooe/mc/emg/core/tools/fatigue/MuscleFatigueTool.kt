@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.core.tools.fatigue
 
 import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.EmgComponentType
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.tools.Tool
 
@@ -10,7 +11,7 @@ import at.fhooe.mc.emg.core.tools.Tool
  */
 
 // TODO Implement Tool for Muscle Fatigue Detection
-@EmgComponent
+@EmgComponent(EmgComponentType.RELAY_SINK)
 class MuscleFatigueTool (override var toolView: MuscleFatigueToolView? = null) : Tool, MuscleFatigueToolViewCallback {
 
 

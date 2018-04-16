@@ -1,41 +1,26 @@
 package at.fhooe.mc.emg.core.analysis
 
+import io.reactivex.Single
+
 /**
  * Author:  Mescht
  * Date:    29.11.2017
  */
-class FrequencyAnalysisMethod(private val method: Method, private val input: DoubleArray,
-                              private val sampleFrequency: Double) {
 
-    enum class Method {
-        FFT, SPECTRUM
-    }
+interface FrequencyAnalysisMethod {
 
-    fun evaluate(view: FrequencyAnalysisView?) {
-        doCalculation(method, input, sampleFrequency, view)
-    }
+    val name: String
 
-    private fun doCalculation(method: FrequencyAnalysisMethod.Method, input: DoubleArray,
-                              fs: Double, view: FrequencyAnalysisView?) {
+    val hasDisplay: Boolean
 
-        AnalysisUtils.fft(input).subscribe({ fft ->
-            when (method) {
-                FrequencyAnalysisMethod.Method.FFT -> showFFTPlot(fft, view)
-                FrequencyAnalysisMethod.Method.SPECTRUM -> showPowerSpectrumPlot(fft, fs, view)
-            }
-        }, { throwable -> view?.showError(throwable) })
-    }
-
-    private fun showFFTPlot(fft: DoubleArray, view: FrequencyAnalysisView?) {
-        val xData = DoubleArray(fft.size) { i -> i.toDouble() }
-        view?.showEvaluation(Method.FFT, xData, fft)
-    }
-
-    private fun showPowerSpectrumPlot(fft: DoubleArray, fs: Double, view: FrequencyAnalysisView?) {
-        AnalysisUtils.powerSpectrum(fft, fs).subscribe({ data ->
-            view?.showEvaluation(Method.SPECTRUM, data.first, data.second)
-        }, { throwable -> view?.showError(throwable) })
-    }
-
+    /**
+     * TODO
+     * @param input
+     * @param fs
+     * @param view
+     *
+     * @return
+     */
+    fun calculate(input: DoubleArray, fs: Double, view: FrequencyAnalysisView?): Single<Double>
 
 }

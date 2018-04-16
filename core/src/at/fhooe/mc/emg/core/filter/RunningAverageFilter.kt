@@ -1,9 +1,10 @@
 package at.fhooe.mc.emg.core.filter
 
 import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.EmgComponentType
 import java.util.*
 
-@EmgComponent
+@EmgComponent(type = EmgComponentType.FILTER)
 class RunningAverageFilter(private val size: Int = 30) : Filter() {
 
     private var sum: Double = 0.0

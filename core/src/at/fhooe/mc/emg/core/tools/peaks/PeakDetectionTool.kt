@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.core.tools.peaks
 
 import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.EmgComponentType
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.tools.Tool
 
@@ -9,7 +10,7 @@ import at.fhooe.mc.emg.core.tools.Tool
  * Date:    04.07.2017
  */
 
-@EmgComponent
+@EmgComponent(type = EmgComponentType.RELAY_SINK)
 class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : Tool, PeakDetectionToolViewCallback {
 
     override val name = "Peak detection"

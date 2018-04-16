@@ -2,6 +2,7 @@ package at.fhooe.mc.emg.core.tools.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.EmgComponentType
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.FileStorage
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  */
-@EmgComponent
+@EmgComponent(type = EmgComponentType.TOOL)
 class ConconiTool(override var toolView: ConconiToolView? = null,
                   private var fileStorage: FileStorage? = null) : Tool, ConconiToolViewCallback {
 

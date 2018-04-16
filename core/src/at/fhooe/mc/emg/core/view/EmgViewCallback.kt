@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.storage.DataStorage
 import at.fhooe.mc.emg.core.util.EmgConfig
 import io.reactivex.functions.Action
+import java.io.File
 
 /**
  * Author:  Martin Macheiner
@@ -27,11 +28,16 @@ interface EmgViewCallback {
 
     fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean)
 
-    fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod.Method)
+    fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod)
 
     fun setVisualViewEnabled(visualEnabled: Boolean)
 
     fun isDataStorageEnabled(): Boolean
 
     fun isHeartRateSensingSupported(): Boolean
+
+    fun openAcquisitionCaseDesigner()
+
+    fun openAcquisitionCaseDesignerFile(file: File)
+
 }

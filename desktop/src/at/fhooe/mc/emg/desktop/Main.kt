@@ -16,7 +16,8 @@ object Main {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
             val setup = BasicReflectionsSetup()
-            DesktopEmgPresenter(setup.driver, setup.tools, setup.filter, setup.configStorage, DesktopMainWindow())
+            DesktopEmgPresenter(setup.driver, setup.tools, setup.filter, setup.frequencyAnalysisMethods,
+                    setup.components, setup.configStorage, DesktopMainWindow())
                     .start()
         }
     }

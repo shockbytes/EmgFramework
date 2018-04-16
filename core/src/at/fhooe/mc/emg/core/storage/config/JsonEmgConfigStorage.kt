@@ -37,14 +37,11 @@ class JsonEmgConfigStorage(private val file: File) : EmgConfigStorage {
             if (!file.exists()) {
                 file.createNewFile()
             }
-
-            println(gson.toJson(config))
             CoreUtils.writeFile(file, gson.toJson(config))
 
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
 
 

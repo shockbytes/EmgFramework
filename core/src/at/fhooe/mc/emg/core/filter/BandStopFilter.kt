@@ -1,9 +1,10 @@
 package at.fhooe.mc.emg.core.filter
 
 import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.EmgComponentType
 
 //Band pass butterworth filter order=1 alpha1=50 alpha2=50.05
-@EmgComponent
+@EmgComponent(type = EmgComponentType.FILTER)
 class BandStopFilter : Filter() {
 
     private var v: DoubleArray = DoubleArray(3)

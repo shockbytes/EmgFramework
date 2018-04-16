@@ -2,7 +2,9 @@ package at.fhooe.mc.emg.core.setup
 
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
+import at.fhooe.mc.emg.core.EmgBuildComponent
 import at.fhooe.mc.emg.core.EmgComponent
+import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.SimpleFileStorage
@@ -64,8 +66,19 @@ open class BasicReflectionsSetup : Setup {
                 .sortedBy { it.name }
     }
 
-    override val components: List<Class<*>> by lazy {
-        reflections.getTypesAnnotatedWith(EmgComponent::class.java).toList()
+    override val frequencyAnalysisMethods: List<FrequencyAnalysisMethod> by lazy {
+        reflections.getSubTypesOf(FrequencyAnalysisMethod::class.java)
+                .filter { !it.isInterface }
+                .map { it.newInstance() }
+    }
+
+    override val components: List<EmgBuildComponent> by lazy {
+        reflections.getTypesAnnotatedWith(EmgComponent::class.java)
+                .map {
+                    // This cast must always succeed, because the reflections API is queried only for those classes
+                    val component = it.annotations.find { it.annotationClass == EmgComponent::class } as EmgComponent
+                    EmgBuildComponent(it.simpleName, it.name, component.type)
+                }
     }
 
     override val fileStorage: FileStorage by lazy {

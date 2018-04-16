@@ -6,7 +6,7 @@ package at.fhooe.mc.emg.core.analysis
  */
 interface FrequencyAnalysisView {
 
-    fun showEvaluation(method: FrequencyAnalysisMethod.Method,
+    fun showEvaluation(method: String,
                        xData: DoubleArray, yData: DoubleArray)
 
     fun showError(error: Throwable)

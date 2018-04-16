@@ -1,6 +1,5 @@
 package at.fhooe.mc.emg.desktop.ui
 
-import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisView
 import org.knowm.xchart.CategoryChart
 import org.knowm.xchart.CategoryChartBuilder
@@ -54,29 +53,23 @@ class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
         chart.styler.xAxisDecimalPattern = "#0.00"
     }
 
-    override fun showEvaluation(method: FrequencyAnalysisMethod.Method, xData: DoubleArray, yData: DoubleArray) {
+    override fun showEvaluation(method: String, xData: DoubleArray, yData: DoubleArray) {
 
-        val name: String
-        val color: Color
-        when(method) {
+        title = method
 
-            FrequencyAnalysisMethod.Method.FFT -> {
-                name = "FFT"
-                color = Color.decode("#0091EA")
-            }
-            FrequencyAnalysisMethod.Method.SPECTRUM -> {
-                name = "Power spectrum"
-                color = Color.decode("#8BC34A")
-            }
+        val color: Color = when (method) {
+            "FFT" -> Color.decode("#0091EA")
+            "Power Spectrum" -> Color.decode("#8BC34A")
+            else -> Color.decode("#AADDEE")
         }
 
-        chart.addSeries(name, xData, yData).setMarkerColor(color)?.lineColor = color
+        chart.addSeries(method, xData, yData).setMarkerColor(color)?.lineColor = color
         contentPane.add(XChartPanel(chart))
         contentPane.revalidate()
     }
 
     override fun showError(error: Throwable) {
-        val msg =  "${error.javaClass.simpleName}: ${error.localizedMessage}"
+        val msg = "${error.javaClass.simpleName}: ${error.localizedMessage}"
         UiUtils.showErrorMessage(this, msg, "Frequency Analysis error")
 
         dispose()

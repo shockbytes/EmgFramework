@@ -22,6 +22,12 @@ object UiUtils {
                 ".ctf", true)
     }
 
+    fun showAcdOpenDialog(): String? {
+        return showDialog("Load Acquisition Case Designer file",
+                FileNameExtensionFilter("Acquisition Case Designer files", "acd"),
+                ".acd", false)
+    }
+
     fun showConconiLoadDialog(): String? {
         return showDialog("Load Conconi test data",
                 FileNameExtensionFilter("Conconi files", "ctf"),

@@ -20,6 +20,7 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 /**
@@ -29,6 +30,8 @@ import java.util.concurrent.TimeUnit
 abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                             private val tools: List<Tool>,
                             private val filters: List<Filter>,
+                            private val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>,
+                            private val buildComponents: List<EmgBuildComponent>,
                             private val configStorage: EmgConfigStorage,
                             open var emgView: EmgView?) : EmgViewCallback {
 
@@ -68,6 +71,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         emgView?.setupEmgClientDriverView(clients, client)
         emgView?.setupToolsView(tools, this)
         emgView?.setupEmgClientDriverConfigViews(clients)
+        emgView?.setupFrequencyAnalysisMethods(frequencyAnalysisMethods)
         emgView?.exposeRawClientDataObservable(rawCallbackSubject)
     }
 
@@ -206,9 +210,8 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         updateStatus(false)
     }
 
-    override fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod.Method) {
-        emgView?.showFrequencyAnalysisView(FrequencyAnalysisMethod(method, visualView.dataForFrequencyAnalysis,
-                client.samplingFrequency))
+    override fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod) {
+        emgView?.showFrequencyAnalysisView(method, visualView.dataForFrequencyAnalysis, client.samplingFrequency)
     }
 
     override fun setVisualViewEnabled(visualEnabled: Boolean) {
@@ -219,6 +222,14 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
     override fun isHeartRateSensingSupported(): Boolean {
         return clients.any { it.msgParser.protocolVersion == MessageParser.ProtocolVersion.V3 }
+    }
+
+    override fun openAcquisitionCaseDesigner() {
+        println("Open acquisition case designer presenter!")
+    }
+
+    override fun openAcquisitionCaseDesignerFile(file: File) {
+        println("Open file ${file.absolutePath}")
     }
 
     // ----------------------------------------------------------------------------------------------------

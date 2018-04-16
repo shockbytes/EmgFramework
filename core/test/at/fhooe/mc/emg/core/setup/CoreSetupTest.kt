@@ -16,7 +16,7 @@ class CoreSetupTest {
     @Test
     fun testFilter() {
         val filter = reflectionsProcessor.filter
-        assertEquals(5, filter.size)
+        assertEquals(13, filter.size)
     }
 
     @Test
