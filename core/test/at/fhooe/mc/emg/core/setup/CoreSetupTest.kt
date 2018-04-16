@@ -1,11 +1,9 @@
-package at.fhooe.mc.emg.core.processor
+package at.fhooe.mc.emg.core.setup
 
-import at.fhooe.mc.emg.core.setup.BasicReflectionsSetup
-import at.fhooe.mc.emg.core.setup.Setup
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class ProcessorTest {
+class CoreSetupTest {
 
     private var reflectionsProcessor: Setup = BasicReflectionsSetup()
 
@@ -24,7 +22,7 @@ class ProcessorTest {
     @Test
     fun testComponents() {
         val components = reflectionsProcessor.components
-        assertEquals(3, components.size)
+        assertEquals(8, components.size)
     }
 
 }
