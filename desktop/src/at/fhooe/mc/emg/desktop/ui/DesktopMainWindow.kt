@@ -316,9 +316,9 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         filter.forEach { f ->
             val item = JCheckBoxMenuItem(f.name)
             item.addItemListener { f.isEnabled = it.stateChange == ItemEvent.SELECTED }
+            item.isSelected = f.isEnabled
             menuFilter.add(item)
         }
-        menuFilter.getItem(2)?.isSelected = true
     }
 
     override fun setupEmgClientDriverView(clients: List<EmgClientDriver>, defaultClient: EmgClientDriver) {

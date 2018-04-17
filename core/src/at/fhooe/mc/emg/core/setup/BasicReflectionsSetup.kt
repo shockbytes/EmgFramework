@@ -44,7 +44,13 @@ open class BasicReflectionsSetup : Setup {
     }
 
     override val filter: List<Filter> by lazy {
-        reflections.getSubTypesOf(Filter::class.java).map { filterByClass(it) }
+        reflections.getSubTypesOf(Filter::class.java)
+                .map {
+                    val filter =  filterByClass(it)
+                    filter.isEnabled = filter.name == "Raw"
+                    filter
+                }
+                .sortedBy { it.name }
     }
 
     override val driver: List<EmgClientDriver> by lazy {
@@ -71,6 +77,7 @@ open class BasicReflectionsSetup : Setup {
         reflections.getSubTypesOf(FrequencyAnalysisMethod::class.java)
                 .filter { !it.isInterface }
                 .map { it.newInstance() }
+                .sortedBy { it.name }
     }
 
     override val components: List<EmgBaseComponent> by lazy {
@@ -112,6 +119,10 @@ open class BasicReflectionsSetup : Setup {
             fc.name.contains("RunningAverage") -> {
                 val constructor = fc.getConstructor(Int::class.java)
                 constructor.newInstance(configStorage.emgConfig.runningAverageWindowSize)
+            }
+            fc.name.contains("Threshold") -> {
+                val constructor = fc.getConstructor(Int::class.java)
+                constructor.newInstance(configStorage.emgConfig.thresholdFilterValue)
             }
             else -> fc.newInstance()
         }

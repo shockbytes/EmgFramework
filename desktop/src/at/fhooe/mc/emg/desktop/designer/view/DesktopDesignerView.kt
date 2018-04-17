@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder
  */
 class DesktopDesignerView: DesignerView {
 
-    private val bgColor =  Color.decode("#2196F3")
+    private val bgColor =  Color.decode("#0017a5")
 
     private lateinit var contentPanel: JPanel
     private lateinit var componentPanel: JPanel
@@ -76,7 +76,7 @@ class DesktopDesignerView: DesignerView {
     private fun initializeMiniMapPanel(): JPanel {
 
         val overviewRootPanel = JPanel()
-        overviewRootPanel.background = Color.decode("#2196F3")
+        overviewRootPanel.background = bgColor
         overviewRootPanel.border = CompoundBorder(null, TitledBorder(UIManager.getBorder("TitledBorder.border"),
                 "MiniMap", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE))
         overviewRootPanel.layout = BorderLayout()

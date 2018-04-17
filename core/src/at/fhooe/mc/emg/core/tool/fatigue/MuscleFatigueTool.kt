@@ -15,7 +15,7 @@ import at.fhooe.mc.emg.designer.EmgComponentType
 class MuscleFatigueTool (override var toolView: MuscleFatigueToolView? = null) : Tool, MuscleFatigueToolViewCallback {
 
 
-    override val name = "Muscle Fatigue"
+    override val name = "Muscle Fatigue Detection"
 
     override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
