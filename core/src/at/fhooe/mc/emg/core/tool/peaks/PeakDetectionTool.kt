@@ -14,7 +14,7 @@ import at.fhooe.mc.emg.designer.EmgComponentType
 @EmgComponent(type = EmgComponentType.RELAY_SINK)
 class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : Tool, PeakDetectionToolViewCallback {
 
-    override val name = "Peak detection"
+    override val name = "Peak Detection"
 
     private var presenter: EmgPresenter? = null
 

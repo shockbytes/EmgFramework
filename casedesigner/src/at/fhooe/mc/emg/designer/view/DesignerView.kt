@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.designer.view
 
+import at.fhooe.mc.emg.designer.DesignerViewCallback
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 
 /**
@@ -8,6 +9,6 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
  */
 interface DesignerView {
 
-    fun show(components: List<EmgBaseComponent>)
+    fun show(viewCallback: DesignerViewCallback, components: List<EmgBaseComponent>)
 
 }

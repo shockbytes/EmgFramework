@@ -29,6 +29,48 @@ class SwingPeakDetectionToolView : PeakDetectionToolView {
     private lateinit var list: JList<String>
     private lateinit var labelPeaksFound: JLabel
 
+    override fun showPlotData(xValues: DoubleArray, yValues: DoubleArray,
+                              xValuesPeaks: DoubleArray, yValuesPeaks: DoubleArray) {
+
+        if (xValues.isNotEmpty()) {
+            chartPeaks.updateXYSeries("Data", xValues, yValues, null)
+        }
+        if (xValuesPeaks.isNotEmpty()) {
+            chartPeaks.updateXYSeries("Peaks", xValuesPeaks, yValuesPeaks, null)
+        }
+        chartPeaksWrapper.repaint()
+    }
+
+    override fun setup(toolViewCallback: PeakDetectionToolViewCallback, showViewImmediate: Boolean) {
+        this.toolViewCallback = toolViewCallback
+
+        if (showViewImmediate) {
+            showView()
+        }
+    }
+
+    override fun showView() {
+        val frame = wrap()
+        frame.addWindowListener(object : WindowAdapter() {
+            override fun windowClosed(e: WindowEvent?) {
+                super.windowClosed(e)
+                toolViewCallback?.onViewClosed()
+            }
+        })
+        frame.isVisible = true
+    }
+
+    override fun showError(cause: String, title: String) {
+        JOptionPane.showMessageDialog(contentPanel, cause, title, JOptionPane.ERROR_MESSAGE)
+    }
+
+    override fun showPeaksDetail(peaks: List<Peak>) {
+        val data = peaks.map { it.toPrettyString() }.toTypedArray()
+        list.setListData(data)
+
+        labelPeaksFound.text = "${peaks.size} peaks detected"
+    }
+
     private fun wrap(): JFrame {
         val frame = JFrame()
         frame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
@@ -104,45 +146,4 @@ class SwingPeakDetectionToolView : PeakDetectionToolView {
         }
     }
 
-    override fun showPlotData(xValues: DoubleArray, yValues: DoubleArray,
-                              xValuesPeaks: DoubleArray, yValuesPeaks: DoubleArray) {
-
-        if (xValues.isNotEmpty()) {
-            chartPeaks.updateXYSeries("Data", xValues, yValues, null)
-        }
-        if (xValuesPeaks.isNotEmpty()) {
-            chartPeaks.updateXYSeries("Peaks", xValuesPeaks, yValuesPeaks, null)
-        }
-        chartPeaksWrapper.repaint()
-    }
-
-    override fun setup(toolViewCallback: PeakDetectionToolViewCallback, showViewImmediate: Boolean) {
-        this.toolViewCallback = toolViewCallback
-
-        if (showViewImmediate) {
-            showView()
-        }
-    }
-
-    override fun showView() {
-        val frame = wrap()
-        frame.addWindowListener(object : WindowAdapter() {
-            override fun windowClosed(e: WindowEvent?) {
-                super.windowClosed(e)
-                toolViewCallback?.onViewClosed()
-            }
-        })
-        frame.isVisible = true
-    }
-
-    override fun showError(cause: String, title: String) {
-        JOptionPane.showMessageDialog(contentPanel, cause, title, JOptionPane.ERROR_MESSAGE)
-    }
-
-    override fun showPeaksDetail(peaks: List<Peak>) {
-        val data = peaks.map { it.toPrettyString() }.toTypedArray()
-        list.setListData(data)
-
-        labelPeaksFound.text = "${peaks.size} peaks detected"
-    }
 }

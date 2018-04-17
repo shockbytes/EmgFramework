@@ -8,7 +8,7 @@ import java.io.File
  * Author:  Martin Macheiner
  * Date:    16.04.2018
  */
-interface DesignerPresenter {
+interface DesignerPresenter : DesignerViewCallback {
 
     val view: DesignerView
 
@@ -16,5 +16,4 @@ interface DesignerPresenter {
 
     fun start(file: File? = null)
 
-    fun stop()
 }

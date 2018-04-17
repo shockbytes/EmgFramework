@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit
 class ConconiTool(override var toolView: ConconiToolView? = null,
                   private var fileStorage: FileStorage? = null) : Tool, ConconiToolViewCallback {
 
+    override val name = "Conconi Test"
+
     private lateinit var presenter: EmgPresenter
     private var data: ConconiData = ConconiData()
 
@@ -35,8 +37,6 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     private var dataStartPointer: Int = 0
     private var dataStopPointer: Int = 0
-
-    override val name = "Conconi Test"
 
     override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
         this.presenter = presenter
