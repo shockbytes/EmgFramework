@@ -3,9 +3,9 @@ package at.fhooe.mc.emg.core.client.simulation
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.core.EmgComponent
-import at.fhooe.mc.emg.core.EmgComponentType
 import at.fhooe.mc.emg.core.util.CoreUtils
+import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -46,7 +46,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     override val category: ClientCategory = ClientCategory.SIMULATION
 
     override val name: String
-        get() = if (simulationSource == null) shortName else "Simulator /w " + simulationSource?.name
+        get() = if (simulationSource == null) shortName else "Simulator /w ${simulationSource?.name}"
 
     override val shortName = "Simulator"
 

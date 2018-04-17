@@ -9,18 +9,18 @@ import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.DataStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
-import at.fhooe.mc.emg.core.tools.Tool
+import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
+import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.messaging.MessageParser
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 /**
@@ -31,7 +31,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                             private val tools: List<Tool>,
                             private val filters: List<Filter>,
                             private val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>,
-                            private val buildComponents: List<EmgBuildComponent>,
+                            protected val designerComponents: List<EmgBaseComponent>,
                             private val configStorage: EmgConfigStorage,
                             open var emgView: EmgView?) : EmgViewCallback {
 
@@ -60,7 +60,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         config = configStorage.emgConfig
 
         // Set default client
-        client = clients[clients.size / 2]
+        client = clients[clients.size - 1]
     }
 
     // ------------------------------------------ Private methods ------------------------------------------
@@ -222,14 +222,6 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
     override fun isHeartRateSensingSupported(): Boolean {
         return clients.any { it.msgParser.protocolVersion == MessageParser.ProtocolVersion.V3 }
-    }
-
-    override fun openAcquisitionCaseDesigner() {
-        println("Open acquisition case designer presenter!")
-    }
-
-    override fun openAcquisitionCaseDesignerFile(file: File) {
-        println("Open file ${file.absolutePath}")
     }
 
     // ----------------------------------------------------------------------------------------------------

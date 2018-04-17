@@ -1,2 +1,3 @@
 rootProject.name = 'desktop'
 include ':core'
+include ':casedesigner'

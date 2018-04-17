@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.core.analysis
 
-import at.fhooe.mc.emg.core.EmgComponent
-import at.fhooe.mc.emg.core.EmgComponentType
+import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentType
 import io.reactivex.Single
 
 @EmgComponent(type = EmgComponentType.SINK)

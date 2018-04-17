@@ -4,7 +4,7 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
-import at.fhooe.mc.emg.core.tools.Tool
+import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
 import io.reactivex.Observable
 

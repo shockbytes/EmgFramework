@@ -3,8 +3,8 @@ package at.fhooe.mc.emg.core.client.network
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.core.EmgComponent
-import at.fhooe.mc.emg.core.EmgComponentType
+import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -28,7 +28,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
     override val category: ClientCategory = ClientCategory.NETWORK
 
     override val name: String
-        get() = "Network device @ " + ip
+        get() = "Network device @ $ip"
 
     override val shortName: String = "Network"
 

@@ -195,7 +195,7 @@ abstract class EmgClient {
     }
 
     /**
-     * Setup all device and platform specific components.
+     * Setup all device and platform specific component.
      * Connection, sensor, and heart rate provider are already set up at this moment.
      */
     abstract fun setup()

@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.core.filter
 
-import at.fhooe.mc.emg.core.EmgComponent
-import at.fhooe.mc.emg.core.EmgComponentType
+import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentType
 import java.util.*
 
 @EmgComponent(type = EmgComponentType.FILTER)

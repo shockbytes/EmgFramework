@@ -1,7 +1,8 @@
 package at.fhooe.mc.emg.core.filter
 
-import at.fhooe.mc.emg.core.EmgComponent
-import at.fhooe.mc.emg.core.EmgComponentType
+import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentType
+
 
 @EmgComponent(type = EmgComponentType.FILTER)
 class NoFilter : Filter() {

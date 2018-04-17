@@ -24,7 +24,7 @@ class EmgData(private val windowWidth: Int = DEFAULT_WINDOW_WITH,
         get() = channels.size
 
     /**
-     * Creates a new EmgData instance for the desired section. This method is mainly used for external tools, which
+     * Creates a new EmgData instance for the desired section. This method is mainly used for external tool, which
      * are only interested in some parts of the captured data.
      *
      * @param start Start point of the desired section in the stored data stream

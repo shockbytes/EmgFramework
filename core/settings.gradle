@@ -1,3 +1,4 @@
 rootProject.name = 'core'
 include ':clientdriver'
+include ':casedesigner'
 include ':messaging'

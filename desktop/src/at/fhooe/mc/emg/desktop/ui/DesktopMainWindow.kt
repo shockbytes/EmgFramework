@@ -5,7 +5,7 @@ import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
-import at.fhooe.mc.emg.core.tools.Tool
+import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
@@ -188,7 +188,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuBar.add(mnAcqCaseDesigner)
 
         menuItemAcqDesigner = JMenuItem("Open Acquisition Designer")
-        menuItemAcqDesigner.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK)
+        menuItemAcqDesigner.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK + InputEvent.SHIFT_MASK)
         menuItemAcqDesigner.addActionListener(this)
         mnAcqCaseDesigner.add(menuItemAcqDesigner)
 

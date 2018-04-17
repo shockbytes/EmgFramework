@@ -2,16 +2,17 @@ package at.fhooe.mc.emg.core.setup
 
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.core.EmgBuildComponent
-import at.fhooe.mc.emg.core.EmgComponent
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.SimpleFileStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.storage.config.JsonEmgConfigStorage
-import at.fhooe.mc.emg.core.tools.Tool
-import at.fhooe.mc.emg.core.tools.ToolView
+import at.fhooe.mc.emg.core.tool.Tool
+import at.fhooe.mc.emg.core.tool.ToolView
+import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.component.EmgBaseComponent
+import at.fhooe.mc.emg.designer.component.EmgComponentFactory
 import org.reflections.Reflections
 import java.io.File
 
@@ -72,13 +73,14 @@ open class BasicReflectionsSetup : Setup {
                 .map { it.newInstance() }
     }
 
-    override val components: List<EmgBuildComponent> by lazy {
+    override val components: List<EmgBaseComponent> by lazy {
         reflections.getTypesAnnotatedWith(EmgComponent::class.java)
                 .map {
                     // This cast must always succeed, because the reflections API is queried only for those classes
                     val component = it.annotations.find { it.annotationClass == EmgComponent::class } as EmgComponent
-                    EmgBuildComponent(it.simpleName, it.name, component.type)
+                    EmgComponentFactory.byType(it.simpleName, it.name, component.type)
                 }
+                .sortedBy { it.name }
     }
 
     override val fileStorage: FileStorage by lazy {

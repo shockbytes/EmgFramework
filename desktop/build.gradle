@@ -32,8 +32,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$rootProject.kotlin_version"
 
     implementation project(':clientdriver')
-    implementation project(':core')
+    implementation project(':casedesigner')
     implementation project(':messaging')
+    implementation project(':core')
 
     // If serial communication is not working, then revert to version 2.1.7, because it works at least with this version
     //implementation group: 'org.rxtx', name: 'rxtx', version: '2.1.7'
