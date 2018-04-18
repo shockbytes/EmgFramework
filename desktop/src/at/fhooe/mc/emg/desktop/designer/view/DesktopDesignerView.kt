@@ -4,6 +4,7 @@ import at.fhooe.mc.emg.designer.DesignerViewCallback
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.view.DesignerView
 import at.fhooe.mc.emg.desktop.designer.DesktopDesignerHelper
+import at.fhooe.mc.emg.desktop.designer.util.DragDropTransferHandler
 import at.fhooe.mc.emg.desktop.ui.UiUtils
 import java.awt.*
 import java.awt.event.MouseAdapter
@@ -20,8 +21,17 @@ import javax.swing.border.TitledBorder
 /**
  * Author:  Martin Macheiner
  * Date:    16.04.2018
+ *
+ * TODO Line Connect functionality
+ *
  */
 class DesktopDesignerView : DesignerView {
+
+    override var components: List<EmgBaseComponent> = listOf()
+        set(value) {
+            miniMap.miniMapComponents = value
+            componentInteractionView.interactionComponents = value
+        }
 
     private val bgColor = Color.decode("#0017a5")
 
@@ -45,7 +55,24 @@ class DesktopDesignerView : DesignerView {
         })
         frame.isVisible = true
 
-        setComponents(components)
+        setAvailableComponents(components)
+    }
+
+    override fun askForStorageBeforeQuit(): File? {
+
+        val answer = JOptionPane.showConfirmDialog(contentPanel, "Save acquisition case?", "Save",
+                JOptionPane.YES_NO_OPTION)
+
+        return if (answer == JOptionPane.YES_OPTION) {
+            val fileName = UiUtils.showAcdSaveDialog() ?: return null
+            File(fileName)
+        } else {
+            null
+        }
+    }
+
+    override fun showStatusMessage(msg: String) {
+        labelMsg.text = "Messages: $msg"
     }
 
     private fun wrap(): JFrame {
@@ -59,11 +86,9 @@ class DesktopDesignerView : DesignerView {
         contentPanel = JPanel(BorderLayout())
         contentPanel.background = bgColor
         contentPanel.add(sideBarPanel(), BorderLayout.EAST)
-        componentInteractionView = DesktopComponentInteractionView()
-        componentInteractionView.background = bgColor
-        contentPanel.add(componentInteractionView, BorderLayout.CENTER)
+        contentPanel.add(componentInteractionView(), BorderLayout.CENTER)
 
-        labelMsg = JLabel("Messages:")
+        labelMsg = JLabel("Messages: Working")
         labelMsg.foreground = Color.WHITE
         labelMsg.border = EmptyBorder(4, 8, 4, 4)
         contentPanel.add(labelMsg, BorderLayout.SOUTH)
@@ -109,7 +134,7 @@ class DesktopDesignerView : DesignerView {
         return menuBar
     }
 
-    private fun sideBarPanel(): Component {
+    private fun sideBarPanel(): JComponent {
 
         val sideBar = Box.createVerticalBox()
         sideBar.background = bgColor
@@ -143,7 +168,14 @@ class DesktopDesignerView : DesignerView {
         return overviewRootPanel
     }
 
-    private fun setComponents(components: List<EmgBaseComponent>) {
+    private fun componentInteractionView(): JComponent {
+        componentInteractionView = DesktopComponentInteractionView()
+        componentInteractionView.background = bgColor
+        componentInteractionView.setup(viewCallback)
+        return componentInteractionView
+    }
+
+    private fun setAvailableComponents(components: List<EmgBaseComponent>) {
         val constraints = componentConstraints()
         components.forEach { component ->
             componentPanel.add(labelFromComponent(component), constraints.clone())
@@ -163,16 +195,21 @@ class DesktopDesignerView : DesignerView {
         val label = JLabel(component.name, DesktopDesignerHelper.componentIcon(component), SwingConstants.LEFT)
         label.border = EmptyBorder(8, 4, 8, 4)
         label.foreground = Color.WHITE
+        label.transferHandler = DragDropTransferHandler(component)
 
         label.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                if (e?.clickCount == 2 && e.button == MouseEvent.BUTTON1) {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+
+                if (e?.button == MouseEvent.BUTTON3) {
+                    // Add by right click
                     viewCallback?.addComponentByDoubleClick(component)
+                } else {
+                    // Add by drag
+                    label.transferHandler.exportAsDrag(label, e, TransferHandler.MOVE)
                 }
             }
         })
-        // TODO Add drag and drop functionality
-
         return label
     }
 

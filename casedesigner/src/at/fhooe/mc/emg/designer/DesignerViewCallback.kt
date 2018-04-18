@@ -9,12 +9,20 @@ interface DesignerViewCallback {
 
     fun open(file: File)
 
-    fun save(file: File): Boolean
+    fun save(file: File)
 
     fun reset()
 
     fun run()
 
+    fun addComponent(component: EmgBaseComponent, x: Int, y: Int)
+
     fun addComponentByDoubleClick(component: EmgBaseComponent)
+
+    fun removeComponent(component: EmgBaseComponent)
+
+    fun moveComponent(component: EmgBaseComponent, xNew: Int, yNew: Int)
+
+    fun connectComponents(component1: EmgBaseComponent, component2: EmgBaseComponent)
 
 }

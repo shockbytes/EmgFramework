@@ -1,50 +1,24 @@
 package at.fhooe.mc.emg.desktop.designer
 
+import at.fhooe.mc.emg.core.storage.FileStorage
+import at.fhooe.mc.emg.core.storage.SimpleFileStorage
 import at.fhooe.mc.emg.designer.DesignerPresenter
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.view.DesignerView
+import io.reactivex.Completable
+import io.reactivex.Single
 import java.io.File
 
-/**
- * Author:  Martin Macheiner
- * Date:    16.04.2018
- */
-class DesktopDesignerPresenter(override val view: DesignerView,
-                               override val components: List<EmgBaseComponent>) : DesignerPresenter {
+class DesktopDesignerPresenter(view: DesignerView, designerComponents: List<EmgBaseComponent>) : DesignerPresenter(view, designerComponents) {
 
-    override fun start(file: File?) {
-        view.show(this, components)
+    private val fileStorage: FileStorage = SimpleFileStorage()
+
+    override fun saveToFile(file: File, content: String): Completable {
+        return fileStorage.storeFile(file.absolutePath, content)
     }
 
-    override fun stop() {
-        println("Stop")
-        // TODO
-    }
-
-    override fun open(file: File) {
-        println("Open ${file.absolutePath}")
-        // TODO
-    }
-
-    override fun save(file: File): Boolean {
-        println("Save ${file.absolutePath}")
-        // TODO
-        return false
-    }
-
-    override fun reset() {
-        println("Reset")
-        // TODO
-    }
-
-    override fun run() {
-        println("Run")
-        // TODO
-    }
-
-    override fun addComponentByDoubleClick(component: EmgBaseComponent) {
-        println("Add component: ${component.name}")
-        // TODO
+    override fun openFile(file: File): Single<String?> {
+       return fileStorage.loadFromFileAsString(file.absolutePath)
     }
 
 }

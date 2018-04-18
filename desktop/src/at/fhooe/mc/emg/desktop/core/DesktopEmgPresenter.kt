@@ -19,7 +19,8 @@ import javax.swing.JComponent
  * Author:  Martin Macheiner
  * Date:    22.11.2017
  *
- * TODO Describe
+ * The DesktopEmgPresenter is the main entry point for the Desktop solution. It provides a Swing-based
+ * visual view representation and a desktop-ready implementation of the Acquisition Case Designer.
  *
  */
 class DesktopEmgPresenter(c: List<EmgClientDriver>,

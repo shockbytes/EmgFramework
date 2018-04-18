@@ -31,7 +31,7 @@ class DesktopMiniMap(defaultScale: Int) : JComponent(), MiniMap {
         g?.color = Color.WHITE
         g?.fillRect(0, 0, width, height)
 
-        // Draw dark components
+        // Draw compact designerComponents
         g?.color = drawColor
 		miniMapComponents.forEach { c ->
             g?.color = compactComponentColor(c)

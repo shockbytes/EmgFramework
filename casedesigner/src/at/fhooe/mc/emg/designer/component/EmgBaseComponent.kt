@@ -1,26 +1,26 @@
 package at.fhooe.mc.emg.designer.component
 
-import at.fhooe.mc.emg.designer.draw.BoxDrawCommand
-import at.fhooe.mc.emg.designer.draw.DrawCommand
-import at.fhooe.mc.emg.designer.draw.LineDrawCommand
-import at.fhooe.mc.emg.designer.draw.StringDrawCommand
+import at.fhooe.mc.emg.designer.draw.*
 import at.fhooe.mc.emg.designer.draw.model.Box
 import at.fhooe.mc.emg.designer.draw.model.Origin
+
+
 
 /**
  * Author:  Martin Macheiner
  * Date:    16.04.2018
  */
-abstract class EmgBaseComponent(val name: String, val qualifiedName: String) {
+abstract class EmgBaseComponent(val name: String = "", val qualifiedName: String = "", origin: Origin = Origin(0, 0)) {
 
-    var width = DEFAULT_WIDTH
-    var box: Box = Box(Origin(0, 0), width, width)
+    var box: Box = Box(origin, DEFAULT_WIDTH, DEFAULT_HEIGHT)
 
     var origin: Origin
         get() = box.origin
         set(value) {
             box.origin = value
         }
+
+    val type: String = javaClass.simpleName
 
     fun draw(): List<DrawCommand> {
         return listOf(
@@ -29,15 +29,23 @@ abstract class EmgBaseComponent(val name: String, val qualifiedName: String) {
                         origin.y,
                         box.width,
                         box.height),
-                StringDrawCommand(
-                        origin.x + (box.width / 2),
-                        origin.y + 10,
+                CenteredStringDrawCommand(
+                        origin.x,
+                        origin.y + 12,
+                        box.width,
                         name),
+                CenteredComponentImageDrawCommand(
+                        origin.x,
+                        origin.y + NAME_COMPARTMENT_HEIGHT,
+                        box.width,
+                        box.height,
+                        javaClass.simpleName
+                ),
                 LineDrawCommand(
                         origin.x,
-                        origin.y + 15,
+                        origin.y + NAME_COMPARTMENT_HEIGHT,
                         origin.x + box.width,
-                        origin.y + 15))
+                        origin.y + NAME_COMPARTMENT_HEIGHT))
     }
 
     fun drawCompact(scale: Int): List<DrawCommand> {
@@ -49,8 +57,27 @@ abstract class EmgBaseComponent(val name: String, val qualifiedName: String) {
                         box.height / scale))
     }
 
+    abstract fun copyWithOrigin(x: Int, y: Int): EmgBaseComponent
+
+    override fun equals(other: Any?): Boolean {
+        return if (other is EmgBaseComponent) {
+            other.name == name && other.origin == origin
+        } else {
+            false
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + qualifiedName.hashCode()
+        result = 31 * result + box.hashCode()
+        return result
+    }
+
     companion object {
-        const val DEFAULT_WIDTH = 70
+        const val DEFAULT_HEIGHT = 90
+        const val DEFAULT_WIDTH = DEFAULT_HEIGHT
+        const val NAME_COMPARTMENT_HEIGHT = 15
     }
 
 }

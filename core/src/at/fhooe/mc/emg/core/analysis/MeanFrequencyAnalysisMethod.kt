@@ -12,7 +12,8 @@ class MeanFrequencyAnalysisMethod: FrequencyAnalysisMethod {
     override val hasDisplay = false
 
     override fun calculate(input: DoubleArray, fs: Double, view: FrequencyAnalysisView?): Single<Double> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // TODO
+        return Single.just(-1.0)
     }
 
 }
