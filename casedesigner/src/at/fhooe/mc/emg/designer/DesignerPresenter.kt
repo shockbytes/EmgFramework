@@ -1,9 +1,11 @@
 package at.fhooe.mc.emg.designer
 
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
+import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.draw.model.Origin
 import at.fhooe.mc.emg.designer.util.GsonComponentDeserializer
 import at.fhooe.mc.emg.designer.util.GsonComponentSerializer
+import at.fhooe.mc.emg.designer.util.GsonSingleComponentSerializer
 import at.fhooe.mc.emg.designer.view.DesignerView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -35,20 +37,22 @@ abstract class DesignerPresenter(private val view: DesignerView,
     override fun open(file: File) {
         openFile(file)
                 .map { json ->
-                    gson.fromJson(json,
-                            object : TypeToken<ArrayList<EmgBaseComponent>>() {}.type) as List<EmgBaseComponent>
+                    renewConnectors(gson.fromJson(json,
+                            object : TypeToken<ArrayList<EmgBaseComponent>>() {}.type) as List<EmgBaseComponent>)
                 }
                 .subscribe({ components ->
                     interactionComponents.clear()
                     interactionComponents.addAll(components)
                     updateView()
+                    view.showStatusMessage("${file.absolutePath} loaded")
                 }, { throwable ->
                     view.showStatusMessage("Cannot open file -> ${throwable.message}")
                 })
     }
 
     override fun save(file: File) {
-        val content = gson.toJson(interactionComponents)
+        val content = gson.toJson(interactionComponents,
+                object : TypeToken<ArrayList<EmgBaseComponent>>() {}.type)
         saveToFile(file, content).subscribe({
             view.showStatusMessage("File successfully stored in ${file.absolutePath}")
             hasModelChanged = false
@@ -70,6 +74,16 @@ abstract class DesignerPresenter(private val view: DesignerView,
     override fun reset() {
         interactionComponents.clear()
         updateView()
+    }
+
+    override fun validate() {
+
+        try {
+            ComponentLogic.build(interactionComponents)
+            view.showStatusMessage("Validation successful!")
+        } catch (ve: ComponentLogic.ValidationException) {
+            view.showStatusMessage("Validation error -> ${ve.message}")
+        }
     }
 
     override fun run() {
@@ -97,18 +111,34 @@ abstract class DesignerPresenter(private val view: DesignerView,
     override fun moveComponent(component: EmgBaseComponent, xNew: Int, yNew: Int) {
         interactionComponents
                 .firstOrNull {
-                    (it.name == component.name) && (it.origin == component.origin) }
+                    (it.name == component.name) && (it.origin == component.origin)
+                }
                 ?.let {
-                    val idx = interactionComponents.indexOf(it)
                     it.origin = Origin(xNew, yNew)
-                    interactionComponents[idx] = it
-
+                    interactionComponents[interactionComponents.indexOf(it)] = it
                     updateView()
                 }
     }
 
     override fun connectComponents(component1: EmgBaseComponent, component2: EmgBaseComponent) {
-        // TODO Connect components
+
+        when (ComponentLogic.connect(component1, component2,
+                interactionComponents.mapNotNull { it as? ConnectorComponent })) {
+
+            ComponentLogic.ConnectionResult.NO_INPUT ->
+                view.showStatusMessage("Component ${component2.name} has no input port!")
+            ComponentLogic.ConnectionResult.NO_OUTPUT ->
+                view.showStatusMessage("Component ${component1.name} has no output port!")
+            ComponentLogic.ConnectionResult.SAME_ELEMENT ->
+                view.showStatusMessage("Cannot connect same component -> ${component1.name}")
+            ComponentLogic.ConnectionResult.INPUT_ALREADY_CONNECTED ->
+                view.showStatusMessage("Component ${component2.name} is already connected!")
+            ComponentLogic.ConnectionResult.GRANT -> { // Connect the components with a connector component
+                interactionComponents.add(ConnectorComponent(component1, component2))
+                updateView()
+            }
+        }
+
     }
 
     fun start(file: File? = null) {
@@ -129,7 +159,24 @@ abstract class DesignerPresenter(private val view: DesignerView,
         return GsonBuilder()
                 .registerTypeAdapter(EmgBaseComponent::class.java, GsonComponentSerializer())
                 .registerTypeAdapter(EmgBaseComponent::class.java, GsonComponentDeserializer())
+                .registerTypeAdapter(EmgBaseComponent::class.java, GsonSingleComponentSerializer())
                 .create()
+    }
+
+    private fun renewConnectors(list: List<EmgBaseComponent>): List<EmgBaseComponent> {
+
+        val renewed = list.filter { it !is ConnectorComponent }.toMutableList()
+        return list.mapNotNull { it as? ConnectorComponent }
+                .mapNotNullTo((renewed)) { c ->
+
+                    val start = renewed.find { it == c.start }
+                    val end = renewed.find { it == c.end }
+                    if (start != null && end != null) {
+                        ConnectorComponent(start, end)
+                    } else {
+                        null
+                    }
+                }
     }
 
 }

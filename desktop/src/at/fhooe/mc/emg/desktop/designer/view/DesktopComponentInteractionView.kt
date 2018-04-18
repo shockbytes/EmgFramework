@@ -27,6 +27,10 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
     private var viewCallback: DesignerViewCallback? = null
     private var dragComponent: EmgBaseComponent? = null
 
+    // Connection values
+    private var connectionComponent: EmgBaseComponent? = null
+
+
     override fun setup(viewCallback: DesignerViewCallback?) {
         this.viewCallback = viewCallback
 
@@ -40,8 +44,28 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
 
+                // Move component
                 if (e?.button == MouseEvent.BUTTON1) {
                     dragComponent = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
+
+                    // New action, erase connection action
+                    connectionComponent = null
+                } else if (e?.button == MouseEvent.BUTTON3){
+
+                    // Connect components
+                    if (connectionComponent == null) {
+                        connectionComponent = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
+                    } else {
+                        val target = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
+
+                        if (target != null && connectionComponent != null) {
+                            viewCallback?.connectComponents(connectionComponent!!, target)
+                        }
+                        connectionComponent = null
+                    }
+
+                    // New action, erase drag action
+                    dragComponent = null
                 }
             }
 

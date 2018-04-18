@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.designer.util
 
 import at.fhooe.mc.emg.designer.component.*
+import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
@@ -8,9 +9,9 @@ import com.google.gson.JsonSerializer
 import java.lang.reflect.Type
 import java.util.*
 
-class GsonComponentSerializer : JsonSerializer<List<EmgBaseComponent>> {
+class GsonComponentSerializer : JsonSerializer<ArrayList<EmgBaseComponent>> {
 
-    override fun serialize(src: List<EmgBaseComponent>?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement? {
+    override fun serialize(src: ArrayList<EmgBaseComponent>?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement? {
 
         val list = src ?: return null
 
@@ -35,6 +36,7 @@ class GsonComponentSerializer : JsonSerializer<List<EmgBaseComponent>> {
             mapping.put("EmgSinkComponent", EmgSinkComponent::class.java)
             mapping.put("EmgSourceComponent", EmgSourceComponent::class.java)
             mapping.put("EmgToolComponent", EmgToolComponent::class.java)
+            mapping.put("ConnectorComponent", ConnectorComponent::class.java)
         }
     }
 }

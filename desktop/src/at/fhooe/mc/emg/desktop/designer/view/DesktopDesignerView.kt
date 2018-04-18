@@ -22,8 +22,6 @@ import javax.swing.border.TitledBorder
  * Author:  Martin Macheiner
  * Date:    16.04.2018
  *
- * TODO Line Connect functionality
- *
  */
 class DesktopDesignerView : DesignerView {
 
@@ -123,6 +121,11 @@ class DesktopDesignerView : DesignerView {
         mnFile.add(mnItemReset)
 
         val mnBuild = JMenu("Build")
+        val mnItemVal = JMenuItem("Validate")
+        mnItemVal.addActionListener {
+            viewCallback?.validate()
+        }
+        mnBuild.add(mnItemVal)
         val mnItemRun = JMenuItem("Run")
         mnItemRun.addActionListener {
             viewCallback?.run()

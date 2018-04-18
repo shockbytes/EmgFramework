@@ -13,6 +13,8 @@ interface DesignerViewCallback {
 
     fun reset()
 
+    fun validate()
+
     fun run()
 
     fun addComponent(component: EmgBaseComponent, x: Int, y: Int)

@@ -47,6 +47,7 @@ object DesktopDesignerHelper {
             is StringDrawCommand -> drawStringCommand(command, g)
             is CenteredStringDrawCommand -> drawCenteredString(command, g)
             is CenteredComponentImageDrawCommand -> drawCenteredComponentImage(command, g)
+            is FilledBoxDrawCommand -> drawFilledBoxCommand(command, g)
         }
     }
 
@@ -56,6 +57,10 @@ object DesktopDesignerHelper {
 
     private fun drawBoxCommand(c: BoxDrawCommand, g: Graphics?) {
         g?.drawRect(c.x, c.y, c.width, c.height)
+    }
+
+    private fun drawFilledBoxCommand(c: FilledBoxDrawCommand, g: Graphics?) {
+        g?.fillRect(c.x, c.y, c.width, c.height)
     }
 
     private fun drawLineCommand(c: LineDrawCommand, g: Graphics?) {
