@@ -95,7 +95,6 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     }
 
     override fun disconnect() {
-
         simulationIndex = 0
         intervalDisposable?.dispose()
     }

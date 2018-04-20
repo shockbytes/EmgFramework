@@ -326,7 +326,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         mnClients.removeAll()
         clients.forEach { c ->
 
-            // Setup chooser for available clients
+            // DependencyInjection chooser for available clients
             val item = JCheckBoxMenuItem(c.shortName)
             item.isSelected = c === defaultClient // Select default client
             item.addActionListener {

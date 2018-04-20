@@ -34,11 +34,11 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
     override fun setup(viewCallback: DesignerViewCallback?) {
         this.viewCallback = viewCallback
 
-        // Setup drag and drop target
+        // DependencyInjection drag and drop target
         dropTarget = DropTarget(this, DnDConstants.ACTION_COPY, this, true)
         transferHandler = DragDropTargetTransferHandler()
 
-        // Setup component move functionality
+        // DependencyInjection component move functionality
         addMouseListener(object : MouseAdapter() {
 
             override fun mousePressed(e: MouseEvent?) {

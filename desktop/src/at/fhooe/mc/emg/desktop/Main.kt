@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.desktop
 
 
-import at.fhooe.mc.emg.core.setup.BasicReflectionsSetup
+import at.fhooe.mc.emg.core.injection.BasicReflectionsDependencyInjection
 import at.fhooe.mc.emg.desktop.core.DesktopEmgPresenter
 import at.fhooe.mc.emg.desktop.ui.DesktopMainWindow
 import java.awt.EventQueue
@@ -15,9 +15,10 @@ object Main {
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
-            val setup = BasicReflectionsSetup()
-            DesktopEmgPresenter(setup.driver, setup.tools, setup.filter, setup.frequencyAnalysisMethods,
-                    setup.components, setup.configStorage, DesktopMainWindow())
+            val injector = BasicReflectionsDependencyInjection()
+            DesktopEmgPresenter(injector.driver, injector.tools, injector.filter,
+                    injector.frequencyAnalysisMethods, injector.components, injector.configStorage,
+                    DesktopMainWindow())
                     .start()
         }
     }

@@ -25,7 +25,7 @@ interface EmgConnection {
      * Sets up the connection and waits for an incoming connection from the server.
      *
      * @param successHandler Callback method for successful connection with remote device name.
-     * @param errorHandler Callback method for erroneous connection setup with error source.
+     * @param errorHandler Callback method for erroneous connection injection with error source.
      */
     fun setup(successHandler: Consumer<String>? = null, errorHandler: Consumer<Throwable>? = null)
 

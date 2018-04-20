@@ -2,6 +2,7 @@ package at.fhooe.mc.emg.clientdriver
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.clientdriver.model.EmgPoint
+import at.fhooe.mc.emg.designer.EmgComponentOutputPort
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action
@@ -36,6 +37,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
 
+    @EmgComponentOutputPort(EmgData::class)
     val channeledCallbackSubject: PublishSubject<EmgData> = PublishSubject.create()
 
     var data: EmgData
@@ -78,7 +80,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
      * Tries to connect to the client. This action can take up to some seconds, depending on the ClientCategory.
      *
      * @param successHandler Action invoked when the driver is successfully connected to the client.
-     * @param errorHandler Action invoked when the driver catches and exception during setup.
+     * @param errorHandler Action invoked when the driver catches and exception during injection.
      */
     abstract fun connect(successHandler: Action, errorHandler: Consumer<Throwable>)
 

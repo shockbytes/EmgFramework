@@ -113,7 +113,6 @@ public class SwingConconiToolView implements ConconiToolView {
     @Override
     public void onRoundDataAvailable(@NotNull ConconiRoundData data, int round) {
 
-        System.out.println("onRoundDataAvailable");
         ((DefaultTableModel) table.getModel()).addRow(
                 new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getRms()),
                         String.valueOf(data.getHeartRate()), String.valueOf(data.getPeaks())});

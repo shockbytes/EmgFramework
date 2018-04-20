@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  * Date:    24.01.2018.
  *
  * Excluding the abstract methods (which should never be called directly!), the abstract scaffold provides
- * two main methods of interest, which describes the usage of the EmgClient. Use #start() to setup all resources
+ * two main methods of interest, which describes the usage of the EmgClient. Use #start() to injection all resources
  * and wait for incoming connections. Use #stop() to shutdown and free all resources. That's it.
  */
 abstract class EmgClient {
@@ -150,8 +150,8 @@ abstract class EmgClient {
 
 
     /**
-     * Sets up sensor, connection and heart rate provider and calls the #setup() method to
-     * indicate subclasses to setup their resources. If a connection is established the subclasses
+     * Sets up sensor, connection and heart rate provider and calls the #injection() method to
+     * indicate subclasses to injection their resources. If a connection is established the subclasses
      * are notified through the #onConnected(String) method.
      */
     fun start() {
@@ -201,7 +201,7 @@ abstract class EmgClient {
     abstract fun setup()
 
     /**
-     * Counter method of #setup(). This method cleans up all device and platform specific logic.
+     * Counter method of #injection(). This method cleans up all device and platform specific logic.
      * Connection, sensor, and heart rate provider are already released at this moment.
      */
     abstract fun cleanup()
