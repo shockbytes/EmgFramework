@@ -27,4 +27,6 @@ interface DesignerViewCallback {
 
     fun connectComponents(component1: EmgBaseComponent, component2: EmgBaseComponent)
 
+    fun showProperties(component: EmgBaseComponent)
+
 }

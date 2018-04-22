@@ -82,7 +82,6 @@ object DesktopDesignerHelper {
     }
 
     private fun drawCenteredComponentImage(c: CenteredComponentImageDrawCommand, g: Graphics?) {
-
         val image = componentIconForName(c.className)?.image ?: return
         val x = c.x + c.width / 2 - image.getWidth(null) / 2
         val y = c.y + c.height / 2 - image.getHeight(null) / 2

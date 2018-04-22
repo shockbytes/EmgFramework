@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.designer.draw.model
+package at.fhooe.mc.emg.designer.component.model
 
 data class Box(var origin: Origin, var width: Int, var height: Int) {
 

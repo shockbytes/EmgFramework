@@ -22,10 +22,9 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
 
     private val points: MutableList<Double> = mutableListOf()
 
-    // These properties can be changed over time
-    @EmgComponentParameter
+    @EmgComponentProperty
     var confidenceThreshold: Double = 0.5
-    @EmgComponentParameter
+    @EmgComponentProperty
     var salientAngleThreshold: Int = 15
 
     @EmgComponentOutputPort(SalientPoint::class)

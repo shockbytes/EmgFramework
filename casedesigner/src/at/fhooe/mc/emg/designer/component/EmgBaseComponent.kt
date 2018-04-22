@@ -1,15 +1,19 @@
 package at.fhooe.mc.emg.designer.component
 
+import at.fhooe.mc.emg.designer.component.model.Box
+import at.fhooe.mc.emg.designer.component.model.Origin
+import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
 import at.fhooe.mc.emg.designer.draw.*
-import at.fhooe.mc.emg.designer.draw.model.Box
-import at.fhooe.mc.emg.designer.draw.model.Origin
 
 
 /**
  * Author:  Martin Macheiner
  * Date:    16.04.2018
  */
-abstract class EmgBaseComponent(val name: String = "", val qualifiedName: String = "", origin: Origin = Origin(0, 0)) {
+abstract class EmgBaseComponent(val name: String = "",
+                                val qualifiedName: String = "",
+                                val parameter: List<EmgComponentParameter> = listOf(),
+                                origin: Origin = Origin(0, 0)) {
 
     /**
      * First value indicates if input port is available
@@ -26,9 +30,6 @@ abstract class EmgBaseComponent(val name: String = "", val qualifiedName: String
         }
 
     val type: String = javaClass.simpleName
-
-    //var inputPort: EmgBaseComponent? = null
-    //var outputPorts: MutableList<EmgBaseComponent> = mutableListOf()
 
     abstract fun copyWithOrigin(x: Int, y: Int): EmgBaseComponent
 
@@ -58,7 +59,7 @@ abstract class EmgBaseComponent(val name: String = "", val qualifiedName: String
                         box.height),
                 CenteredStringDrawCommand(
                         origin.x,
-                        origin.y + 12,
+                        origin.y + LINE_HEIGHT,
                         box.width,
                         name),
                 CenteredComponentImageDrawCommand(
@@ -66,13 +67,21 @@ abstract class EmgBaseComponent(val name: String = "", val qualifiedName: String
                         origin.y + NAME_COMPARTMENT_HEIGHT,
                         box.width,
                         box.height,
-                        javaClass.simpleName
-                ),
+                        javaClass.simpleName),
                 LineDrawCommand(
                         origin.x,
                         origin.y + NAME_COMPARTMENT_HEIGHT,
                         origin.x + box.width,
                         origin.y + NAME_COMPARTMENT_HEIGHT))
+
+        // Add draw commands for properties only if available
+        if (parameter.isNotEmpty()) {
+            drawCommands.add(CenteredStringDrawCommand(
+                    origin.x + PORT_WIDTH,
+                    origin.y + NAME_COMPARTMENT_HEIGHT + LINE_HEIGHT + 5,
+                    box.width - (2 * PORT_WIDTH),
+                    "${parameter.size} parameter"))
+        }
 
         // Input port indicator
         val (hasInput, hasOutput) = portConfiguration
@@ -106,6 +115,7 @@ abstract class EmgBaseComponent(val name: String = "", val qualifiedName: String
         const val NAME_COMPARTMENT_HEIGHT = 20
         const val PORT_HEIGHT = 20
         const val PORT_WIDTH = 5
+        const val LINE_HEIGHT = 12
     }
 
 }

@@ -2,7 +2,7 @@ package at.fhooe.mc.emg.designer
 
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
-import at.fhooe.mc.emg.designer.draw.model.Origin
+import at.fhooe.mc.emg.designer.component.model.Origin
 import at.fhooe.mc.emg.designer.util.GsonComponentDeserializer
 import at.fhooe.mc.emg.designer.util.GsonComponentSerializer
 import at.fhooe.mc.emg.designer.util.GsonSingleComponentSerializer
@@ -78,12 +78,11 @@ abstract class DesignerPresenter(private val view: DesignerView,
 
     override fun validate() {
 
-        try {
-            ComponentLogic.build(interactionComponents)
+        ComponentLogic.build(interactionComponents).subscribe({
             view.showStatusMessage("Validation successful!")
-        } catch (ve: ComponentLogic.ValidationException) {
-            view.showStatusMessage("Validation error -> ${ve.message}")
-        }
+        }, { throwable ->
+            view.showStatusMessage("Validation error -> ${throwable.message}")
+        })
     }
 
     override fun run() {
@@ -138,7 +137,10 @@ abstract class DesignerPresenter(private val view: DesignerView,
                 updateView()
             }
         }
+    }
 
+    override fun showProperties(component: EmgBaseComponent) {
+        println("show properties for ${component.name}!")
     }
 
     fun start(file: File? = null) {

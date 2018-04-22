@@ -11,14 +11,20 @@ import at.fhooe.mc.emg.core.storage.config.JsonEmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.ToolView
 import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentProperty
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgComponentFactory
+import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
 import org.reflections.Reflections
+import org.reflections.scanners.FieldAnnotationsScanner
+import org.reflections.scanners.SubTypesScanner
+import org.reflections.scanners.TypeAnnotationsScanner
 import java.io.File
 
 open class BasicReflectionsDependencyInjection : DependencyInjection {
 
-    protected val reflections = Reflections()
+    protected val reflections = Reflections(FieldAnnotationsScanner(),
+            SubTypesScanner(), TypeAnnotationsScanner())
 
     override val tools: List<Tool> by lazy {
 
@@ -81,11 +87,17 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
     }
 
     override val components: List<EmgBaseComponent> by lazy {
+
+        val params = reflections.getFieldsAnnotatedWith(EmgComponentProperty::class.java)
+                .map { EmgComponentParameter(it.declaringClass, it.type, it.name)}
+
         reflections.getTypesAnnotatedWith(EmgComponent::class.java)
-                .map {
+                .map {cls ->
                     // This cast must always succeed, because the reflections API is queried only for those classes
-                    val component = it.annotations.find { it.annotationClass == EmgComponent::class } as EmgComponent
-                    EmgComponentFactory.byType(it.simpleName, it.name, component.type)
+                    val component = cls.annotations.find { it.annotationClass == EmgComponent::class } as EmgComponent
+                    EmgComponentFactory.byType(cls.simpleName, cls.name,
+                            params.filter { it.declaringClass == cls },
+                            component.type)
                 }
                 .sortedBy { it.name }
     }

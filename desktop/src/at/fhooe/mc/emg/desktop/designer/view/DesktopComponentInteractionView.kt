@@ -2,8 +2,8 @@ package at.fhooe.mc.emg.desktop.designer.view
 
 import at.fhooe.mc.emg.designer.DesignerViewCallback
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
-import at.fhooe.mc.emg.designer.draw.model.Origin
-import at.fhooe.mc.emg.designer.draw.model.Point
+import at.fhooe.mc.emg.designer.component.model.Origin
+import at.fhooe.mc.emg.designer.component.model.Point
 import at.fhooe.mc.emg.designer.view.ComponentInteractionView
 import at.fhooe.mc.emg.desktop.designer.DesktopDesignerHelper
 import at.fhooe.mc.emg.desktop.designer.util.DragDropTargetTransferHandler
@@ -45,27 +45,35 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
                 super.mousePressed(e)
 
                 // Move component
-                if (e?.button == MouseEvent.BUTTON1) {
-                    dragComponent = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
+                when {
+                    e?.button == MouseEvent.BUTTON1 -> {
+                        dragComponent = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
 
-                    // New action, erase connection action
-                    connectionComponent = null
-                } else if (e?.button == MouseEvent.BUTTON3){
-
-                    // Connect components
-                    if (connectionComponent == null) {
-                        connectionComponent = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
-                    } else {
-                        val target = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
-
-                        if (target != null && connectionComponent != null) {
-                            viewCallback?.connectComponents(connectionComponent!!, target)
-                        }
+                        // New action, erase connection action
                         connectionComponent = null
                     }
+                    e?.button == MouseEvent.BUTTON3 -> {
 
-                    // New action, erase drag action
-                    dragComponent = null
+                        // Connect components
+                        connectionComponent = if (connectionComponent == null) {
+                            interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
+                        } else {
+                            val target = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
+                            if (target != null && connectionComponent != null) {
+                                viewCallback?.connectComponents(connectionComponent!!, target)
+                            }
+                            null
+                        }
+
+                        // New action, erase drag action
+                        dragComponent = null
+                    }
+                    e?.button == MouseEvent.BUTTON2 -> {
+                        val c = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
+                        if (c != null) {
+                            viewCallback?.showProperties(c)
+                        }
+                    }
                 }
             }
 
