@@ -14,7 +14,6 @@ import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog
 import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog
 import at.fhooe.mc.emg.desktop.view.DesktopEmgView
 import io.reactivex.Observable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.awt.BorderLayout
 import java.awt.Color
@@ -374,12 +373,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         cbMenuItemCopyToSimulation.isSelected = config.isCopyToSimulationEnabled
     }
 
-    override fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod, data: DoubleArray, fs: Double) {
-        val window = if (method.hasDisplay) FrequencyAnalysisFrame() else null
-        // TODO Better callback handling!
-        method.calculate(data, fs, window).subscribe(Consumer {
-            println(it)
-        })
+    override fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod, data: DoubleArray) {
+        method.calculate(data)
     }
 
     override fun showConnectionError(throwable: Throwable) {

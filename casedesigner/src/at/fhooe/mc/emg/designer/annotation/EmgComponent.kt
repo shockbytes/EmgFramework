@@ -1,4 +1,6 @@
-package at.fhooe.mc.emg.designer
+package at.fhooe.mc.emg.designer.annotation
+
+import at.fhooe.mc.emg.designer.EmgComponentType
 
 /**
  * Classes which are annotated with this annotation are exposed as component to the EMG drag and drop framework.

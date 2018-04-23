@@ -1,19 +1,18 @@
 package at.fhooe.mc.emg.core.analysis
 
-import at.fhooe.mc.emg.designer.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentType
-import io.reactivex.Single
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
 
 @EmgComponent(type = EmgComponentType.SINK)
-class PowerSpectrumAnalysisMethod: FrequencyAnalysisMethod {
+class PowerSpectrumAnalysisMethod(override var view: FrequencyAnalysisView? = null,
+                                  override var fs: Double = 100.0) : FrequencyAnalysisMethod {
 
     override val name = "Power Spectrum"
 
     override val hasDisplay = true
 
-    override fun calculate(input: DoubleArray, fs: Double, view: FrequencyAnalysisView?): Single<Double> {
+    override fun calculate(input: DoubleArray) {
         AnalysisUtils.fft(input).subscribe({ fft -> showPowerSpectrumPlot(fft, fs, view) })
-        return Single.just(Double.MIN_VALUE)
     }
 
     private fun showPowerSpectrumPlot(fft: DoubleArray, fs: Double, view: FrequencyAnalysisView?) {

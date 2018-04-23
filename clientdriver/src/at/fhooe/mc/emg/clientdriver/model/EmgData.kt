@@ -55,6 +55,14 @@ class EmgData(private val windowWidth: Int = DEFAULT_WINDOW_WITH,
         return channels[channel].last()
     }
 
+    /**
+     * Returns the last entry point of all channels of the data
+     *
+     * @return The last EmgPoint of all channels
+     */
+    fun lastOfChannels(): List<EmgPoint> {
+        return channels.map { it.last() }
+    }
 
     /**
      * Returns the last entry of recorded heart rate values

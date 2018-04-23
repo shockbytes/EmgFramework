@@ -1,20 +1,20 @@
 package at.fhooe.mc.emg.core.analysis
 
-import at.fhooe.mc.emg.designer.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentType
-import io.reactivex.Single
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
 
 @EmgComponent(type = EmgComponentType.SINK)
-class FftFrequencyAnalysisMethod: FrequencyAnalysisMethod {
+class FftFrequencyAnalysisMethod(override var view: FrequencyAnalysisView? = null,
+                                 override var fs: Double = 100.0) : FrequencyAnalysisMethod {
 
     override val name = "FFT"
 
     override val hasDisplay = true
 
-
-    override fun calculate(input: DoubleArray, fs: Double, view: FrequencyAnalysisView?): Single<Double> {
+    @EmgComponentInputPort(DoubleArray::class)
+    override fun calculate(input: DoubleArray) {
         AnalysisUtils.fft(input).subscribe({ fft -> showFFTPlot(fft, view) })
-        return Single.just(Double.MIN_VALUE)
     }
 
     private fun showFFTPlot(fft: DoubleArray, view: FrequencyAnalysisView?) {

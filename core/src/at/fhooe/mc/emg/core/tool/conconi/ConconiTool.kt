@@ -1,15 +1,15 @@
 package at.fhooe.mc.emg.core.tool.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
-
-import at.fhooe.mc.emg.core.EmgPresenter
+import at.fhooe.mc.emg.core.Toolable
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.peaks.PeakDetector
 import at.fhooe.mc.emg.core.util.CoreUtils
-import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.core.util.rms
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -30,7 +30,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     override val name = "Conconi Test"
 
-    private lateinit var presenter: EmgPresenter
+    private lateinit var toolable: Toolable
     private var data: ConconiData = ConconiData()
 
     private var timerDisposable: Disposable? = null
@@ -38,8 +38,8 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
     private var dataStartPointer: Int = 0
     private var dataStopPointer: Int = 0
 
-    override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
-        this.presenter = presenter
+    override fun start(toolable: Toolable, showViewImmediate: Boolean) {
+        this.toolable = toolable
 
         toolView?.setup(this, showViewImmediate)
 
@@ -55,7 +55,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     override fun onStopClicked() {
         timerDisposable?.dispose()
-        presenter.disconnectFromClient(null)
+        toolable.disconnectFromClient(null)
     }
 
     override fun onSaveClicked(filename: String?, errorHandler: Consumer<Throwable>) {
@@ -69,7 +69,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
             // No action required if everything works fine
             fileStorage?.storeFileAsObject(data, fileNameConconi)?.subscribe(Action {}, errorHandler)
-            presenter.exportData(fileNameRaw, CsvDataStorage())
+            toolable.exportData(fileNameRaw, CsvDataStorage())
         } else {
             errorHandler.accept(NullPointerException("Filename must not be null!"))
         }
@@ -124,7 +124,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
     }
 
     private fun connectAndStart() {
-        presenter.connectToClient(Action { startTimer() })
+        toolable.connectToClient(Action { startTimer() })
     }
 
     private fun startTimer() {
@@ -154,8 +154,8 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     private fun storeRoundData(index: Int) {
 
-        dataStopPointer = presenter.currentDataPointer
-        val roundData = presenter.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
+        dataStopPointer = toolable.currentDataPointer
+        val roundData = toolable.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
         data.addRoundData(roundData)
         val crd = emg2ConconiRoundData(roundData, index)
@@ -172,11 +172,6 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
         val rms = CoreUtils.roundDouble(yData.rms(), 2)
         val hr = roundData.heartRateData.average().toInt()
         return ConconiRoundData(speed, peaks, rms, hr)
-    }
-
-    private fun DoubleArray.rms(): Double {
-        val sum = sumByDouble { it * it }
-        return Math.sqrt(sum / this.size)
     }
 
     companion object {

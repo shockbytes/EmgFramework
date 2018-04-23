@@ -2,7 +2,7 @@ package at.fhooe.mc.emg.clientdriver
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.clientdriver.model.EmgPoint
-import at.fhooe.mc.emg.designer.EmgComponentOutputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action

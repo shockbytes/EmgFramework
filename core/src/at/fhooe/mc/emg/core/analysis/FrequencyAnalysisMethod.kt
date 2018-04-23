@@ -1,7 +1,5 @@
 package at.fhooe.mc.emg.core.analysis
 
-import io.reactivex.Single
-
 /**
  * Author:  Mescht
  * Date:    29.11.2017
@@ -13,6 +11,10 @@ interface FrequencyAnalysisMethod {
 
     val hasDisplay: Boolean
 
+    var view: FrequencyAnalysisView?
+
+    var fs: Double
+
     /**
      * TODO
      * @param input
@@ -21,6 +23,6 @@ interface FrequencyAnalysisMethod {
      *
      * @return
      */
-    fun calculate(input: DoubleArray, fs: Double, view: FrequencyAnalysisView?): Single<Double>
+    fun calculate(input: DoubleArray)
 
 }

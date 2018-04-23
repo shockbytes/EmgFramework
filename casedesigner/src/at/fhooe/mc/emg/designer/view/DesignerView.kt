@@ -18,4 +18,6 @@ interface DesignerView {
 
     fun showStatusMessage(msg: String)
 
+    fun drawBackgroundForInteractionView(draw: Boolean)
+
 }

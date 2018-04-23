@@ -1,8 +1,12 @@
 package at.fhooe.mc.emg.core.tool.salient
 
-import at.fhooe.mc.emg.core.EmgPresenter
+import at.fhooe.mc.emg.core.Toolable
 import at.fhooe.mc.emg.core.tool.Tool
-import at.fhooe.mc.emg.designer.*
+import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -35,7 +39,7 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
         this.salientAngleThreshold = angle
     }
 
-    override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
+    override fun start(toolable: Toolable, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
     }
 

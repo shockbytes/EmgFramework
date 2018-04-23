@@ -34,7 +34,6 @@ class GsonComponentSerializer : JsonSerializer<ArrayList<EmgBaseComponent>> {
             mapping.put("EmgFilterComponent", EmgFilterComponent::class.java)
             mapping.put("EmgRelaySinkComponent", EmgRelaySinkComponent::class.java)
             mapping.put("EmgSinkComponent", EmgSinkComponent::class.java)
-            mapping.put("EmgSourceComponent", EmgSourceComponent::class.java)
             mapping.put("EmgToolComponent", EmgToolComponent::class.java)
             mapping.put("ConnectorComponent", ConnectorComponent::class.java)
         }

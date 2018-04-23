@@ -10,10 +10,11 @@ import javax.swing.ImageIcon
 
 object DesktopDesignerHelper {
 
+    val blueprintColor: Color = Color.decode("#0017a5")
+
     fun compactComponentColor(c: EmgBaseComponent): Color {
         return when (c) {
             is EmgDeviceComponent -> Color.ORANGE
-            is EmgSourceComponent -> Color.ORANGE
             is EmgFilterComponent -> Color.GREEN
             is EmgToolComponent -> Color.BLUE
             is EmgSinkComponent -> Color.BLACK
@@ -25,7 +26,6 @@ object DesktopDesignerHelper {
     fun componentIcon(c: EmgBaseComponent): ImageIcon? {
         val filename = when (c) {
             is EmgDeviceComponent -> "ic_component_device.png"
-            is EmgSourceComponent -> "ic_component_device.png"
             is EmgFilterComponent -> "ic_component_filter.png"
             is EmgToolComponent -> "ic_component_tool.png"
             is EmgSinkComponent -> "ic_component_sink.png"
@@ -56,6 +56,13 @@ object DesktopDesignerHelper {
     }
 
     private fun drawBoxCommand(c: BoxDrawCommand, g: Graphics?) {
+
+        // Draw a background for the standard view
+        if (!c.transparentBackground) {
+            g?.color = blueprintColor
+            g?.fillRect(c.x, c.y, c.width, c.height)
+            g?.color = Color.WHITE
+        }
         g?.drawRect(c.x, c.y, c.width, c.height)
     }
 

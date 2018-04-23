@@ -12,7 +12,6 @@ class EmgComponentFactory {
                    parameters: List<EmgComponentParameter>, type: EmgComponentType): EmgBaseComponent {
             return when (type) {
                 EmgComponentType.FILTER -> EmgFilterComponent(name, qualifiedName, parameters)
-                EmgComponentType.SOURCE -> EmgSourceComponent(name, qualifiedName, parameters)
                 EmgComponentType.SINK -> EmgSinkComponent(name, qualifiedName, parameters)
                 EmgComponentType.RELAY_SINK -> EmgRelaySinkComponent(name, qualifiedName, parameters)
                 EmgComponentType.TOOL -> EmgToolComponent(name, qualifiedName, parameters)

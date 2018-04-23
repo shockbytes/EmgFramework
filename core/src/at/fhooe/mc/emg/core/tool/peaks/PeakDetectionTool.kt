@@ -1,10 +1,10 @@
 package at.fhooe.mc.emg.core.tool.peaks
 
 
-import at.fhooe.mc.emg.core.EmgPresenter
+import at.fhooe.mc.emg.core.Toolable
 import at.fhooe.mc.emg.core.tool.Tool
-import at.fhooe.mc.emg.designer.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
 
 /**
  * Author:  Martin Macheiner
@@ -16,19 +16,19 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
 
     override val name = "Peak Detection"
 
-    private var presenter: EmgPresenter? = null
+    private var toolable: Toolable? = null
 
-    override fun start(presenter: EmgPresenter, showViewImmediate: Boolean) {
+    override fun start(toolable: Toolable, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
-        this.presenter = presenter
+        this.toolable = toolable
     }
 
     override fun compute(width: Int, threshold: Double, decayRate: Double, isRelative: Boolean) {
 
-        val yValues = presenter?.visualView?.dataForFrequencyAnalysis
+        val yValues = toolable?.dataForFrequencyAnalysis
         if (yValues != null) {
             // If current data pointer not available, then point to 0
-            val xStart = (presenter?.currentDataPointer ?: yValues.size) - yValues.size
+            val xStart = (toolable?.currentDataPointer ?: yValues.size) - yValues.size
             PeakDetector.detectPeakLocations(yValues, width, threshold, decayRate, isRelative).subscribe({ peaks ->
 
                 val yValuesPeaks = DoubleArray(peaks.size) { yValues[peaks[it]] }
@@ -50,7 +50,7 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
     }
 
     override fun onViewClosed() {
-        presenter = null
+        toolable = null
         // No further cleanup necessary
     }
 

@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.core.filter
 
-import at.fhooe.mc.emg.designer.EmgComponent
-import at.fhooe.mc.emg.designer.EmgComponentRelayPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentRelayPort
 import at.fhooe.mc.emg.designer.EmgComponentType
 
 

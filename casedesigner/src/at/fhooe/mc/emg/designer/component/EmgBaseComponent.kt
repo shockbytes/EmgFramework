@@ -56,7 +56,8 @@ abstract class EmgBaseComponent(val name: String = "",
                         origin.x,
                         origin.y,
                         box.width,
-                        box.height),
+                        box.height,
+                        false),
                 CenteredStringDrawCommand(
                         origin.x,
                         origin.y + LINE_HEIGHT,
@@ -106,7 +107,8 @@ abstract class EmgBaseComponent(val name: String = "",
                 origin.x / scale,
                 origin.y / scale,
                 box.width / scale,
-                box.height / scale))
+                box.height / scale,
+                true))
     }
 
     companion object {

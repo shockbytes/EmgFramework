@@ -8,8 +8,10 @@ import at.fhooe.mc.emg.designer.view.ComponentInteractionView
 import at.fhooe.mc.emg.desktop.designer.DesktopDesignerHelper
 import at.fhooe.mc.emg.desktop.designer.util.DragDropTargetTransferHandler
 import at.fhooe.mc.emg.desktop.designer.util.DragDropTransferHandler
+import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics
+import java.awt.Graphics2D
 import java.awt.dnd.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -30,6 +32,14 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
     // Connection values
     private var connectionComponent: EmgBaseComponent? = null
 
+    override var drawBackground: Boolean = false
+        set(value) {
+            field = value
+            repaint()
+        }
+
+    private val bgOffset = 0
+    private val bgBlockSize = 30.0
 
     override fun setup(viewCallback: DesignerViewCallback?) {
         this.viewCallback = viewCallback
@@ -71,7 +81,7 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
                     e?.button == MouseEvent.BUTTON2 -> {
                         val c = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
                         if (c != null) {
-                            viewCallback?.showProperties(c)
+                            viewCallback?.showDetails(c)
                         }
                     }
                 }
@@ -102,6 +112,12 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
         super.paintComponent(g)
 
         g?.color = Color.WHITE
+
+        if (drawBackground) {
+            drawBackground(g)
+            (g as? Graphics2D)?.stroke = BasicStroke(1f)
+        }
+
         interactionComponents.forEach { c ->
             c.draw().forEach { command -> DesktopDesignerHelper.drawCommand(command, g) }
         }
@@ -119,6 +135,36 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
         val src = e.transferable
                 .getTransferData(DragDropTransferHandler.COMPONENT_DATA_FLAVOR) as? EmgBaseComponent ?: return
         viewCallback?.addComponent(src, e.location.x, e.location.y)
+    }
+
+    private fun drawBackground(g: Graphics?) {
+
+        g?.drawRect(bgOffset, bgOffset, width - 1, height - 1)
+
+        val cols = (width / bgBlockSize).toInt()
+        val rows = (height / bgBlockSize).toInt()
+
+        val dashed = BasicStroke(0.1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0f, floatArrayOf(2f), 0f)
+        val basic = BasicStroke(0.1f)
+
+        for (i in 0..cols) {
+            (g as? Graphics2D)?.stroke = if (i % 5 == 0) {
+                basic
+            } else {
+                dashed
+            }
+            g?.drawLine(bgOffset + (i * bgBlockSize).toInt(), bgOffset, (bgOffset + i * bgBlockSize).toInt(), height - 1)
+        }
+
+        for (i in 0..rows) {
+            (g as? Graphics2D)?.stroke = if (i % 5 == 0) {
+                basic
+            } else {
+                dashed
+            }
+            g?.drawLine(bgOffset, bgOffset + (i * bgBlockSize).toInt(), width - bgOffset, bgOffset + (i * bgBlockSize).toInt())
+        }
+
     }
 
 }

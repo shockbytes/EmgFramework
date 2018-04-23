@@ -2,7 +2,12 @@ package at.fhooe.mc.emg.desktop.view
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.filter.Filter
+import at.fhooe.mc.emg.core.filter.NoFilter
 import at.fhooe.mc.emg.core.view.VisualView
+import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentSinkView
 import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
@@ -17,6 +22,8 @@ import javax.swing.JComponent
  * Author:  Martin Macheiner
  * Date:    03.07.2017
  */
+
+@EmgComponent(type = EmgComponentType.SINK)
 class XChartVisualView : VisualView<JComponent> {
 
     private lateinit var realtimeChart: org.knowm.xchart.XYChart
@@ -24,7 +31,6 @@ class XChartVisualView : VisualView<JComponent> {
 
     override val dataForFrequencyAnalysis: DoubleArray
         get() {
-
             return if (!realtimeChart.seriesMap.isEmpty()) {
                 val first = realtimeChart.seriesMap.values.firstOrNull()
                 first?.yData ?: DoubleArray(0)
@@ -33,11 +39,14 @@ class XChartVisualView : VisualView<JComponent> {
             }
         }
 
+    @EmgComponentSinkView
     override val view: JComponent
         get() = chartWrapper
 
     override val scheduler: Scheduler? = null
     override val bufferSpan: Long = -1
+
+    override var filter: List<Filter> = listOf(NoFilter())
 
     init {
         initialize()
@@ -56,14 +65,14 @@ class XChartVisualView : VisualView<JComponent> {
         chartWrapper = XChartPanel(realtimeChart)
     }
 
-    override fun update(data: EmgData, filters: List<Filter>) {
+    @EmgComponentInputPort(EmgData::class)
+    override fun update(data: EmgData) {
         Flowable.fromCallable {
             (0 until data.channelCount)
                     .flatMap { i ->
                         val plotData = data.plotData(i)
                         val x = plotData.map { it.x }
-                        filters.filter { it.isEnabled }
-                                .map { filter ->
+                        filter.map { filter ->
                                     synchronized(this) {
                                         val name = (i + 1).toString() + "." + filter.shortName
                                         val y = plotData.map { filter.step(it.y) }
@@ -95,45 +104,6 @@ class XChartVisualView : VisualView<JComponent> {
     }
 
     private fun isChannelAvailable(channel: String) = realtimeChart.seriesMap.containsKey(channel)
-
-    @Deprecated("This method is used internally in the also deprecated method #updateDeprecated()")
-    private fun addChannelsIfNecessary(data: EmgData, filters: List<Filter>): Boolean {
-
-        val series = realtimeChart.seriesMap.entries.size
-        val addSeries = series < data.channelCount
-        if (addSeries) {
-            for (i in series until data.channelCount) {
-                filters
-                        .filter { it.isEnabled }
-                        .forEach { filter ->
-                            val plotData = data.plotData(i)
-                            realtimeChart.addSeries((i + 1).toString() + "." + filter.shortName,
-                                    plotData.map { it.x },
-                                    plotData.map({ filter.step(it.y) }),
-                                    null)
-                        }
-            }
-        }
-        return addSeries
-    }
-
-    @Deprecated("It's not efficient, but it works. Use the reactive way instead.")
-    private fun updateDeprecated(data: EmgData, filters: List<Filter>) {
-        if (!addChannelsIfNecessary(data, filters)) {
-            for (i in 0 until data.channelCount) {
-                filters
-                        .filter { it.isEnabled }
-                        .forEach { filter ->
-                            val plotData = data.plotData(i)
-                            realtimeChart.updateXYSeries((i + 1).toString() + "." + filter.shortName,
-                                    plotData.map { it.x },
-                                    plotData.map({ filter.step(it.y) }),
-                                    null)
-                        }
-            }
-        }
-        chartWrapper.repaint()
-    }
 
     data class VisualViewChannel(val x: List<Double>, val y: List<Double>, val name: String)
 

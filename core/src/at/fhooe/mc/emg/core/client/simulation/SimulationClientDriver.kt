@@ -4,8 +4,11 @@ import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.core.util.CoreUtils
-import at.fhooe.mc.emg.designer.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -34,11 +37,13 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
 
     private var simulationIndex: Int = 0
 
+    @EmgComponentProperty
     var simulationSource: SimulationSource? = null
 
     var simulationSources: List<SimulationSource>
         private set
 
+    @EmgComponentProperty
     var isEndlessLoopEnabled = false
 
     override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V2)
@@ -69,6 +74,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
         }
     }
 
+    @EmgComponentEntryPoint
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
         Completable.fromAction {
 
@@ -76,6 +82,8 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                 throw IllegalStateException("Simulation source cannot be null!")
             }
             disconnect() // Reset connection first
+
+            println(simulationSource?.filePath)
 
             prepareSimulationData()
             prepareSamplingFrequency()
@@ -94,6 +102,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
         }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
+    @EmgComponentExitPoint
     override fun disconnect() {
         simulationIndex = 0
         intervalDisposable?.dispose()

@@ -27,7 +27,6 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
 
     override fun buildClientMessage(packet: EmgPacket): String {
-
         return when (protocolVersion) {
             MessageParser.ProtocolVersion.V1 -> buildV1(packet)
             MessageParser.ProtocolVersion.V2 -> buildV2(packet)
@@ -84,8 +83,8 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
     private fun parseV2(params: List<String>): EmgPacket? {
         return if (params.size >= 2) {
-            val timestamp = params[1].toLongOrNull() ?: System.currentTimeMillis()
-            parseV1(params[0])?.setTimestamp(timestamp)
+            val timestamp = params[0].toLongOrNull() ?: System.currentTimeMillis()
+            parseV1(params[1])?.setTimestamp(timestamp)
         } else null
     }
 

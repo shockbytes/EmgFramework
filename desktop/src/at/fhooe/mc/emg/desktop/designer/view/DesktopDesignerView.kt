@@ -7,10 +7,7 @@ import at.fhooe.mc.emg.desktop.designer.DesktopDesignerHelper
 import at.fhooe.mc.emg.desktop.designer.util.DragDropTransferHandler
 import at.fhooe.mc.emg.desktop.ui.UiUtils
 import java.awt.*
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
+import java.awt.event.*
 import java.io.File
 import javax.swing.*
 import javax.swing.border.CompoundBorder
@@ -31,7 +28,7 @@ class DesktopDesignerView : DesignerView {
             componentInteractionView.interactionComponents = value
         }
 
-    private val bgColor = Color.decode("#0017a5")
+    private val bgColor = DesktopDesignerHelper.blueprintColor
 
     private var viewCallback: DesignerViewCallback? = null
 
@@ -71,6 +68,10 @@ class DesktopDesignerView : DesignerView {
 
     override fun showStatusMessage(msg: String) {
         labelMsg.text = "Messages: $msg"
+    }
+
+    override fun drawBackgroundForInteractionView(draw: Boolean) {
+        componentInteractionView.drawBackground = draw
     }
 
     private fun wrap(): JFrame {
@@ -132,8 +133,17 @@ class DesktopDesignerView : DesignerView {
         }
         mnBuild.add(mnItemRun)
 
+        val mnView = JMenu("View")
+        val mnItemBg = JCheckBoxMenuItem("Draw background")
+        mnItemBg.addItemListener {
+            viewCallback?.drawBackground(it.stateChange == ItemEvent.SELECTED)
+        }
+        mnItemBg.state = false
+        mnView.add(mnItemBg)
+
         menuBar.add(mnFile)
         menuBar.add(mnBuild)
+        menuBar.add(mnView)
         return menuBar
     }
 

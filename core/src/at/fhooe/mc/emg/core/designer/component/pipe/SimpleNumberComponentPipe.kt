@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.core.designer.component
+package at.fhooe.mc.emg.core.designer.component.pipe
 
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import kotlin.reflect.KClass

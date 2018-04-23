@@ -30,16 +30,19 @@ import java.util.concurrent.TimeUnit
  */
 abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                             private val tools: List<Tool>,
-                            private val filters: List<Filter>,
+                            private val filter: List<Filter>,
                             private val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>,
                             protected val designerComponents: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<*,*>>>,
                             private val configStorage: EmgConfigStorage,
-                            open var emgView: EmgView?) : EmgViewCallback {
+                            open var emgView: EmgView?) : EmgViewCallback, Toolable {
 
     abstract val visualView: VisualView<*>
 
-    val currentDataPointer: Int
+    override val currentDataPointer: Int
         get() = client.currentDataPointer
+
+    override val dataForFrequencyAnalysis: DoubleArray
+        get() = visualView.dataForFrequencyAnalysis
 
     private val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
 
@@ -68,7 +71,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
     private fun setupEmgView() {
         emgView?.setupView(this, config)
-        emgView?.setupFilterViews(filters)
+        emgView?.setupFilterViews(filter)
         emgView?.setupEmgClientDriverView(clients, client)
         emgView?.setupToolsView(tools, this)
         emgView?.setupEmgClientDriverConfigViews(clients)
@@ -128,13 +131,9 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         setupEmgView()
     }
 
-    fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): EmgData {
-        return client.data.section(start, stop, channel)
-    }
-
     // ----------------------------------------------------------------------------------------------------
 
-    // -------------------------------------- EmgViewCallback methods -------------------------------------
+    // -------------------------------- EmgViewCallback & Toolable methods --------------------------------
 
     override fun exportData(filename: String, dataStorage: DataStorage) {
         val success = dataStorage.store(filename, client.data)
@@ -165,11 +164,20 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         }
     }
 
+    override fun getSingleChannelDataSection(start: Int, stop: Int, channel: Int): EmgData {
+        return client.data.section(start, stop, channel)
+    }
+
+
     override fun connectToClient(successHandler: Action?) {
 
         emgView?.reset()
+        // Clear data storage, before new data is added
+        client.clearData()
 
-        client.clearData() // Clear data storage, before new data is added
+        // Set the selected filter to the visual view
+        visualView.filter = filter.filter { it.isEnabled }
+
         client.connect(Action {
 
             rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
@@ -182,12 +190,12 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                     channelDisposable = if (visualView.requestBufferedUpdates) {
                         channelCallback
                                 .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                                .subscribe { it.forEach { visualView.update(it, filters) } }
+                                .subscribe { it.forEach { visualView.update(it) } }
                     } else {
-                        channelCallback.subscribe { visualView.update(it, filters) }
+                        channelCallback.subscribe { visualView.update(it) }
                     }
                 } else {
-                    channelDisposable = channelCallback.subscribe { visualView.update(it, filters) }
+                    channelDisposable = channelCallback.subscribe { visualView.update(it) }
                 }
             }
             updateStatus(true)
@@ -202,7 +210,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
     override fun disconnectFromClient(writeFileOnDisconnectFileName: String?) {
         client.disconnect()
         storeData(writeFileOnDisconnectFileName)
-        filters.forEach { it.reset() }
+        filter.forEach { it.reset() }
 
         rawDisposable?.dispose()
         channelDisposable?.dispose()
@@ -212,7 +220,8 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
     }
 
     override fun requestFrequencyAnalysisView(method: FrequencyAnalysisMethod) {
-        emgView?.showFrequencyAnalysisView(method, visualView.dataForFrequencyAnalysis, client.samplingFrequency)
+        method.fs = client.samplingFrequency
+        emgView?.showFrequencyAnalysisView(method, visualView.dataForFrequencyAnalysis)
     }
 
     override fun setVisualViewEnabled(visualEnabled: Boolean) {

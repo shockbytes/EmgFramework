@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.tool
 
-import at.fhooe.mc.emg.core.EmgPresenter
+import at.fhooe.mc.emg.core.Toolable
 
 /**
  * Author:  Martin Macheiner
@@ -12,5 +12,5 @@ interface Tool {
 
     val toolView: ToolView<*>?
 
-    fun start(presenter: EmgPresenter, showViewImmediate: Boolean)
+    fun start(toolable: Toolable, showViewImmediate: Boolean)
 }

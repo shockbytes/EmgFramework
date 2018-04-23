@@ -40,7 +40,7 @@ interface EmgView {
 
     // -------------------------------------------------------
 
-    fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod, data: DoubleArray, fs: Double)
+    fun showFrequencyAnalysisView(method: FrequencyAnalysisMethod, data: DoubleArray)
 
     fun showConnectionError(throwable: Throwable)
 

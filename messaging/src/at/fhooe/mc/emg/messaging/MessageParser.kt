@@ -27,11 +27,11 @@ interface MessageParser<T> {
         // Example: 1,2,3
         V1,
         // Incorporates timestamp. This version should tackle the problem of latencies. Now every packet has its stamp.
-        // Example: 1,2,3:687801928
+        // Example: 687801928:1,2,3
         V2,
         // Adds the possibility to measure and send heart rate as well. This is especially useful when a Conconi test
         // should be conducted. Because of the data overhead it is not recommended to use this, when it is not necessary.
-        // Example: 1,2,3:687801928:65
+        // Example: 687801928:1,2,3:65
         V3
     }
 

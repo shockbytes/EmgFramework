@@ -3,8 +3,11 @@ package at.fhooe.mc.emg.core.client.network
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.designer.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -34,7 +37,9 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     override val isDataStorageEnabled: Boolean = true
 
+    @EmgComponentProperty
     var ip: String = "localhost"
+    @EmgComponentProperty
     var port: Int = 5673
 
     private val buffer = ByteArray(64)
@@ -42,6 +47,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     private var isRunning = false
 
+    @EmgComponentEntryPoint
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
         Completable.fromAction {
 
@@ -64,6 +70,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
         }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
+    @EmgComponentExitPoint
     override fun disconnect() {
         Completable.fromAction {
 

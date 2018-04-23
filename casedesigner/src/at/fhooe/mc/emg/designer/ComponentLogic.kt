@@ -1,5 +1,9 @@
 package at.fhooe.mc.emg.designer
 
+import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentRelayPort
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgDeviceComponent
 import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
@@ -55,7 +59,7 @@ object ComponentLogic {
             // Throws an error if not valid
             validate(components, pipes).blockingGet()
 
-            // TODO Execute run logic
+            // TODO Run workflow
         }
     }
 
@@ -108,6 +112,16 @@ object ComponentLogic {
         if (components.none { it is EmgDeviceComponent }) {
             throw ValidationException("No device component defined!")
         }
+
+        // Check for valid entry point
+        components
+                .mapNotNull { it as? EmgDeviceComponent }
+                .forEach { c ->
+                    ReflectionUtils
+                            .getMethods(Class.forName(c.qualifiedName), ReflectionUtils.withAnnotation(EmgComponentEntryPoint::class.java))
+                            .firstOrNull()
+                            ?: throw ValidationException("Device component ${c.name} does not provide a valid entry point")
+                }
     }
 
     /**
@@ -128,12 +142,12 @@ object ComponentLogic {
                 ReflectionUtils.withAnnotation(EmgComponentRelayPort::class.java)).firstOrNull()
 
         if (outputPort == null && relayPort == null) {
-           outputPort = ReflectionUtils.getSuperTypes(Class.forName(c.qualifiedName))
-                   .mapNotNull { cls ->
-                       ReflectionUtils
-                               .getFields(cls, ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java))
-                               .firstOrNull()
-                   }.firstOrNull()
+            outputPort = ReflectionUtils.getSuperTypes(Class.forName(c.qualifiedName))
+                    .mapNotNull { cls ->
+                        ReflectionUtils
+                                .getFields(cls, ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java))
+                                .firstOrNull()
+                    }.firstOrNull()
         }
 
         val consumes: KClass<*>?

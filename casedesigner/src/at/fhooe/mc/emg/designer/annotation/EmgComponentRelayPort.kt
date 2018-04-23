@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.designer
+package at.fhooe.mc.emg.designer.annotation
 
 import kotlin.reflect.KClass
 

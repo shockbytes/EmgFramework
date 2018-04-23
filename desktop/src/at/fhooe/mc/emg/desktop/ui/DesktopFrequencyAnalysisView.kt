@@ -14,7 +14,7 @@ import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 
-class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
+class DesktopFrequencyAnalysisView : JFrame(), FrequencyAnalysisView {
 
     private val contentPanel: JPanel
     private var chart: CategoryChart
@@ -24,7 +24,7 @@ class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
         defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
         iconImage = Toolkit.getDefaultToolkit()
                 .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_analysis.png")
-        title = "Frequency analysis"
+        title = "Frequency Analysis View"
         bounds = Rectangle(400, 200, 450, 300)
 
         contentPanel = JPanel()
@@ -36,7 +36,6 @@ class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
         initializeChart()
 
         contentPane = contentPanel
-        isVisible = true
     }
 
     private fun initializeChart() {
@@ -56,6 +55,7 @@ class FrequencyAnalysisFrame : JFrame(), FrequencyAnalysisView {
     override fun showEvaluation(method: String, xData: DoubleArray, yData: DoubleArray) {
 
         title = method
+        isVisible = true
 
         val color: Color = when (method) {
             "FFT" -> Color.decode("#0091EA")

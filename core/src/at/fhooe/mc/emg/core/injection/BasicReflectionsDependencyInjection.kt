@@ -3,6 +3,7 @@ package at.fhooe.mc.emg.core.injection
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
+import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisView
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.SimpleFileStorage
@@ -10,8 +11,8 @@ import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.storage.config.JsonEmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.ToolView
-import at.fhooe.mc.emg.designer.EmgComponent
-import at.fhooe.mc.emg.designer.EmgComponentProperty
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgComponentFactory
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
@@ -81,9 +82,20 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
     }
 
     override val frequencyAnalysisMethods: List<FrequencyAnalysisMethod> by lazy {
+
+        val frequencyViewClass = reflections
+                .getSubTypesOf(FrequencyAnalysisView::class.java)
+                .firstOrNull { !it.isInterface }
+
         reflections.getSubTypesOf(FrequencyAnalysisMethod::class.java)
                 .filter { !it.isInterface }
-                .map { it.newInstance() }
+                .map {
+                    val instance = it.newInstance()
+                    if (instance.hasDisplay && frequencyViewClass != null) {
+                        instance.view = frequencyViewClass.newInstance()
+                    }
+                    instance
+                }
                 .sortedBy { it.name }
     }
 

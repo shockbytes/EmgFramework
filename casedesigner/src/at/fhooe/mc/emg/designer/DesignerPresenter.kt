@@ -22,7 +22,7 @@ import java.io.File
  */
 abstract class DesignerPresenter(private val view: DesignerView,
                                  private val designerComponents: List<EmgBaseComponent>,
-                                 private val designerPipes: List<EmgComponentPipe<*,*>>) : DesignerViewCallback {
+                                 private val designerPipes: List<EmgComponentPipe<*, *>>) : DesignerViewCallback {
 
     private val gson: Gson
     private var hasModelChanged = false
@@ -143,8 +143,12 @@ abstract class DesignerPresenter(private val view: DesignerView,
         }
     }
 
-    override fun showProperties(component: EmgBaseComponent) {
+    override fun showDetails(component: EmgBaseComponent) {
         println("show properties for ${component.name}!")
+    }
+
+    override fun drawBackground(draw: Boolean) {
+        view.drawBackgroundForInteractionView(draw)
     }
 
     fun start(file: File? = null) {
@@ -170,7 +174,6 @@ abstract class DesignerPresenter(private val view: DesignerView,
     }
 
     private fun renewConnectors(list: List<EmgBaseComponent>): List<EmgBaseComponent> {
-
         val renewed = list.filter { it !is ConnectorComponent }.toMutableList()
         return list.mapNotNull { it as? ConnectorComponent }
                 .mapNotNullTo((renewed)) { c ->

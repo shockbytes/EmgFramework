@@ -24,9 +24,11 @@ interface VisualView<out T> {
     val requestBufferedUpdates: Boolean
         get() = bufferSpan > 0
 
+    var filter: List<Filter>
+
     fun initialize()
 
-    fun update(data: EmgData, filters: List<Filter>)
+    fun update(data: EmgData)
 
     fun setYMaximum(maximum: Double)
 
