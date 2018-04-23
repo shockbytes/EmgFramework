@@ -15,6 +15,7 @@ import at.fhooe.mc.emg.core.view.EmgView
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
+import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.messaging.MessageParser
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
@@ -31,7 +32,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                             private val tools: List<Tool>,
                             private val filters: List<Filter>,
                             private val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>,
-                            protected val designerComponents: List<EmgBaseComponent>,
+                            protected val designerComponents: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<*,*>>>,
                             private val configStorage: EmgConfigStorage,
                             open var emgView: EmgView?) : EmgViewCallback {
 

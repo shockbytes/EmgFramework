@@ -3,6 +3,7 @@ package at.fhooe.mc.emg.designer
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.model.Origin
+import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.util.GsonComponentDeserializer
 import at.fhooe.mc.emg.designer.util.GsonComponentSerializer
 import at.fhooe.mc.emg.designer.util.GsonSingleComponentSerializer
@@ -20,7 +21,8 @@ import java.io.File
  * Date:    16.04.2018
  */
 abstract class DesignerPresenter(private val view: DesignerView,
-                                 private val designerComponents: List<EmgBaseComponent>) : DesignerViewCallback {
+                                 private val designerComponents: List<EmgBaseComponent>,
+                                 private val designerPipes: List<EmgComponentPipe<*,*>>) : DesignerViewCallback {
 
     private val gson: Gson
     private var hasModelChanged = false
@@ -77,8 +79,7 @@ abstract class DesignerPresenter(private val view: DesignerView,
     }
 
     override fun validate() {
-
-        ComponentLogic.build(interactionComponents).subscribe({
+        ComponentLogic.validate(interactionComponents, designerPipes).subscribe({
             view.showStatusMessage("Validation successful!")
         }, { throwable ->
             view.showStatusMessage("Validation error -> ${throwable.message}")
@@ -86,8 +87,11 @@ abstract class DesignerPresenter(private val view: DesignerView,
     }
 
     override fun run() {
-        println("Run")
-        // TODO Execute workflow
+        ComponentLogic.run(interactionComponents, designerPipes).subscribe({
+            view.showStatusMessage("Executing actions!")
+        }, { throwable ->
+            view.showStatusMessage("Execution error -> ${throwable.message}")
+        })
     }
 
     override fun addComponentByDoubleClick(component: EmgBaseComponent) {

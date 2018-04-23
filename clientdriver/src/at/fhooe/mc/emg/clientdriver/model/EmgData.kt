@@ -46,6 +46,26 @@ class EmgData(private val windowWidth: Int = DEFAULT_WINDOW_WITH,
     }
 
     /**
+     * Returns the last entry point of a single channel of the data
+     * @param channel Desired channel, as it is assumed the data provides multiple channels
+     *
+     * @return The last EmgPoint of the given channel
+     */
+    fun lastOfChannel(channel: Int): EmgPoint {
+        return channels[channel].last()
+    }
+
+
+    /**
+     * Returns the last entry of recorded heart rate values
+     *
+     * @return The last heart rate value
+     */
+    fun lastOfHeartRate(): Int {
+        return heartRateData.last()
+    }
+
+    /**
      * Updates a channel with a given EmgPoint.
      *
      * @param channel Indicates the channel to update with the data

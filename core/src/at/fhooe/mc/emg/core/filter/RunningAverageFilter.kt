@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.core.filter
 
 import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentRelayPort
 import at.fhooe.mc.emg.designer.EmgComponentType
 import java.util.*
 
@@ -14,6 +15,7 @@ class RunningAverageFilter(private val size: Int = 30) : Filter() {
     override val name = "Running average"
     override val shortName = "rAvg"
 
+    @EmgComponentRelayPort(Double::class, Double::class)
     override fun step(x: Double): Double {
 
         if (buffer.size == size) {

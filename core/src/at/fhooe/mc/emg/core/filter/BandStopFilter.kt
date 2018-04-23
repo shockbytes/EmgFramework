@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.core.filter
 
 import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentRelayPort
 import at.fhooe.mc.emg.designer.EmgComponentType
 
 
@@ -13,6 +14,7 @@ class BandStopFilter : Filter() {
     override val name = "50Hz Butterworth band stop"
     override val shortName = "BS"
 
+    @EmgComponentRelayPort(Double::class, Double::class)
     override fun step(x: Double): Double {
         v[0] = v[1]
         v[1] = v[2]

@@ -16,8 +16,12 @@ object Main {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
             val injector = BasicReflectionsDependencyInjection()
-            DesktopEmgPresenter(injector.driver, injector.tools, injector.filter,
-                    injector.frequencyAnalysisMethods, injector.components, injector.configStorage,
+            DesktopEmgPresenter(injector.driver,
+                    injector.tools,
+                    injector.filter,
+                    injector.frequencyAnalysisMethods,
+                    Pair(injector.components, injector.componentPipes),
+                    injector.configStorage,
                     DesktopMainWindow())
                     .start()
         }

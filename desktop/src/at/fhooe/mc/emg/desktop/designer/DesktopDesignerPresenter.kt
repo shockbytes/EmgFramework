@@ -4,12 +4,16 @@ import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.SimpleFileStorage
 import at.fhooe.mc.emg.designer.DesignerPresenter
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
+import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.view.DesignerView
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.io.File
 
-class DesktopDesignerPresenter(view: DesignerView, designerComponents: List<EmgBaseComponent>) : DesignerPresenter(view, designerComponents) {
+class DesktopDesignerPresenter(view: DesignerView,
+                               designerComponents: List<EmgBaseComponent>,
+                               designerPipes: List<EmgComponentPipe<*,*>>)
+    : DesignerPresenter(view, designerComponents, designerPipes) {
 
     private val fileStorage: FileStorage = SimpleFileStorage()
 

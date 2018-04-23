@@ -2,6 +2,7 @@ package at.fhooe.mc.emg.core.filter
 
 import at.fhooe.mc.emg.core.util.filter.sg.CurveSmooth
 import at.fhooe.mc.emg.designer.EmgComponent
+import at.fhooe.mc.emg.designer.EmgComponentRelayPort
 import at.fhooe.mc.emg.designer.EmgComponentType
 import java.util.*
 
@@ -13,6 +14,7 @@ class SavitzkyGolayFilter(private val sgFilterWidth: Int = 10) : Filter() {
     override val name = "Savitzky Golay Filter"
     override val shortName = "SG"
 
+    @EmgComponentRelayPort(Double::class, Double::class)
     override fun step(x: Double): Double {
 
         if (buffer.size == sgFilterWidth) {

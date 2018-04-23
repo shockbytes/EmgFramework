@@ -8,6 +8,7 @@ import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
+import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.desktop.designer.DesktopDesignerPresenter
 import at.fhooe.mc.emg.desktop.designer.view.DesktopDesignerView
 import at.fhooe.mc.emg.desktop.view.DesktopEmgView
@@ -27,7 +28,7 @@ class DesktopEmgPresenter(c: List<EmgClientDriver>,
                           t: List<Tool>,
                           f: List<Filter>,
                           fam: List<FrequencyAnalysisMethod>,
-                          ebc: List<EmgBaseComponent>,
+                          ebc: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<*,*>>>,
                           cs: EmgConfigStorage,
                           v: DesktopEmgView<JComponent>) : EmgPresenter(c, t, f, fam, ebc, cs, v) {
 
@@ -38,11 +39,11 @@ class DesktopEmgPresenter(c: List<EmgClientDriver>,
     }
 
     override fun openAcquisitionCaseDesigner() {
-        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents).start()
+        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents.first, designerComponents.second).start()
     }
 
     override fun openAcquisitionCaseDesignerFile(file: File) {
-        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents).start(file)
+        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents.first, designerComponents.second).start(file)
     }
 
 

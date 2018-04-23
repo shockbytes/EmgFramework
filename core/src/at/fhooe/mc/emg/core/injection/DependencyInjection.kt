@@ -7,6 +7,7 @@ import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
+import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 
 interface DependencyInjection {
 
@@ -19,6 +20,8 @@ interface DependencyInjection {
     val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>
 
     val components: List<EmgBaseComponent>
+
+    val componentPipes: List<EmgComponentPipe<*, *>>
 
     val fileStorage: FileStorage
 

@@ -14,6 +14,7 @@ import at.fhooe.mc.emg.designer.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentProperty
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgComponentFactory
+import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
 import org.reflections.Reflections
 import org.reflections.scanners.FieldAnnotationsScanner
@@ -52,7 +53,7 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
     override val filter: List<Filter> by lazy {
         reflections.getSubTypesOf(Filter::class.java)
                 .map {
-                    val filter =  filterByClass(it)
+                    val filter = filterByClass(it)
                     filter.isEnabled = filter.name == "Raw"
                     filter
                 }
@@ -89,16 +90,22 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
     override val components: List<EmgBaseComponent> by lazy {
 
         val params = reflections.getFieldsAnnotatedWith(EmgComponentProperty::class.java)
-                .map { EmgComponentParameter(it.declaringClass, it.type, it.name)}
+                .map { EmgComponentParameter(it.declaringClass, it.type, it.name) }
 
         reflections.getTypesAnnotatedWith(EmgComponent::class.java)
-                .map {cls ->
+                .map { cls ->
                     // This cast must always succeed, because the reflections API is queried only for those classes
                     val component = cls.annotations.find { it.annotationClass == EmgComponent::class } as EmgComponent
                     EmgComponentFactory.byType(cls.simpleName, cls.name,
                             params.filter { it.declaringClass == cls },
                             component.type)
                 }
+                .sortedBy { it.name }
+    }
+
+    override val componentPipes: List<EmgComponentPipe<*, *>> by lazy {
+        reflections.getSubTypesOf(EmgComponentPipe::class.java)
+                .map { it.newInstance() }
                 .sortedBy { it.name }
     }
 
