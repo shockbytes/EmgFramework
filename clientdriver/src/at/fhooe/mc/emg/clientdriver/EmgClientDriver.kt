@@ -99,7 +99,6 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
     init {
         data = EmgData(channelWindowWidth)
     }
-
     /**
      * Resets all stored data
      */

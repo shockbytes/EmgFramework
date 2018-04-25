@@ -108,7 +108,7 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
     private fun getServerMessageForTypeType(type: String, data: String): ServerMessage {
         return when (type) {
-            "delay" -> ServerMessage(ServerMessage.MessageType.FREQUENCY, data.toLong())
+            "delay" -> ServerMessage(ServerMessage.MessageType.FREQUENCY, data)
             else -> ServerMessage(ServerMessage.MessageType.NA, data)
         }
     }

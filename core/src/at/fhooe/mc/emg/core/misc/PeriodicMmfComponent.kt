@@ -29,7 +29,7 @@ class PeriodicMmfComponent {
 
         data.add(x)
         if (data.size >= capacity) {
-            // TODO Calculate mean and mediean frequency
+            // TODO Calculate mean and median frequency
             val rms = data.toDoubleArray().rms()
             //outputPort.onNext(rms)
             data.clear()

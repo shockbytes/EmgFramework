@@ -26,3 +26,5 @@ captures/
 
 # Keystore files
 *.jks
+
+/protocol_buffer

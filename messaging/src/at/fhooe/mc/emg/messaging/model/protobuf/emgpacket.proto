@@ -1,0 +1,22 @@
+
+syntax = "proto3";
+
+package at.fhooe.mc.emg.messaging.model.protobuf;
+
+option java_package = "at.fhooe.mc.emg.messaging.model.protobuf";
+option java_outer_classname = "ProtocolBuffers";
+
+message EmgPacket {
+    repeated double channels = 1;
+    int64 timestamp = 2;
+    int32 heartRate = 3;
+}
+
+message ServerMessage {
+    int32 type = 1;
+    string data = 2;
+}
+
+message FrequencyMessage {
+    int32 delay = 1;
+}
