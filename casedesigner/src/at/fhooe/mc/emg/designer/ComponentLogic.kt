@@ -9,7 +9,9 @@ import at.fhooe.mc.emg.designer.component.EmgDeviceComponent
 import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 import org.reflections.ReflectionUtils
+import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 
 object ComponentLogic {
@@ -62,7 +64,6 @@ object ComponentLogic {
             // TODO Run workflow
         }
     }
-
 
     @Throws(ValidationException::class)
     private fun checkComponentConnections(components: List<EmgBaseComponent>,
@@ -141,6 +142,7 @@ object ComponentLogic {
         val relayPort = ReflectionUtils.getMethods(Class.forName(c.qualifiedName),
                 ReflectionUtils.withAnnotation(EmgComponentRelayPort::class.java)).firstOrNull()
 
+        // Check in super class if in concrete class no output port is defined
         if (outputPort == null && relayPort == null) {
             outputPort = ReflectionUtils.getSuperTypes(Class.forName(c.qualifiedName))
                     .mapNotNull { cls ->
@@ -148,6 +150,13 @@ object ComponentLogic {
                                 .getFields(cls, ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java))
                                 .firstOrNull()
                     }.firstOrNull()
+        }
+
+        // Extra check if output port has the right signature
+        if (outputPort != null) {
+            if (Modifier.isPrivate(outputPort.modifiers) || (outputPort.type == PublishSubject::class)) {
+                throw ValidationException("Output port in ${outputPort.declaringClass} is not from type PublishSubject or public")
+            }
         }
 
         val consumes: KClass<*>?

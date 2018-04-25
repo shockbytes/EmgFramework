@@ -3,8 +3,11 @@ package at.fhooe.mc.emg.desktop.client.serial
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -19,14 +22,6 @@ import java.util.*
 @EmgComponent(type = EmgComponentType.DEVICE)
 class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv), SerialPortEventListener {
 
-    private var ports: List<CommPortIdentifier>? = null
-
-    private var inputReader: BufferedReader? = null
-    private var outputWriter: BufferedWriter? = null
-    private var connectionPort: SerialPort? = null
-
-    private var portName: String? = null
-
     override val name: String
         get() = if (portName == null) shortName else "Serial device @ $portName"
 
@@ -34,16 +29,26 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
 
     override val isDataStorageEnabled: Boolean = true
 
-    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
+    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
 
     override val category: ClientCategory = ClientCategory.SERIAL
 
+    @EmgComponentProperty
     var dataRate: Int = 0
+
+    @EmgComponentProperty
+    var portName: String? = null
+
+    private var ports: List<CommPortIdentifier>? = null
+    private var inputReader: BufferedReader? = null
+    private var outputWriter: BufferedWriter? = null
+    private var connectionPort: SerialPort? = null
 
     init {
         initializePorts()
     }
 
+    @EmgComponentEntryPoint
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
         Completable.fromAction {
 
@@ -59,6 +64,7 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
         }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
+    @EmgComponentExitPoint
     override fun disconnect() {
 
         connectionPort?.removeEventListener()
@@ -108,17 +114,13 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
                 as Enumeration<CommPortIdentifier>?)
 
         if (ports?.isNotEmpty() == true) {
-            selectSerialPort(ports!![0].name)
+            portName = ports?.get(0)?.name
         }
     }
 
     @Throws(NoSuchPortException::class)
     private fun getPortByName(name: String?): CommPortIdentifier {
         return CommPortIdentifier.getPortIdentifier(name)
-    }
-
-    private fun setPortName(portName: String) {
-        this.portName = portName
     }
 
     fun getAvailablePortNames(forceUpdate: Boolean): List<String> {
@@ -128,9 +130,6 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
         return ports?.map { it.name } ?: listOf()
     }
 
-    fun selectSerialPort(port: String) {
-        setPortName(port)
-    }
 
     companion object {
 

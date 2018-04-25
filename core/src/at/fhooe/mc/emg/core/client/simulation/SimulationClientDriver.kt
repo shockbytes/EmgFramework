@@ -46,7 +46,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     @EmgComponentProperty
     var isEndlessLoopEnabled = false
 
-    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V2)
+    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V2)
 
     override val category: ClientCategory = ClientCategory.SIMULATION
 

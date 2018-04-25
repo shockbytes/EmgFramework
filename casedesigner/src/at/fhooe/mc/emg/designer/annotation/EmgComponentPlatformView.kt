@@ -1,3 +1,3 @@
 package at.fhooe.mc.emg.designer.annotation
 
-annotation class EmgComponentSinkView
+annotation class EmgComponentPlatformView

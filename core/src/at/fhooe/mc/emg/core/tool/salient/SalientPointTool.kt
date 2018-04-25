@@ -22,6 +22,10 @@ import io.reactivex.subjects.PublishSubject
 @EmgComponent(EmgComponentType.RELAY_SINK)
 class SalientPointTool(override var toolView: SalientPointToolView? = null) : Tool, SalientPointToolViewCallback {
 
+    /*
+        private val testData: List<Double> = listOf(3.0, 2.4, 3.5, 6.0, 6.2, 5.8, 6.5, 14.0, 15.0, 18.0, 17.0, 27.0, 30.0)
+     */
+
     override val name = "Salient Point Detection"
 
     private val points: MutableList<Double> = mutableListOf()
@@ -31,6 +35,7 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
     @EmgComponentProperty
     var salientAngleThreshold: Int = 15
 
+    @JvmField
     @EmgComponentOutputPort(SalientPoint::class)
     var outputPort: PublishSubject<SalientPoint> = PublishSubject.create()
 
@@ -48,8 +53,8 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
     }
 
     @EmgComponentInputPort(Double::class)
-    override fun update(d: Double) {
-        points.add(d)
+    override fun update(value: Double) {
+        points.add(value)
         toolView?.updateChart(DoubleArray(points.size) { it.toDouble() }.toList(), points)
         calculateSalientPoint()
     }

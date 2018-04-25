@@ -68,7 +68,7 @@ class DesktopSerialClientDriverConfigView : EmgClientDriverConfigView {
             // Set selected port
             val port: String? = comboBoxPorts.selectedItem?.toString()
             if (port != null) {
-                client.selectSerialPort(port)
+                client.portName = port
             }
             // Set data rate
             client.dataRate = comboBoxDatarates.selectedItem.toString().toInt()

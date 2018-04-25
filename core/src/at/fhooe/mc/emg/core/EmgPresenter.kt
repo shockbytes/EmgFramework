@@ -32,7 +32,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                             private val tools: List<Tool>,
                             private val filter: List<Filter>,
                             private val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>,
-                            protected val designerComponents: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<*,*>>>,
+                            protected val designerComponents: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<*, *>>>,
                             private val configStorage: EmgConfigStorage,
                             open var emgView: EmgView?) : EmgViewCallback, Toolable {
 
@@ -58,6 +58,8 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
     private var client: EmgClientDriver
     private var config: EmgConfig
+
+    private val connectedTools: MutableList<Tool> = mutableListOf()
 
     init {
         // Load configuration
@@ -168,6 +170,16 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         return client.data.section(start, stop, channel)
     }
 
+    override fun registerToolForUpdates(t: Tool) {
+        if (!connectedTools.contains(t)) {
+            connectedTools.add(t)
+        }
+    }
+
+    override fun unregisterToolUpdates(t: Tool) {
+        connectedTools.remove(t)
+    }
+
 
     override fun connectToClient(successHandler: Action?) {
 
@@ -182,7 +194,6 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
             rawDisposable = client.rawCallbackSubject.subscribe { rawCallbackSubject.onNext(it) }
 
-            // TODO Refactor this!!!
             if (isVisualEnabled) {
                 var channelCallback = client.channeledCallbackSubject.subscribeOn(Schedulers.io())
                 if (visualView.requestScheduler) {
@@ -190,12 +201,12 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                     channelDisposable = if (visualView.requestBufferedUpdates) {
                         channelCallback
                                 .buffer(visualView.bufferSpan, TimeUnit.MILLISECONDS, visualView.scheduler)
-                                .subscribe { it.forEach { visualView.update(it) } }
+                                .subscribe { notifyCachedChanneledCallbacks(it) }
                     } else {
-                        channelCallback.subscribe { visualView.update(it) }
+                        channelCallback.subscribe { notifyChanneledCallbacks(it) }
                     }
                 } else {
-                    channelDisposable = channelCallback.subscribe { visualView.update(it) }
+                    channelDisposable = channelCallback.subscribe { notifyChanneledCallbacks(it) }
                 }
             }
             updateStatus(true)
@@ -235,5 +246,25 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
     }
 
     // ----------------------------------------------------------------------------------------------------
+
+    private fun notifyCachedChanneledCallbacks(data: List<EmgData>) {
+        data.forEach {
+            // Update visual view
+            visualView.update(it)
+
+            // Update connected tools
+            val value = it.lastOfChannel(0).y
+            connectedTools.forEach { t -> t.update(value) }
+        }
+    }
+
+    private fun notifyChanneledCallbacks(data: EmgData) {
+        // Update visual view
+        visualView.update(data)
+
+        // Update connected tools
+        val value = data.lastOfChannel(0).y
+        connectedTools.forEach { t -> t.update(value) }
+    }
 
 }

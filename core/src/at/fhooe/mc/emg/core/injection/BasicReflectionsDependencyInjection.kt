@@ -102,14 +102,14 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
     override val components: List<EmgBaseComponent> by lazy {
 
         val params = reflections.getFieldsAnnotatedWith(EmgComponentProperty::class.java)
-                .map { EmgComponentParameter(it.declaringClass, it.type, it.name) }
+                .map { EmgComponentParameter(it.declaringClass.name, it.type.name, it.name) }
 
         reflections.getTypesAnnotatedWith(EmgComponent::class.java)
                 .map { cls ->
                     // This cast must always succeed, because the reflections API is queried only for those classes
                     val component = cls.annotations.find { it.annotationClass == EmgComponent::class } as EmgComponent
                     EmgComponentFactory.byType(cls.simpleName, cls.name,
-                            params.filter { it.declaringClass == cls },
+                            params.filter { it.declaringClass == cls.name },
                             component.type)
                 }
                 .sortedBy { it.name }

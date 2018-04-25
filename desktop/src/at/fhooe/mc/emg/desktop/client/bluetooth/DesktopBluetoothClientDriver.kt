@@ -3,8 +3,10 @@ package at.fhooe.mc.emg.desktop.client.bluetooth
 import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
-import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -39,7 +41,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     override val category = ClientCategory.BLUETOOTH
 
-    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V3)
+    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V3)
 
     // Debug Mac address
     // Moto G5(s):      D4:63:C6:39:DD:23
@@ -56,6 +58,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     private var reader: BufferedReader? = null
     private var readerDisposable: Disposable? = null
 
+    @EmgComponentEntryPoint
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
         Completable.fromAction {
 
@@ -68,6 +71,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
         }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
 
+    @EmgComponentExitPoint
     override fun disconnect() {
         readerDisposable?.dispose()
         writer?.close()

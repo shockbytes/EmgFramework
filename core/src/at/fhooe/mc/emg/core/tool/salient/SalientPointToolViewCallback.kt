@@ -8,8 +8,6 @@ import at.fhooe.mc.emg.core.tool.ToolViewCallback
  */
 interface SalientPointToolViewCallback : ToolViewCallback {
 
-    fun update(d: Double)
-
     fun updateParameter(confidence: Double, angle: Int)
 
 }

@@ -7,8 +7,9 @@ package at.fhooe.mc.emg.designer
  * <li> RELAY_SINK:     Sink components which provide additionally an output value and an output port
  * <li> TOOL:           Complex computation components with no output port, use RELAY_SINK if tool provides an output value
  * <li> DEVICE:         Driver component for interacting with client devices
+ * <li> RELAY:           Any component type with input and output port
  *
  */
 enum class EmgComponentType {
-    FILTER, SINK, RELAY_SINK, TOOL, DEVICE
+    FILTER, SINK, RELAY_SINK, TOOL, DEVICE, RELAY
 }

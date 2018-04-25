@@ -3,8 +3,6 @@ package at.fhooe.mc.emg.desktop.tool.salient
 import at.fhooe.mc.emg.core.tool.salient.SalientPoint
 import at.fhooe.mc.emg.core.tool.salient.SalientPointToolView
 import at.fhooe.mc.emg.core.tool.salient.SalientPointToolViewCallback
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.XYChartBuilder
@@ -15,7 +13,6 @@ import java.awt.GridLayout
 import java.awt.Toolkit
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.util.concurrent.TimeUnit
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
@@ -43,7 +40,6 @@ class SwingSalientPointToolView : SalientPointToolView {
             override fun windowClosed(e: WindowEvent?) {
                 super.windowClosed(e)
                 toolViewCallback?.onViewClosed()
-                disposable?.dispose()
             }
         })
         frame.isVisible = true
@@ -93,13 +89,6 @@ class SwingSalientPointToolView : SalientPointToolView {
         contentPanel.add(chart(), BorderLayout.CENTER)
         contentPanel.add(parameterPanel(), BorderLayout.EAST)
 
-        // TODO Just Testing
-        val btn = JButton("Testing")
-        btn.addActionListener {
-            startTesting()
-        }
-        contentPanel.add(btn, BorderLayout.SOUTH)
-
         frame.contentPane = contentPanel
         return frame
     }
@@ -144,21 +133,6 @@ class SwingSalientPointToolView : SalientPointToolView {
         panel.add(textAreaPointInfo)
 
         return panel
-    }
-
-    var disposable: Disposable? = null
-    private val testData: List<Double> = listOf(3.0, 2.4, 3.5, 6.0, 6.2, 5.8, 6.5, 14.0, 15.0, 18.0, 17.0, 27.0, 30.0)
-    private fun startTesting() {
-
-        disposable = Observable.interval(1, TimeUnit.SECONDS).subscribe {
-
-            val idx = it.toInt()
-            if (idx < testData.size) {
-                toolViewCallback?.update(testData[idx])
-            } else {
-                disposable?.dispose()
-            }
-        }
     }
 
 }

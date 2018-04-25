@@ -26,14 +26,14 @@ import java.net.InetAddress
 @EmgComponent(type = EmgComponentType.DEVICE)
 class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
-    override val msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
+    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
 
     override val category: ClientCategory = ClientCategory.NETWORK
 
     override val name: String
         get() = "Network device @ $ip"
 
-    override val shortName: String = "Network"
+    override val shortName: String = "Network (UDP)"
 
     override val isDataStorageEnabled: Boolean = true
 

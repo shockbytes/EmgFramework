@@ -108,6 +108,12 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
         timerDisposable?.dispose()
     }
 
+    override fun update(value: Double) {
+        // Not needed in this tool...
+    }
+
+    // --------------------------------------------------------------------------------
+
     private fun startCountdown() {
 
         var disposable: Disposable? = null

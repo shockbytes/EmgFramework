@@ -7,7 +7,7 @@ import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
-import at.fhooe.mc.emg.designer.annotation.EmgComponentSinkView
+import at.fhooe.mc.emg.designer.annotation.EmgComponentPlatformView
 import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
@@ -39,7 +39,7 @@ class XChartVisualView : VisualView<JComponent> {
             }
         }
 
-    @EmgComponentSinkView
+    @EmgComponentPlatformView
     override val view: JComponent
         get() = chartWrapper
 

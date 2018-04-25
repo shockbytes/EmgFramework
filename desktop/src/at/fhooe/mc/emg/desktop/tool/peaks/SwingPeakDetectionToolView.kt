@@ -84,7 +84,7 @@ class SwingPeakDetectionToolView : PeakDetectionToolView {
 
         val configPanel = JPanel()
         configPanel.border = EmptyBorder(8, 8, 8, 8)
-        configPanel.layout = GridLayout(10, 1, 4, 4)
+        configPanel.layout = GridLayout(11, 1, 4, 4)
         configPanel.add(JLabel("Width between peaks"))
         val tfWidth = JTextField(PeakDetector.defaultWidth.toString())
         configPanel.add(tfWidth)
@@ -100,8 +100,15 @@ class SwingPeakDetectionToolView : PeakDetectionToolView {
         labelPeaksFound = JLabel("")
         labelPeaksFound.horizontalAlignment = JLabel.CENTER
         configPanel.add(labelPeaksFound)
+
+        val btnUpdateParameter = JButton("Update parameter")
+        btnUpdateParameter.addActionListener {
+            validate(tfWidth.text, tfThreshold.text, tfDecayRate.text, cbIsRelative.isSelected)
+        }
+        configPanel.add(btnUpdateParameter)
+
         val btnCompute = JButton("Compute peaks")
-        btnCompute.addActionListener { _ -> validate(tfWidth.text, tfThreshold.text, tfDecayRate.text, cbIsRelative.isSelected) }
+        btnCompute.addActionListener { toolViewCallback?.computeManually() }
         configPanel.add(btnCompute)
         contentPanel.add(configPanel, BorderLayout.EAST)
 
@@ -140,7 +147,7 @@ class SwingPeakDetectionToolView : PeakDetectionToolView {
             if (decayRate < 0.0 || decayRate > 1.0) {
                 throw NumberFormatException("Decay Rate must be in range [0, 1]")
             }
-            toolViewCallback?.compute(width, threshold, decayRate, isRelative)
+            toolViewCallback?.updateParameter(width, threshold, decayRate, isRelative)
         } catch (nfe: NumberFormatException) {
             showError(nfe.localizedMessage, nfe.javaClass.simpleName)
         }

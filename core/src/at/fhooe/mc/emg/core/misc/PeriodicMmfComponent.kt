@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.core.misc
 
+import at.fhooe.mc.emg.core.analysis.model.MeanMedianFrequency
 import at.fhooe.mc.emg.core.util.rms
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
@@ -9,23 +10,17 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import io.reactivex.subjects.PublishSubject
 
 /**
- * Author:  Martin Macheiner
- * Date:    23.04.2018
- *
- * This class consumes continously EMG data and calculates
- * the RMS value of the signal in a fixed interval
- *
+ * Periodic Mean Median Frequency computation component
  */
 @EmgComponent(type = EmgComponentType.RELAY)
-class PeriodicRmsComponent {
+class PeriodicMmfComponent {
 
-    @JvmField
     @EmgComponentProperty
-    var capacity: Int = 2000
+    var capacity = 2000
 
     @JvmField
-    @EmgComponentOutputPort(Double::class)
-    var outputPort: PublishSubject<Double> = PublishSubject.create()
+    @EmgComponentOutputPort(MeanMedianFrequency::class)
+    var outputPort: PublishSubject<MeanMedianFrequency> = PublishSubject.create()
 
     private val data: MutableList<Double> = ArrayList(capacity)
 
@@ -34,8 +29,9 @@ class PeriodicRmsComponent {
 
         data.add(x)
         if (data.size >= capacity) {
+            // TODO Calculate mean and mediean frequency
             val rms = data.toDoubleArray().rms()
-            outputPort.onNext(rms)
+            //outputPort.onNext(rms)
             data.clear()
         }
     }

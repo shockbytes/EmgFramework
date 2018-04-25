@@ -37,6 +37,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     val rawCallbackSubject: PublishSubject<String> = PublishSubject.create()
 
+    @JvmField
     @EmgComponentOutputPort(EmgData::class)
     val channeledCallbackSubject: PublishSubject<EmgData> = PublishSubject.create()
 
@@ -74,7 +75,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
      * NOTE: Each subtype of EmgClientDriver must agree to utilize the EmgPacket as the common data type. On the other
      * hand this revokes the advantages of a generic implementation, but on the other hand it eases the development.
      */
-    abstract val msgParser: MessageParser<EmgPacket>
+    abstract var msgParser: MessageParser<EmgPacket>
 
     /**
      * Tries to connect to the client. This action can take up to some seconds, depending on the ClientCategory.

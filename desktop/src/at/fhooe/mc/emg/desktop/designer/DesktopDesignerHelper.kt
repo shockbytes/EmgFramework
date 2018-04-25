@@ -19,6 +19,7 @@ object DesktopDesignerHelper {
             is EmgToolComponent -> Color.BLUE
             is EmgSinkComponent -> Color.BLACK
             is EmgRelaySinkComponent -> Color.LIGHT_GRAY
+            is EmgRelayComponent -> Color.RED
             else -> Color.decode("#424242")
         }
     }
@@ -30,6 +31,7 @@ object DesktopDesignerHelper {
             is EmgToolComponent -> "ic_component_tool.png"
             is EmgSinkComponent -> "ic_component_sink.png"
             is EmgRelaySinkComponent -> "ic_component_relay_sink.png"
+            is EmgRelayComponent -> "ic_component_relay.png"
             else -> null
         }
         return if (filename != null) {
@@ -40,7 +42,6 @@ object DesktopDesignerHelper {
     }
 
     fun drawCommand(command: DrawCommand, g: Graphics?) {
-
         when (command) {
             is BoxDrawCommand -> drawBoxCommand(command, g)
             is LineDrawCommand -> drawLineCommand(command, g)
@@ -56,7 +57,6 @@ object DesktopDesignerHelper {
     }
 
     private fun drawBoxCommand(c: BoxDrawCommand, g: Graphics?) {
-
         // Draw a background for the standard view
         if (!c.transparentBackground) {
             g?.color = blueprintColor
@@ -76,16 +76,16 @@ object DesktopDesignerHelper {
 
     private fun drawCenteredString(c: CenteredStringDrawCommand, g: Graphics?) {
         val width = g?.fontMetrics?.stringWidth(c.text) ?: c.maxWidth
-        val overflowPad = 8
+        val overflowPadding = 8
         var text = c.text
-        val xOff = if (width < c.maxWidth) {
-            val pad = c.maxWidth - width
-            pad / 2
+        val xOffset = if (width < c.maxWidth) {
+            val padding = c.maxWidth - width
+            padding / 2
         } else {
-            text = SwingUtilities2.clipStringIfNecessary(null, g?.fontMetrics, c.text, c.maxWidth - overflowPad)
-            overflowPad / 2
+            text = SwingUtilities2.clipStringIfNecessary(null, g?.fontMetrics, c.text, c.maxWidth - overflowPadding)
+            overflowPadding / 2
         }
-        g?.drawString(text, c.x + xOff, c.y)
+        g?.drawString(text, c.x + xOffset, c.y)
     }
 
     private fun drawCenteredComponentImage(c: CenteredComponentImageDrawCommand, g: Graphics?) {
@@ -103,6 +103,7 @@ object DesktopDesignerHelper {
             "EmgToolComponent" -> "ic_component_tool.png"
             "EmgSinkComponent" -> "ic_component_sink.png"
             "EmgRelaySinkComponent" -> "ic_component_relay_sink.png"
+            "EmgRelayComponent" -> "ic_component_relay.png"
             else -> null
         }
         return if (filename != null) {

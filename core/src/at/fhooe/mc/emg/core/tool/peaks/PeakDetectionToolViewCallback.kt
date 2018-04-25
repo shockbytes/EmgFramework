@@ -4,6 +4,8 @@ import at.fhooe.mc.emg.core.tool.ToolViewCallback
 
 interface PeakDetectionToolViewCallback : ToolViewCallback {
 
-    fun compute(width: Int, threshold: Double, decayRate: Double, isRelative: Boolean)
+    fun computeManually()
+
+    fun updateParameter(width: Int, threshold: Double, decayRate: Double, isRelative: Boolean)
 
 }

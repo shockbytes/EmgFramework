@@ -103,7 +103,7 @@ abstract class EmgBaseComponent(val name: String = "",
     }
 
     open fun drawCompact(scale: Int): List<DrawCommand> {
-        return listOf<DrawCommand>(BoxDrawCommand(
+        return listOf(BoxDrawCommand(
                 origin.x / scale,
                 origin.y / scale,
                 box.width / scale,
