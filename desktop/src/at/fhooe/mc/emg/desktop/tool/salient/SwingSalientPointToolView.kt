@@ -55,26 +55,31 @@ class SwingSalientPointToolView : SalientPointToolView {
         chartWrapper.repaint()
     }
 
-    override fun drawSalientPoint(point: SalientPoint) {
-
+    override fun updateSalientPointInformation(point: SalientPoint) {
         textAreaPointInfo.text = "$point"
+    }
+
+    override fun drawSalientPoint(point: SalientPoint) {
 
         val yData = chart.seriesMap["Data"]?.yData ?: return
         val xSeries: List<Double> = listOf(0.0, point.x.toDouble(), yData.size.toDouble() - 1)
         val ySeries: List<Double> = listOf(yData.first(), point.y, yData.last())
 
-        if (chart.seriesMap.size == 1) {
-            chart.addSeries("Salient Point", xSeries, ySeries)
-        } else if (chart.seriesMap.size > 1) {
-            chart.updateXYSeries("Salient Point", xSeries, ySeries, null)
+        synchronized(this) {
+            if (chart.seriesMap.size == 1) {
+                chart.addSeries("Salient Point", xSeries, ySeries)
+            } else if (chart.seriesMap.size > 1) {
+                chart.updateXYSeries("Salient Point", xSeries, ySeries, null)
+            }
+            chartWrapper.repaint()
         }
-
-        chartWrapper.repaint()
     }
 
     override fun clearSalientPoint() {
-        chart.removeSeries("Salient Point")
-        chartWrapper.repaint()
+        synchronized(this) {
+            chart.removeSeries("Salient Point")
+            chartWrapper.repaint()
+        }
     }
 
     private fun wrap(): JFrame {
@@ -112,8 +117,8 @@ class SwingSalientPointToolView : SalientPointToolView {
         val panel = JPanel(GridLayout(6, 1, 4, 4))
         panel.border = EmptyBorder(4, 4, 4, 4)
 
-        val tfAngle = JTextField("15")
-        val tfConfidence = JTextField("0.5")
+        val tfAngle = JTextField("0")
+        val tfConfidence = JTextField("50.0")
         val btnApply = JButton("Apply")
         btnApply.addActionListener {
             val angle = tfAngle.text.toIntOrNull()
@@ -125,9 +130,9 @@ class SwingSalientPointToolView : SalientPointToolView {
         textAreaPointInfo = JTextArea()
         textAreaPointInfo.isEditable = false
 
-        panel.add(JLabel("Angle threshold (5 - 90°)"))
+        panel.add(JLabel("Angle threshold (in degree)"))
         panel.add(tfAngle)
-        panel.add(JLabel("Confidence threshold (0-1)"))
+        panel.add(JLabel("Confidence threshold"))
         panel.add(tfConfidence)
         panel.add(btnApply)
         panel.add(textAreaPointInfo)

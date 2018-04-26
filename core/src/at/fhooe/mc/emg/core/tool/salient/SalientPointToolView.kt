@@ -10,6 +10,8 @@ interface SalientPointToolView: ToolView<SalientPointToolViewCallback> {
 
     fun updateChart(xVals: List<Double>, yVals: List<Double>)
 
+    fun updateSalientPointInformation(point: SalientPoint)
+
     fun drawSalientPoint(point: SalientPoint)
 
     fun clearSalientPoint()
