@@ -8,6 +8,8 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgDeviceComponent
 import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
+import at.fhooe.mc.emg.designer.model.Workflow
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import org.reflections.ReflectionUtils
@@ -45,23 +47,23 @@ object ComponentLogic {
         return ConnectionResult.GRANT
     }
 
-    fun validate(components: List<EmgBaseComponent>, pipes: List<EmgComponentPipe<*, *>>): Single<Boolean> {
-        return Single.fromCallable {
-            // Perform validation checks
+    fun validate(components: List<EmgBaseComponent>, pipes: List<EmgComponentPipe<*, *>>): Completable {
+        // Perform validation checks
+        return Completable.fromCallable {
             checkForDriverComponent(components)
             checkComponentPorts(components)
             checkComponentConnections(components, pipes)
-            true
         }
     }
 
-    fun run(components: List<EmgBaseComponent>, pipes: List<EmgComponentPipe<*, *>>): Single<Boolean> {
+    fun build(components: List<EmgBaseComponent>, pipes: List<EmgComponentPipe<Any, Any>>): Single<Workflow> {
         return Single.fromCallable {
 
-            // Throws an error if not valid
+            // Throws an error if not validated
             validate(components, pipes).blockingGet()
 
-            // TODO Run workflow
+            val connectors = components.mapNotNull { it as? ConnectorComponent }
+            buildWorkflow(connectors, pipes)
         }
     }
 
@@ -135,11 +137,12 @@ object ComponentLogic {
      */
     private fun getPortConnectivityInformation(c: EmgBaseComponent): Triple<KClass<*>?, KClass<*>?, Boolean> {
 
-        val inputPort = ReflectionUtils.getMethods(Class.forName(c.qualifiedName),
+        val clazz = Class.forName(c.qualifiedName)
+        val inputPort = ReflectionUtils.getMethods(clazz,
                 ReflectionUtils.withAnnotation(EmgComponentInputPort::class.java)).firstOrNull()
-        var outputPort = ReflectionUtils.getFields(Class.forName(c.qualifiedName),
+        var outputPort = ReflectionUtils.getFields(clazz,
                 ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java)).firstOrNull()
-        val relayPort = ReflectionUtils.getMethods(Class.forName(c.qualifiedName),
+        val relayPort = ReflectionUtils.getMethods(clazz,
                 ReflectionUtils.withAnnotation(EmgComponentRelayPort::class.java)).firstOrNull()
 
         // Check in super class if in concrete class no output port is defined
@@ -176,6 +179,62 @@ object ComponentLogic {
                     .let { (it as? EmgComponentOutputPort)?.produces }
         }
         return Triple(consumes, produces, relayPort != null)
+    }
+
+    private fun buildWorkflow(connectors: List<ConnectorComponent>,
+                              pipes: List<EmgComponentPipe<Any, Any>>): Workflow {
+
+        val workflowBuilder = Workflow.Builder()
+        val relayComponentList: MutableList<Workflow.Consumer> = mutableListOf()
+        // TODO Replace relayport components with a pipe
+        connectors
+                .groupBy { it.start } // Group output components by same input component
+                .forEach { map ->
+
+                    val start = map.key
+                    val endpoints = map.value
+
+                    // Create producer and consumer and corresponding pipes
+                    // A producer instance is already stored inside a consumer instance --> Reuse it, otherwise workflow is not working
+                    val reusedConsumer = relayComponentList.find { it.qualifiedName == start.qualifiedName }
+                    val producer = if (reusedConsumer != null) {
+                        Workflow.Producer.of(start, reusedConsumer)
+                    } else {
+                        Workflow.Producer.of(start)
+                    }
+
+                    val (_, _, hasRelayPort) = getPortConnectivityInformation(start)
+                    val consumer = endpoints.map {
+                        val (pipe, hasOutput) = findSuitablePipe(start, it.end, pipes)
+                        val consumer = Workflow.Consumer.of(it.end, pipe)
+                        if (hasOutput) {
+                            relayComponentList.add(consumer)
+                        }
+                        consumer
+                    }
+                    // Let the workflow object wire them together
+                    workflowBuilder.addItem(Workflow.WorkflowItem(producer, consumer))
+                }
+        return workflowBuilder.build()
+    }
+
+    /**
+     * @return The suitable pipe and a boolean which indicates if the consumer is also a producer, wrapped inside a Pair
+     */
+    private fun findSuitablePipe(start: EmgBaseComponent,
+                                 end: EmgBaseComponent,
+                                 pipes: List<EmgComponentPipe<Any, Any>>): Pair<EmgComponentPipe<Any, Any>, Boolean> {
+
+        val (_, startProduces, _) = getPortConnectivityInformation(start)
+        val (endConsumes, endProduces, _) = getPortConnectivityInformation(end)
+        val hasOutput = endProduces != null
+
+        val pipe = pipes.find {
+            val (pipeConsumes, pipeProduces) = it.ports
+            (startProduces == pipeConsumes) && (pipeProduces == endConsumes)
+        } ?: throw IllegalArgumentException("There is no valid pipe for ${start.name} / ${end.name} ")
+
+        return Pair(pipe, hasOutput)
     }
 
 }

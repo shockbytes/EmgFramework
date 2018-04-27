@@ -21,7 +21,7 @@ class PeriodicRmsComponent {
 
     @JvmField
     @EmgComponentProperty
-    var capacity: Int = 2000
+    var capacity: Int = 100
 
     @JvmField
     @EmgComponentOutputPort(Double::class)
@@ -31,11 +31,11 @@ class PeriodicRmsComponent {
 
     @EmgComponentInputPort(Double::class)
     fun update(x: Double) {
-
         data.add(x)
         if (data.size >= capacity) {
             val rms = data.toDoubleArray().rms()
             outputPort.onNext(rms)
+            println("Send periodic RMS: $rms")
             data.clear()
         }
     }

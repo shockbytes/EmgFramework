@@ -2,7 +2,7 @@ package at.fhooe.mc.emg.designer.component.pipe
 
 import kotlin.reflect.KClass
 
-interface EmgComponentPipe<K, V> {
+interface EmgComponentPipe<in K, out V> {
 
     val ports: Pair<KClass<*>, KClass<*>>
 

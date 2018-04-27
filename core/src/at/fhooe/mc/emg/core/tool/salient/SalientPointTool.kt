@@ -56,6 +56,8 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
 
     @EmgComponentInputPort(Double::class)
     override fun update(value: Double) {
+        println("Update SalientPointTool: $value")
+
         points.add(value)
         toolView?.updateChart(DoubleArray(points.size) { it.toDouble() }.toList(), points)
         calculateSalientPoint()

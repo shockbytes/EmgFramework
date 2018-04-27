@@ -21,7 +21,7 @@ interface DependencyInjection {
 
     val components: List<EmgBaseComponent>
 
-    val componentPipes: List<EmgComponentPipe<*, *>>
+    val componentPipes: List<EmgComponentPipe<Any, Any>>
 
     val fileStorage: FileStorage
 

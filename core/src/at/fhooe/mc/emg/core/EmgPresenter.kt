@@ -32,7 +32,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                             private val tools: List<Tool>,
                             private val filter: List<Filter>,
                             private val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>,
-                            protected val designerComponents: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<*, *>>>,
+                            protected val designerComponents: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<Any, Any>>>,
                             private val configStorage: EmgConfigStorage,
                             open var emgView: EmgView?) : EmgViewCallback, Toolable {
 

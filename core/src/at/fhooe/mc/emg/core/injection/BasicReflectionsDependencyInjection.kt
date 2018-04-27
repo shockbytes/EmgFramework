@@ -115,9 +115,12 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
                 .sortedBy { it.name }
     }
 
-    override val componentPipes: List<EmgComponentPipe<*, *>> by lazy {
+    override val componentPipes: List<EmgComponentPipe<Any, Any>> by lazy {
         reflections.getSubTypesOf(EmgComponentPipe::class.java)
-                .map { it.newInstance() }
+                .map{
+                    @Suppress("UNCHECKED_CAST")
+                    it.newInstance() as EmgComponentPipe<Any, Any>
+                }
                 .sortedBy { it.name }
     }
 
@@ -168,11 +171,18 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
         val driverViewInterface = EmgClientDriverConfigView::class.java
         return if (dc.name.contains("Simulation")) {
             val constructor = dc.getConstructor(driverViewInterface, String::class.java)
-            constructor.newInstance(driverView?.newInstance(), System.getProperty("user.dir") + "/data/simulation")
+            constructor.newInstance(driverView?.newInstance(), SIMULATION_DRIVER_DESKTOP_PATH)
         } else {
             val constructor = dc.getConstructor(driverViewInterface)
             constructor.newInstance(driverView?.newInstance())
         }
+    }
+
+
+    companion object {
+
+        val SIMULATION_DRIVER_DESKTOP_PATH: String = System.getProperty("user.dir") + "/data/simulation"
+
     }
 
 }

@@ -72,8 +72,8 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
     /**
      * Message parser implementation, which takes care of message sending and receiving for the driver.
      *
-     * NOTE: Each subtype of EmgClientDriver must agree to utilize the EmgPacket as the common data type. On the other
-     * hand this revokes the advantages of a generic implementation, but on the other hand it eases the development.
+     * NOTE: Each subtype of EmgClientDriver must agree to utilize the EmgPacket as the common data type. On the one
+     * hand this revokes the advantages of a generic implementation, but on the other hand it eases the development pain.
      */
     abstract var msgParser: MessageParser<EmgPacket>
 

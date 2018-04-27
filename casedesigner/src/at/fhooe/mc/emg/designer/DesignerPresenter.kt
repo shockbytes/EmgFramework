@@ -4,6 +4,7 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.model.Origin
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
+import at.fhooe.mc.emg.designer.model.Workflow
 import at.fhooe.mc.emg.designer.util.GsonComponentDeserializer
 import at.fhooe.mc.emg.designer.util.GsonComponentSerializer
 import at.fhooe.mc.emg.designer.util.GsonSingleComponentSerializer
@@ -22,7 +23,7 @@ import java.io.File
  */
 abstract class DesignerPresenter(private val view: DesignerView,
                                  private val designerComponents: List<EmgBaseComponent>,
-                                 private val designerPipes: List<EmgComponentPipe<*, *>>) : DesignerViewCallback {
+                                 private val designerPipes: List<EmgComponentPipe<Any, Any>>) : DesignerViewCallback {
 
     private val gson: Gson
     private var hasModelChanged = false
@@ -35,6 +36,8 @@ abstract class DesignerPresenter(private val view: DesignerView,
     abstract fun openFile(file: File): Single<String?>
 
     abstract fun saveToFile(file: File, content: String): Completable
+
+    abstract fun startWorkflowPresenter(workflow: Workflow)
 
     override fun open(file: File) {
         openFile(file)
@@ -87,10 +90,12 @@ abstract class DesignerPresenter(private val view: DesignerView,
     }
 
     override fun run() {
-        ComponentLogic.run(interactionComponents, designerPipes).subscribe({
-            view.showStatusMessage("Executing actions!")
+        ComponentLogic.build(interactionComponents, designerPipes).subscribe({ workflow ->
+            view.showStatusMessage("Build successful!")
+            startWorkflowPresenter(workflow)
         }, { throwable ->
-            view.showStatusMessage("Execution error -> ${throwable.message}")
+            view.showStatusMessage("Build error -> ${throwable.message}")
+            throwable.printStackTrace()
         })
     }
 

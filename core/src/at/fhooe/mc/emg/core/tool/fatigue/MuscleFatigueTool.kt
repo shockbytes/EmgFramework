@@ -54,6 +54,7 @@ class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = null) : 
 
     @EmgComponentInputPort(Double::class)
     override fun update(value: Double) {
+        println("Update muscle fatigue tool: $value")
         frequencyComponent.update(value)
         timeComponent.update(value)
     }

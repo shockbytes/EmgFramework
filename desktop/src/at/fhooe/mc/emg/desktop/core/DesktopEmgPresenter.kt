@@ -28,7 +28,7 @@ class DesktopEmgPresenter(c: List<EmgClientDriver>,
                           t: List<Tool>,
                           f: List<Filter>,
                           fam: List<FrequencyAnalysisMethod>,
-                          ebc: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<*,*>>>,
+                          ebc: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<Any, Any>>>,
                           cs: EmgConfigStorage,
                           v: DesktopEmgView<JComponent>) : EmgPresenter(c, t, f, fam, ebc, cs, v) {
 
