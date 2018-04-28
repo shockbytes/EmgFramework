@@ -2,6 +2,8 @@ package at.fhooe.mc.emg.core.analysis
 
 import at.fhooe.mc.emg.core.analysis.model.MeanMedianFrequency
 import at.fhooe.mc.emg.core.util.CoreUtils
+import at.fhooe.mc.emg.core.util.meanFrequency
+import at.fhooe.mc.emg.core.util.medianFrequency
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jtransforms.fft.DoubleFFT_1D
@@ -44,8 +46,7 @@ object AnalysisUtils {
     fun meanMedianFrequency(input: DoubleArray, fs: Double): Single<MeanMedianFrequency> {
         return if (input.isNotEmpty()) {
             Single.fromCallable {
-                // TODO
-                MeanMedianFrequency(0.0, 0.0, fs)
+                MeanMedianFrequency(input.meanFrequency(), input.medianFrequency(), fs)
             }.subscribeOn(Schedulers.computation())
         } else {
             Single.error(IllegalArgumentException("Input for mean and median must not be empty!"))

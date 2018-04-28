@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.desktop.ui.dialog
+package at.fhooe.mc.emg.desktop.ui
 
 import at.fhooe.mc.emg.core.util.EmgConfig
 import java.awt.Color

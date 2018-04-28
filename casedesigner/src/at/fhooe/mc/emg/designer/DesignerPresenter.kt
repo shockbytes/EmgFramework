@@ -4,10 +4,14 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.model.Origin
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
+import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
 import at.fhooe.mc.emg.designer.model.Workflow
+import at.fhooe.mc.emg.designer.model.WorkflowConfiguration
+import at.fhooe.mc.emg.designer.util.ComponentInspection
 import at.fhooe.mc.emg.designer.util.GsonComponentDeserializer
 import at.fhooe.mc.emg.designer.util.GsonComponentSerializer
 import at.fhooe.mc.emg.designer.util.GsonSingleComponentSerializer
+import at.fhooe.mc.emg.designer.view.ComponentPropertyView
 import at.fhooe.mc.emg.designer.view.DesignerView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -28,6 +32,19 @@ abstract class DesignerPresenter(private val view: DesignerView,
     private val gson: Gson
     private var hasModelChanged = false
     private val interactionComponents: MutableList<EmgBaseComponent> = mutableListOf()
+
+    private val propertyCallback: ((EmgBaseComponent, EmgComponentParameter, String) -> Boolean)  = { c, p, value ->
+        if (ComponentInspection.matchDataTypes(p.type, value)) {
+            c.parameter[c.parameter.indexOf(p)].value = value
+            true
+        } else {
+            false
+        }
+    }
+
+    abstract val workflowConfig: WorkflowConfiguration
+
+    abstract val componentPropertyView: ComponentPropertyView
 
     init {
         gson = initializeGson()
@@ -90,7 +107,7 @@ abstract class DesignerPresenter(private val view: DesignerView,
     }
 
     override fun run() {
-        ComponentLogic.build(interactionComponents, designerPipes).subscribe({ workflow ->
+        ComponentLogic.build(interactionComponents, designerPipes, workflowConfig).subscribe({ workflow ->
             view.showStatusMessage("Build successful!")
             startWorkflowPresenter(workflow)
         }, { throwable ->
@@ -148,8 +165,10 @@ abstract class DesignerPresenter(private val view: DesignerView,
         }
     }
 
-    override fun showDetails(component: EmgBaseComponent) {
-        println("show properties for ${component.name}!")
+    override fun showProperties(component: EmgBaseComponent, point: Pair<Int, Int>) {
+        if (component.parameter.isNotEmpty()) {
+            componentPropertyView.showPropertyView(component, point, propertyCallback)
+        }
     }
 
     override fun drawBackground(draw: Boolean) {

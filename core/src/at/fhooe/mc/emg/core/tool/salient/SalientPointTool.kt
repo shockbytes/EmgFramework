@@ -32,9 +32,12 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
 
     private val confidenceGauge: ConfidenceGauge = WeightedErrorConfidenceGauge(0.4f, 0.6f)
 
-    @EmgComponentProperty
+    @JvmField
+    @EmgComponentProperty("50.0")
     var confidenceThreshold: Double = 50.0
-    @EmgComponentProperty
+
+    @JvmField
+    @EmgComponentProperty("0")
     var salientAngleThreshold: Int = 0
 
     @JvmField
@@ -46,7 +49,7 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
         this.salientAngleThreshold = angle
     }
 
-    override fun start(toolable: Toolable, showViewImmediate: Boolean) {
+    override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
     }
 

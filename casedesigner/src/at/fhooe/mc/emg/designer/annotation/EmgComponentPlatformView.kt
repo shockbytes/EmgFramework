@@ -1,3 +1,5 @@
 package at.fhooe.mc.emg.designer.annotation
 
-annotation class EmgComponentPlatformView
+import at.fhooe.mc.emg.designer.ViewType
+
+annotation class EmgComponentPlatformView(val viewType: ViewType)

@@ -19,16 +19,13 @@ import io.reactivex.functions.BiFunction
  */
 
 @EmgComponent(EmgComponentType.SINK)
-class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = null) : Tool, MuscleFatigueToolViewCallback {
+open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = null) : Tool, MuscleFatigueToolViewCallback {
 
     override val name = "Muscle Fatigue Detection"
 
-    @EmgComponentProperty
+    @JvmField
+    @EmgComponentProperty("2000")
     var periodCapacity: Int = 2000
-        set(value) {
-            frequencyComponent.capacity = value
-            timeComponent.capacity = value
-        }
 
     private val frequencyComponent: PeriodicMmfComponent = PeriodicMmfComponent()
     private val timeComponent: PeriodicRmsComponent = PeriodicRmsComponent()
@@ -36,10 +33,14 @@ class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = null) : 
     private var disposable: Disposable? = null
     private var toolable: Toolable? = null
 
-    override fun start(toolable: Toolable, showViewImmediate: Boolean) {
+    override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         this.toolable = toolable
 
-        toolable.registerToolForUpdates(this)
+        // Set capacity of sub components
+        frequencyComponent.capacity = periodCapacity
+        timeComponent.capacity = periodCapacity
+
+        toolable?.registerToolForUpdates(this)
         toolView?.setup(this, showViewImmediate)
 
         disposable = Observable.zip(frequencyComponent.outputPort, timeComponent.outputPort,

@@ -1,6 +1,7 @@
-package at.fhooe.mc.emg.desktop.ui
+package at.fhooe.mc.emg.desktop.view
 
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisView
+import at.fhooe.mc.emg.desktop.util.UiUtils
 import org.knowm.xchart.CategoryChart
 import org.knowm.xchart.CategoryChartBuilder
 import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle

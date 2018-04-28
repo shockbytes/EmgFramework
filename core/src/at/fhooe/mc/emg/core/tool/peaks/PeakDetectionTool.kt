@@ -24,7 +24,7 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
     private var decayRate: Double = PeakDetector.defaultDecayRate
     private var isRelative: Boolean = PeakDetector.defaultIsRelative
 
-    override fun start(toolable: Toolable, showViewImmediate: Boolean) {
+    override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
         this.toolable = toolable
     }

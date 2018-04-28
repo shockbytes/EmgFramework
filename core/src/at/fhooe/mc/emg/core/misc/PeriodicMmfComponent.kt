@@ -1,7 +1,8 @@
 package at.fhooe.mc.emg.core.misc
 
 import at.fhooe.mc.emg.core.analysis.model.MeanMedianFrequency
-import at.fhooe.mc.emg.core.util.rms
+import at.fhooe.mc.emg.core.util.meanFrequency
+import at.fhooe.mc.emg.core.util.medianFrequency
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
@@ -15,8 +16,13 @@ import io.reactivex.subjects.PublishSubject
 @EmgComponent(type = EmgComponentType.RELAY)
 class PeriodicMmfComponent {
 
-    @EmgComponentProperty
-    var capacity = 2000
+    @JvmField
+    @EmgComponentProperty("5000")
+    var capacity = 5000
+
+    @JvmField
+    @EmgComponentProperty("100")
+    var samplingFrequency = 100.0
 
     @JvmField
     @EmgComponentOutputPort(MeanMedianFrequency::class)
@@ -29,9 +35,9 @@ class PeriodicMmfComponent {
 
         data.add(x)
         if (data.size >= capacity) {
-            // TODO Calculate mean and median frequency
-            val rms = data.toDoubleArray().rms()
-            //outputPort.onNext(rms)
+            val mean = data.meanFrequency()
+            val median = data.medianFrequency()
+            outputPort.onNext(MeanMedianFrequency(mean, median, samplingFrequency))
             data.clear()
         }
     }

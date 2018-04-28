@@ -13,3 +13,7 @@ package at.fhooe.mc.emg.designer
 enum class EmgComponentType {
     FILTER, SINK, RELAY_SINK, TOOL, DEVICE, RELAY
 }
+
+enum class ViewType {
+    DESKTOP, MOBILE
+}

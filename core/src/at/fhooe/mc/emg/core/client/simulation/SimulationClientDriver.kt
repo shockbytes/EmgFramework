@@ -37,13 +37,13 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
 
     private var simulationIndex: Int = 0
 
-    @EmgComponentProperty
     var simulationSource: SimulationSource? = null
 
     var simulationSources: List<SimulationSource>
         private set
 
-    @EmgComponentProperty
+    @JvmField
+    @EmgComponentProperty("false")
     var isEndlessLoopEnabled = false
 
     override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V2)
@@ -82,8 +82,6 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                 throw IllegalStateException("Simulation source cannot be null!")
             }
             disconnect() // Reset connection first
-
-            println(simulationSource?.filePath)
 
             prepareSimulationData()
             prepareSamplingFrequency()

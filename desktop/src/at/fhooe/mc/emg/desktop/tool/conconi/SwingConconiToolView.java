@@ -3,7 +3,7 @@ package at.fhooe.mc.emg.desktop.tool.conconi;
 import at.fhooe.mc.emg.core.tool.conconi.ConconiRoundData;
 import at.fhooe.mc.emg.core.tool.conconi.ConconiToolView;
 import at.fhooe.mc.emg.core.tool.conconi.ConconiToolViewCallback;
-import at.fhooe.mc.emg.desktop.ui.UiUtils;
+import at.fhooe.mc.emg.desktop.util.UiUtils;
 import at.fhooe.mc.emg.desktop.util.DesktopUtils;
 import io.reactivex.functions.Consumer;
 import org.jetbrains.annotations.NotNull;

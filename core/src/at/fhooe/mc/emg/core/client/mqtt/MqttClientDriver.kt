@@ -32,9 +32,12 @@ class MqttClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(
 
     override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V3)
 
-    @EmgComponentProperty
+    @JvmField
+    @EmgComponentProperty("localhost")
     var ip: String = "localhost"
-    @EmgComponentProperty
+
+    @JvmField
+    @EmgComponentProperty("5673")
     var port: Int = 5673
 
     private var mqtt: MQTT = MQTT()

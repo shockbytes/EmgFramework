@@ -27,7 +27,7 @@ interface DesignerViewCallback {
 
     fun connectComponents(component1: EmgBaseComponent, component2: EmgBaseComponent)
 
-    fun showDetails(component: EmgBaseComponent)
+    fun showProperties(component: EmgBaseComponent, point: Pair<Int, Int>)
 
     fun drawBackground(draw: Boolean)
 

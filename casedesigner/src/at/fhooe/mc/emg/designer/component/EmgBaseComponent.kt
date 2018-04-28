@@ -77,11 +77,13 @@ abstract class EmgBaseComponent(val name: String = "",
 
         // Add draw commands for properties only if available
         if (parameter.isNotEmpty()) {
+
+            val quantity = if (parameter.size > 1) "properties" else "property"
             drawCommands.add(CenteredStringDrawCommand(
                     origin.x + PORT_WIDTH,
                     origin.y + NAME_COMPARTMENT_HEIGHT + LINE_HEIGHT + 5,
                     box.width - (2 * PORT_WIDTH),
-                    "${parameter.size} parameter"))
+                    "${parameter.size} $quantity"))
         }
 
         // Input port indicator

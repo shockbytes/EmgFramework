@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.filter.NoFilter
 import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.ViewType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
 import at.fhooe.mc.emg.designer.annotation.EmgComponentPlatformView
@@ -39,7 +40,7 @@ class XChartVisualView : VisualView<JComponent> {
             }
         }
 
-    @EmgComponentPlatformView
+    @EmgComponentPlatformView(ViewType.DESKTOP)
     override val view: JComponent
         get() = chartWrapper
 

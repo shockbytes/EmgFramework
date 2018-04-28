@@ -1,18 +1,20 @@
-package at.fhooe.mc.emg.desktop.ui
+package at.fhooe.mc.emg.desktop.view
 
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
+import at.fhooe.mc.emg.core.misc.RawDataLog
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
-import at.fhooe.mc.emg.desktop.ui.dialog.FilterConfigDialog
-import at.fhooe.mc.emg.desktop.ui.dialog.SamplingFrequencyDialog
-import at.fhooe.mc.emg.desktop.ui.dialog.VisualYMaxDialog
-import at.fhooe.mc.emg.desktop.view.DesktopEmgView
+import at.fhooe.mc.emg.desktop.misc.DesktopRawDataLog
+import at.fhooe.mc.emg.desktop.ui.FilterConfigDialog
+import at.fhooe.mc.emg.desktop.ui.SamplingFrequencyDialog
+import at.fhooe.mc.emg.desktop.ui.VisualYMaxDialog
+import at.fhooe.mc.emg.desktop.util.UiUtils
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.awt.BorderLayout
@@ -26,7 +28,6 @@ import javax.swing.border.EmptyBorder
 class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     private lateinit var labelStatus: JLabel
-    private lateinit var textAreaConsole: JTextArea
 
     private lateinit var splitPane: JSplitPane
 
@@ -58,6 +59,8 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     private lateinit var config: EmgConfig
 
     private lateinit var visualView: VisualView<JComponent>
+
+    private val rawLogView: RawDataLog<JScrollPane> = DesktopRawDataLog()
 
     init {
         iconImage = Toolkit.getDefaultToolkit()
@@ -99,9 +102,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         labelStatus.border = EmptyBorder(4, 4, 4, 4)
         contentPane.add(labelStatus, BorderLayout.SOUTH)
 
-        textAreaConsole = JTextArea()
-        textAreaConsole.isEditable = false
-        splitPane.leftComponent = JScrollPane(textAreaConsole)
+        splitPane.leftComponent = rawLogView.view
 
         updateStatus("Not connected")
     }
@@ -213,7 +214,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     override fun reset() {
 
         synchronized(this) {
-            textAreaConsole.text = ""
+            rawLogView.clear()
             splitPane.remove(2)
             visualView.reset()
             splitPane.rightComponent = visualView.view
@@ -294,10 +295,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     }
 
     override fun exposeRawClientDataObservable(observable: Observable<String>) {
-        observable.subscribeOn(Schedulers.io()).subscribe {
-            textAreaConsole.append("$it\n")
-            textAreaConsole.caretPosition = textAreaConsole.document?.length ?: 0
-        }
+        observable.subscribeOn(Schedulers.io()).subscribe { rawLogView.update(it) }
     }
 
     override fun setupToolsView(tools: List<Tool>, presenter: EmgPresenter) {

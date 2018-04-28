@@ -33,10 +33,12 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
 
     override val category: ClientCategory = ClientCategory.SERIAL
 
-    @EmgComponentProperty
+    @JvmField
+    @EmgComponentProperty(defaultDataRate.toString())
     var dataRate: Int = 0
 
-    @EmgComponentProperty
+    @JvmField
+    @EmgComponentProperty("")
     var portName: String? = null
 
     private var ports: List<CommPortIdentifier>? = null

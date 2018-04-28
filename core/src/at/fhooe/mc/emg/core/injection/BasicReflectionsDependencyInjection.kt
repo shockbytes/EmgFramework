@@ -6,9 +6,7 @@ import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisView
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.FileStorage
-import at.fhooe.mc.emg.core.storage.SimpleFileStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
-import at.fhooe.mc.emg.core.storage.config.JsonEmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.ToolView
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
@@ -21,9 +19,8 @@ import org.reflections.Reflections
 import org.reflections.scanners.FieldAnnotationsScanner
 import org.reflections.scanners.SubTypesScanner
 import org.reflections.scanners.TypeAnnotationsScanner
-import java.io.File
 
-open class BasicReflectionsDependencyInjection : DependencyInjection {
+open class BasicReflectionsDependencyInjection(private val platformConfig: PlatformConfiguration) : DependencyInjection {
 
     protected val reflections = Reflections(FieldAnnotationsScanner(),
             SubTypesScanner(), TypeAnnotationsScanner())
@@ -102,7 +99,10 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
     override val components: List<EmgBaseComponent> by lazy {
 
         val params = reflections.getFieldsAnnotatedWith(EmgComponentProperty::class.java)
-                .map { EmgComponentParameter(it.declaringClass.name, it.type.name, it.name) }
+                .map {
+                    val propAnnotation = it.annotations.find { it is EmgComponentProperty } as EmgComponentProperty
+                    EmgComponentParameter(it.declaringClass.name, it.type.name, it.name, propAnnotation.defaultValue)
+                }
 
         reflections.getTypesAnnotatedWith(EmgComponent::class.java)
                 .map { cls ->
@@ -117,7 +117,7 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
 
     override val componentPipes: List<EmgComponentPipe<Any, Any>> by lazy {
         reflections.getSubTypesOf(EmgComponentPipe::class.java)
-                .map{
+                .map {
                     @Suppress("UNCHECKED_CAST")
                     it.newInstance() as EmgComponentPipe<Any, Any>
                 }
@@ -125,11 +125,11 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
     }
 
     override val fileStorage: FileStorage by lazy {
-        SimpleFileStorage()
+        platformConfig.fileStorage
     }
 
     override val configStorage: EmgConfigStorage by lazy {
-        JsonEmgConfigStorage(File(System.getProperty("user.dir") + "/data/config.json"))
+        platformConfig.configStorage
     }
 
     // ------------------------------------------------------------------------
@@ -162,27 +162,16 @@ open class BasicReflectionsDependencyInjection : DependencyInjection {
         }
     }
 
-    /**
-     * Mark this method as protected, so platform specific implementations (like Android) only have to override
-     * this method to handle special driver instantiation instead of overriding #driver
-     */
-    protected fun driverByClass(dc: Class<out EmgClientDriver>, driverView: Class<*>?): EmgClientDriver {
+    private fun driverByClass(dc: Class<out EmgClientDriver>, driverView: Class<*>?): EmgClientDriver {
 
         val driverViewInterface = EmgClientDriverConfigView::class.java
         return if (dc.name.contains("Simulation")) {
             val constructor = dc.getConstructor(driverViewInterface, String::class.java)
-            constructor.newInstance(driverView?.newInstance(), SIMULATION_DRIVER_DESKTOP_PATH)
+            constructor.newInstance(driverView?.newInstance(), platformConfig.simulationFolder)
         } else {
             val constructor = dc.getConstructor(driverViewInterface)
             constructor.newInstance(driverView?.newInstance())
         }
-    }
-
-
-    companion object {
-
-        val SIMULATION_DRIVER_DESKTOP_PATH: String = System.getProperty("user.dir") + "/data/simulation"
-
     }
 
 }

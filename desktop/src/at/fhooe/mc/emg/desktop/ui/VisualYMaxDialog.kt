@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.desktop.ui.dialog
+package at.fhooe.mc.emg.desktop.ui
 
 import javax.swing.*
 import javax.swing.border.EmptyBorder

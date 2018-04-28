@@ -81,7 +81,7 @@ class DesktopComponentInteractionView : JPanel(), ComponentInteractionView, Drop
                     e?.button == MouseEvent.BUTTON2 -> {
                         val c = interactionComponents.firstOrNull { it.box.intersects(Point(e.point.x, e.point.y)) }
                         if (c != null) {
-                            viewCallback?.showDetails(c)
+                            viewCallback?.showProperties(c, Pair(e.point.x, e.point.y))
                         }
                     }
                 }

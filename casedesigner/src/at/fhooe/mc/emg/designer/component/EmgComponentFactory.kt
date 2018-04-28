@@ -8,8 +8,10 @@ class EmgComponentFactory {
 
     companion object {
 
-        fun byType(name: String, qualifiedName: String,
-                   parameter: List<EmgComponentParameter>, type: EmgComponentType): EmgBaseComponent {
+        fun byType(name: String,
+                   qualifiedName: String,
+                   parameter: List<EmgComponentParameter>,
+                   type: EmgComponentType): EmgBaseComponent {
             return when (type) {
                 EmgComponentType.FILTER -> EmgFilterComponent(name, qualifiedName, parameter)
                 EmgComponentType.SINK -> EmgSinkComponent(name, qualifiedName, parameter)

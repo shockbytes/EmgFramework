@@ -12,7 +12,7 @@ interface Tool {
 
     val toolView: ToolView<*>?
 
-    fun start(toolable: Toolable, showViewImmediate: Boolean)
+    fun start(toolable: Toolable? = null, showViewImmediate: Boolean = false)
 
     fun update(value: Double)
 }

@@ -24,3 +24,34 @@ fun Double.round(): Int {
     return Math.round(this).toInt()
 }
 
+fun List<Double>.meanFrequency(): Double {
+    return toDoubleArray().meanFrequency()
+}
+
+fun List<Double>.medianFrequency(): Double {
+    return toDoubleArray().medianFrequency()
+}
+
+fun List<Double>.modifiedMeanFrequency(): Double {
+    return toDoubleArray().modifiedMeanFrequency()
+}
+
+fun List<Double>.modifiedMedianFrequency(): Double {
+    return toDoubleArray().modifiedMedianFrequency()
+}
+
+fun DoubleArray.meanFrequency(): Double {
+    TODO("Calculate mean frequency")
+}
+
+fun DoubleArray.medianFrequency(): Double {
+    TODO("Calculate mean frequency")
+}
+
+fun DoubleArray.modifiedMeanFrequency(): Double {
+    TODO("Calculate mean frequency")
+}
+
+fun DoubleArray.modifiedMedianFrequency(): Double {
+    TODO("Calculate mean frequency")
+}

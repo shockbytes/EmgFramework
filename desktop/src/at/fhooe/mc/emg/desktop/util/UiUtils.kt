@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.desktop.ui
+package at.fhooe.mc.emg.desktop.util
 
 import java.awt.Component
 import java.awt.Toolkit

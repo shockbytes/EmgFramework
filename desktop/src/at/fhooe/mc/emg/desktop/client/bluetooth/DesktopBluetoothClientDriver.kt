@@ -7,6 +7,7 @@ import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.messaging.EmgMessageParser
 import at.fhooe.mc.emg.messaging.MessageParser
 import at.fhooe.mc.emg.messaging.model.EmgPacket
@@ -48,9 +49,16 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     // Rasperry Pi 3:   22:22:20:E8:93:4
 
     // These properties can be changed in the ConfigView, therefore they aren't private
+
+    @JvmField
+    @EmgComponentProperty("22:22:20:E8:93:47")
     var remoteDeviceMacAddress: String = "22:22:20:E8:93:47"
-    var uuid: UUID = UUID("5f77cdab8f4847849958d2736f4727c5", false)
+
+    @JvmField
+    @EmgComponentProperty("22:22:20:E8:93:47")
     var channel: String = "2"
+
+    var uuid: UUID = UUID("5f77cdab8f4847849958d2736f4727c5", false)
 
     private var remoteDevice: RemoteDevice? = null
     private var connection: StreamConnection? = null

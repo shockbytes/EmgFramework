@@ -16,12 +16,7 @@ interface FrequencyAnalysisMethod {
     var fs: Double
 
     /**
-     * TODO
-     * @param input
-     * @param fs
-     * @param view
-     *
-     * @return
+     * @param input series of input values of a single channel
      */
     fun calculate(input: DoubleArray)
 

@@ -5,7 +5,7 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.view.DesignerView
 import at.fhooe.mc.emg.desktop.designer.DesktopDesignerHelper
 import at.fhooe.mc.emg.desktop.designer.util.DragDropTransferHandler
-import at.fhooe.mc.emg.desktop.ui.UiUtils
+import at.fhooe.mc.emg.desktop.util.UiUtils
 import java.awt.*
 import java.awt.event.*
 import java.io.File

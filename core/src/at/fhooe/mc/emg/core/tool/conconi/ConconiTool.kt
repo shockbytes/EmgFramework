@@ -30,15 +30,15 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     override val name = "Conconi Test"
 
-    private lateinit var toolable: Toolable
     private var data: ConconiData = ConconiData()
 
     private var timerDisposable: Disposable? = null
+    private var toolable: Toolable? = null
 
     private var dataStartPointer: Int = 0
     private var dataStopPointer: Int = 0
 
-    override fun start(toolable: Toolable, showViewImmediate: Boolean) {
+    override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         this.toolable = toolable
 
         toolView?.setup(this, showViewImmediate)
@@ -55,7 +55,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     override fun onStopClicked() {
         timerDisposable?.dispose()
-        toolable.disconnectFromClient(null)
+        toolable?.disconnectFromClient(null)
     }
 
     override fun onSaveClicked(filename: String?, errorHandler: Consumer<Throwable>) {
@@ -69,7 +69,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
             // No action required if everything works fine
             fileStorage?.storeFileAsObject(data, fileNameConconi)?.subscribe(Action {}, errorHandler)
-            toolable.exportData(fileNameRaw, CsvDataStorage())
+            toolable?.exportData(fileNameRaw, CsvDataStorage())
         } else {
             errorHandler.accept(NullPointerException("Filename must not be null!"))
         }
@@ -130,7 +130,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
     }
 
     private fun connectAndStart() {
-        toolable.connectToClient(Action { startTimer() })
+        toolable?.connectToClient(Action { startTimer() })
     }
 
     private fun startTimer() {
@@ -160,12 +160,14 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     private fun storeRoundData(index: Int) {
 
-        dataStopPointer = toolable.currentDataPointer
-        val roundData = toolable.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
+        if (toolable != null) {
+            dataStopPointer = toolable!!.currentDataPointer
+            val roundData = toolable!!.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
-        data.addRoundData(roundData)
-        val crd = emg2ConconiRoundData(roundData, index)
-        toolView?.onRoundDataAvailable(crd, index)
+            data.addRoundData(roundData)
+            val crd = emg2ConconiRoundData(roundData, index)
+            toolView?.onRoundDataAvailable(crd, index)
+        }
 
         dataStartPointer = dataStopPointer
     }
