@@ -1,3 +1,6 @@
 package at.fhooe.mc.emg.designer.model
 
-class WorkflowConfiguration(val simulationDeviceFolder: String)
+import at.fhooe.mc.emg.designer.view.WorkflowItemViewManager
+
+class WorkflowConfiguration(val simulationDeviceFolder: String,
+                            val itemViewManager: WorkflowItemViewManager)

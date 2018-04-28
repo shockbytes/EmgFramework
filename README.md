@@ -7,6 +7,7 @@ Supported clients are:
 * SerialClient,
 * SimulationClient,
 * NetworkClient,
+* MqttClient
 * BluetoothClient (for Android and for Desktop).
 
 This project is part of my master thesis about smart EMG-enabled textiles. 
@@ -94,7 +95,7 @@ versioning.
 ## Versions
 
 ### 1.0.0 
-- [ ] Introduce a Test template class
+- [ ] Introduce the Acquisition Case Designer
 - [ ] Implement muscle fatigue detection algorithms
 - [x] Handle heart rate messages and relay it to Tools
 
@@ -139,7 +140,7 @@ plot or file, or algorithm)).
 The UI is not mandatory, but it would be an impressive detail.
 
 ### Major
-* Support for **Test classes**
+* Support for **Acquisition Case Designer**
 * Support **Muscle Fatigue detection** as a Tool
 * ~~Support Peak detection~~
 * ~~Support **BluetoothClient**~~

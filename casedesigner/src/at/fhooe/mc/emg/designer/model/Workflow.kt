@@ -35,6 +35,8 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
                         throwable.printStackTrace()
                         isStarted = false
                     })
+            // TODO Start tools
+            
             isStarted = true
         }
     }
@@ -55,10 +57,16 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
     class WorkflowItem(val producer: Producer,
                        val consumer: List<Consumer?>)
 
-    class Consumer(val qualifiedName: String,
+    open class Consumer(val qualifiedName: String,
                    val instance: Any,
                    val method: Method,
                    val pipe: EmgComponentPipe<Any, Any>)
+
+    class ViewableConsumer(qualifiedName: String,
+                           instance: Any,
+                           method: Method,
+                           pipe: EmgComponentPipe<Any, Any>,
+                           view: Method): Consumer(qualifiedName, instance, method, pipe)
 
     open class Producer(val instance: Any,
                         val field: Field)
@@ -81,6 +89,16 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
          * Connect the producer and consumer via the pipe, before adding to list
          */
         fun addItem(item: WorkflowItem) {
+
+            // Open platform views
+            item.consumer
+                    .mapNotNull { it as? ViewableConsumer }
+                    .forEach { flowConfig.itemViewManager.showPlatformView(it) }
+
+            // Show tool views
+            if ((item.producer is StartableProducer) && item.producer.startableType == StartableType.TOOL) {
+                // TODO Find suitable ToolView
+            }
 
             // Connect component instances
             (item.producer.field.get(item.producer.instance) as PublishSubject<*>).subscribe { data ->
@@ -116,10 +134,17 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
         }
 
         fun consumerOf(c: EmgBaseComponent, pipe: EmgComponentPipe<Any, Any>): Consumer {
+
             val instance = Class.forName(c.qualifiedName).newInstance()
             setComponentProperties(instance, c.parameter)
             val method = ComponentInspection.getInputPort(c)
-            return Consumer(c.qualifiedName, instance, method, pipe)
+
+            val viewMethod = ComponentInspection.getPlatformView(c)
+            return if (viewMethod != null) {
+                ViewableConsumer(c.qualifiedName, instance, method, pipe, viewMethod)
+            } else {
+                Consumer(c.qualifiedName, instance, method, pipe)
+            }
         }
 
         fun build(): Workflow {

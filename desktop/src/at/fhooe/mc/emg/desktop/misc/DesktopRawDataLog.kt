@@ -25,6 +25,7 @@ class DesktopRawDataLog: RawDataLog<JScrollPane> {
 
     @EmgComponentInputPort(String::class)
     override fun update(data: String) {
+        println(data)
         textAreaConsole.append("$data\n")
         textAreaConsole.caretPosition = textAreaConsole.document?.length ?: 0
     }

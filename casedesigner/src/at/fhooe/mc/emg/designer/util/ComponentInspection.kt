@@ -106,6 +106,11 @@ object ComponentInspection {
                 ReflectionUtils.withAnnotation(EmgComponentExitPoint::class.java)).first()
     }
 
+    fun getPlatformView(c: EmgBaseComponent): Method? {
+        TODO("Get platform view")
+    }
+
+
     fun setProperty(instance: Any, fieldName: String, value: String, type: String) {
         instance.javaClass.getField(fieldName)?.set(instance, convertValueToType(value, type))
     }
