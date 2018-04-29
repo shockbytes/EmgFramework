@@ -4,13 +4,13 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
-import at.fhooe.mc.emg.core.misc.RawDataLog
+import at.fhooe.mc.emg.core.misc.DataLog
 import at.fhooe.mc.emg.core.storage.CsvDataStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
-import at.fhooe.mc.emg.desktop.misc.DesktopRawDataLog
+import at.fhooe.mc.emg.desktop.misc.DesktopDataLog
 import at.fhooe.mc.emg.desktop.ui.FilterConfigDialog
 import at.fhooe.mc.emg.desktop.ui.SamplingFrequencyDialog
 import at.fhooe.mc.emg.desktop.ui.VisualYMaxDialog
@@ -60,7 +60,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     private lateinit var visualView: VisualView<JComponent>
 
-    private val rawLogView: RawDataLog<JComponent> = DesktopRawDataLog()
+    private val logView: DataLog<JComponent> = DesktopDataLog()
 
     init {
         iconImage = Toolkit.getDefaultToolkit()
@@ -102,7 +102,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         labelStatus.border = EmptyBorder(4, 4, 4, 4)
         contentPane.add(labelStatus, BorderLayout.SOUTH)
 
-        splitPane.leftComponent = rawLogView.view
+        splitPane.leftComponent = logView.view
 
         updateStatus("Not connected")
     }
@@ -192,7 +192,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
         menuItemAcqDesigner.addActionListener(this)
         mnAcqCaseDesigner.add(menuItemAcqDesigner)
 
-        menuItemOpenAcqDesignerFile = JMenuItem("Open acd file")
+        menuItemOpenAcqDesignerFile = JMenuItem("Open case designer file")
         menuItemOpenAcqDesignerFile.addActionListener(this)
         mnAcqCaseDesigner.add(menuItemOpenAcqDesignerFile)
 
@@ -214,7 +214,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     override fun reset() {
 
         synchronized(this) {
-            rawLogView.clear()
+            logView.clear()
             splitPane.remove(2)
             visualView.reset()
             splitPane.rightComponent = visualView.view
@@ -295,7 +295,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
     }
 
     override fun exposeRawClientDataObservable(observable: Observable<String>) {
-        observable.subscribeOn(Schedulers.io()).subscribe { rawLogView.update(it) }
+        observable.subscribeOn(Schedulers.io()).subscribe { logView.update(it) }
     }
 
     override fun setupToolsView(tools: List<Tool>, presenter: EmgPresenter) {

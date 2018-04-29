@@ -9,6 +9,7 @@ import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
+import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -51,6 +52,11 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
     override fun onViewClosed() {
         disposable?.dispose()
         toolable?.unregisterToolUpdates(this)
+    }
+
+    @EmgComponentStartablePoint("toolView", MuscleFatigueToolView::class)
+    override fun externalStart() {
+        start(null, true)
     }
 
     @EmgComponentInputPort(Double::class)

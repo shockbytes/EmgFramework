@@ -9,7 +9,6 @@ class PowerSpectrumAnalysisMethod(override var view: FrequencyAnalysisView? = nu
                                   override var fs: Double = 100.0) : FrequencyAnalysisMethod {
 
     override val name = "Power Spectrum"
-    override val hasDisplay = true
 
     @EmgComponentInputPort(DoubleArray::class)
     override fun calculate(input: DoubleArray) {
@@ -17,8 +16,9 @@ class PowerSpectrumAnalysisMethod(override var view: FrequencyAnalysisView? = nu
     }
 
     private fun showPowerSpectrumPlot(fft: DoubleArray, fs: Double, view: FrequencyAnalysisView?) {
-        AnalysisUtils.powerSpectrum(fft, fs).subscribe({ data ->
-            view?.showEvaluation("Power Spectrum", data.first, data.second)
-        }, { throwable -> view?.showError(throwable) })
+        AnalysisUtils.powerSpectrum(fft, fs)
+                .subscribe(
+                        { data -> view?.showEvaluation("Power Spectrum", data.first, data.second) },
+                        { throwable -> view?.showError(throwable) })
     }
 }

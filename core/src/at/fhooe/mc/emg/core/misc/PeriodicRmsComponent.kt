@@ -35,7 +35,6 @@ class PeriodicRmsComponent {
         if (data.size >= capacity) {
             val rms = data.toDoubleArray().rms()
             outputPort.onNext(rms)
-            println("Send periodic RMS: $rms")
             data.clear()
         }
     }

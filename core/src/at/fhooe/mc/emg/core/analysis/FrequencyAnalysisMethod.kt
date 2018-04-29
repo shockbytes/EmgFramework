@@ -9,8 +9,6 @@ interface FrequencyAnalysisMethod {
 
     val name: String
 
-    val hasDisplay: Boolean
-
     var view: FrequencyAnalysisView?
 
     var fs: Double

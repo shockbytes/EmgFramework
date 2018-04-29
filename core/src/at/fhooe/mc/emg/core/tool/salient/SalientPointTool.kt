@@ -7,10 +7,7 @@ import at.fhooe.mc.emg.core.util.PointD
 import at.fhooe.mc.emg.core.util.rmse
 import at.fhooe.mc.emg.core.util.round
 import at.fhooe.mc.emg.designer.EmgComponentType
-import at.fhooe.mc.emg.designer.annotation.EmgComponent
-import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
-import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
-import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
+import at.fhooe.mc.emg.designer.annotation.*
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -59,11 +56,14 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
 
     @EmgComponentInputPort(Double::class)
     override fun update(value: Double) {
-        println("Update SalientPointTool: $value")
-
         points.add(value)
         toolView?.updateChart(DoubleArray(points.size) { it.toDouble() }.toList(), points)
         calculateSalientPoint()
+    }
+
+    @EmgComponentStartablePoint("toolView", SalientPointToolView::class)
+    override fun externalStart() {
+        start(null, true)
     }
 
     private fun calculateSalientPoint() {

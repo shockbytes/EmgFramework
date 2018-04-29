@@ -15,15 +15,11 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgComponentFactory
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
-import org.reflections.Reflections
-import org.reflections.scanners.FieldAnnotationsScanner
-import org.reflections.scanners.SubTypesScanner
-import org.reflections.scanners.TypeAnnotationsScanner
+import at.fhooe.mc.emg.designer.util.ComponentInspection
 
 open class BasicReflectionsDependencyInjection(private val platformConfig: PlatformConfiguration) : DependencyInjection {
 
-    protected val reflections = Reflections(FieldAnnotationsScanner(),
-            SubTypesScanner(), TypeAnnotationsScanner())
+    protected val reflections = ComponentInspection.reflections
 
     override val tools: List<Tool> by lazy {
 
@@ -88,7 +84,7 @@ open class BasicReflectionsDependencyInjection(private val platformConfig: Platf
                 .filter { !it.isInterface }
                 .map {
                     val instance = it.newInstance()
-                    if (instance.hasDisplay && frequencyViewClass != null) {
+                    if (frequencyViewClass != null) {
                         instance.view = frequencyViewClass.newInstance()
                     }
                     instance

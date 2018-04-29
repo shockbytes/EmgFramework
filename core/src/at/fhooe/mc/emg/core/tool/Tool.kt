@@ -14,5 +14,7 @@ interface Tool {
 
     fun start(toolable: Toolable? = null, showViewImmediate: Boolean = false)
 
+    fun externalStart()
+
     fun update(value: Double)
 }

@@ -15,9 +15,18 @@ class DesktopWorkflowItemViewManager : WorkflowItemViewManager {
     private val defaultWidth = 300
     private val defaultHeight = 300
 
-    override fun startProducer(item: Workflow.StartableProducer) {
-        // TODO
-        println("Start producer view ${item.instance.javaClass.simpleName}")
+    override fun startConsumer(item: Workflow.StartableViewConsumer) {
+
+        // Instantiate view
+        val view = item.startMethod.viewClass?.newInstance()
+
+        // Set view
+        val viewField = item.instance.javaClass.getDeclaredField(item.startMethod.viewFieldName)
+        viewField.isAccessible = true
+        viewField.set(item.instance, view)
+
+        // Call start method
+        item.startMethod.method.invoke(item.instance)
     }
 
     override fun showPlatformView(item: Workflow.ViewableConsumer) {

@@ -123,7 +123,7 @@ class SwingSalientPointToolView : SalientPointToolView {
         btnApply.addActionListener {
             val angle = tfAngle.text.toIntOrNull()
             val confidence = tfConfidence.text.toDoubleOrNull()
-            if (angle != null && (angle in 5..90) && confidence != null && (confidence in 0..1)) {
+            if (angle != null && (angle in 0..360) && confidence != null) {
                 toolViewCallback?.updateParameter(confidence, angle)
             }
         }

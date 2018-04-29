@@ -6,6 +6,7 @@ import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
 
 /**
  * Author:  Martin Macheiner
@@ -45,6 +46,11 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
 
     override fun update(value: Double) {
         // Not needed here...
+    }
+
+    @EmgComponentStartablePoint("toolView", PeakDetectionToolView::class)
+    override fun externalStart() {
+        start(null, true)
     }
 
     override fun updateParameter(width: Int, threshold: Double, decayRate: Double, isRelative: Boolean) {

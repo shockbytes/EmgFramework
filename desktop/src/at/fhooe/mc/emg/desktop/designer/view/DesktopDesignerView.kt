@@ -80,7 +80,7 @@ class DesktopDesignerView : DesignerView {
         frame.title = "Acquisition Case Designer"
         frame.iconImage = Toolkit.getDefaultToolkit()
                 .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_case_designer.png")
-        frame.setBounds(250, 100, 1000, 600)
+        frame.setBounds(100, 100, 1150, 600)
 
         contentPanel = JPanel(BorderLayout())
         contentPanel.background = bgColor
@@ -102,6 +102,7 @@ class DesktopDesignerView : DesignerView {
 
         val mnFile = JMenu("File")
         val mnItemOpen = JMenuItem("Open")
+        mnItemOpen.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK)
         mnItemOpen.addActionListener {
             val fileName = UiUtils.showAcdOpenDialog()
             if (fileName != null) {
@@ -110,6 +111,7 @@ class DesktopDesignerView : DesignerView {
         }
         mnFile.add(mnItemOpen)
         val mnItemSave = JMenuItem("Save")
+        mnItemSave.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK)
         mnItemSave.addActionListener {
             val fileName = UiUtils.showAcdSaveDialog()
             if (fileName != null) {
@@ -117,7 +119,8 @@ class DesktopDesignerView : DesignerView {
             }
         }
         mnFile.add(mnItemSave)
-        val mnItemReset = JMenuItem("Reset")
+        val mnItemReset = JMenuItem("New")
+        mnItemReset.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK)
         mnItemReset.addActionListener { viewCallback?.reset() }
         mnFile.add(mnItemReset)
 
@@ -128,6 +131,7 @@ class DesktopDesignerView : DesignerView {
         }
         mnBuild.add(mnItemVal)
         val mnItemRun = JMenuItem("Run")
+        mnItemRun.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK)
         mnItemRun.addActionListener {
             viewCallback?.run()
         }

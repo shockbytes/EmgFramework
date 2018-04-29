@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.desktop.misc
 
-import at.fhooe.mc.emg.core.misc.RawDataLog
+import at.fhooe.mc.emg.core.misc.DataLog
 import at.fhooe.mc.emg.designer.ComponentViewType
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
@@ -11,7 +11,7 @@ import javax.swing.JScrollPane
 import javax.swing.JTextArea
 
 @EmgComponent(type = EmgComponentType.SINK)
-class DesktopRawDataLog : RawDataLog<JComponent> {
+class DesktopDataLog : DataLog<JComponent> {
 
     private val textAreaConsole = JTextArea()
 
@@ -19,7 +19,7 @@ class DesktopRawDataLog : RawDataLog<JComponent> {
         textAreaConsole.isEditable = false
     }
 
-    @EmgComponentPlatformView(viewType = ComponentViewType.DESKTOP, requestedWidth = 200)
+    @EmgComponentPlatformView(viewType = ComponentViewType.DESKTOP, requestedWidth = 300)
     override val view: JComponent = JScrollPane(textAreaConsole)
 
     @EmgComponentInputPort(String::class)

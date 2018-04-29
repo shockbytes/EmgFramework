@@ -10,6 +10,7 @@ import at.fhooe.mc.emg.core.util.CoreUtils
 import at.fhooe.mc.emg.core.util.rms
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -46,6 +47,11 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
         data = ConconiData()
         dataStartPointer = 0
         dataStopPointer = 0
+    }
+
+    @EmgComponentStartablePoint("toolView", ConconiToolView::class)
+    override fun externalStart() {
+        start(null, true)
     }
 
     override fun onStartClicked() {

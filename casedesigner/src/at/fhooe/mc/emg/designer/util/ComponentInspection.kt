@@ -4,8 +4,13 @@ import at.fhooe.mc.emg.designer.ComponentLogic
 import at.fhooe.mc.emg.designer.ComponentViewType
 import at.fhooe.mc.emg.designer.annotation.*
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
-import io.reactivex.subjects.PublishSubject
+import at.fhooe.mc.emg.designer.model.Workflow
+import io.reactivex.subjects.Subject
 import org.reflections.ReflectionUtils
+import org.reflections.Reflections
+import org.reflections.scanners.FieldAnnotationsScanner
+import org.reflections.scanners.SubTypesScanner
+import org.reflections.scanners.TypeAnnotationsScanner
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -16,6 +21,9 @@ import kotlin.reflect.KClass
  * reflection related tasks.
  */
 object ComponentInspection {
+
+    @JvmField
+    val reflections = Reflections(FieldAnnotationsScanner(), SubTypesScanner(), TypeAnnotationsScanner())
 
     /**
      *
@@ -47,7 +55,7 @@ object ComponentInspection {
 
         // Extra check if output port has the right signature
         if (outputPort != null) {
-            if (Modifier.isPrivate(outputPort.modifiers) || (outputPort.type == PublishSubject::class)) {
+            if (Modifier.isPrivate(outputPort.modifiers) || (outputPort.type == Subject::class)) {
                 throw ComponentLogic.ValidationException("Output port in ${outputPort.declaringClass} is not from type PublishSubject or public")
             }
         }
@@ -129,6 +137,25 @@ object ComponentInspection {
                 }.firstOrNull()
     }
 
+    /**
+     * @return A method if the class has a valid startableMethod
+     */
+    fun getStartableMethod(c: EmgBaseComponent): Workflow.StartableMethod? {
+        return ReflectionUtils.getMethods(Class.forName(c.qualifiedName),
+                ReflectionUtils.withAnnotation(EmgComponentStartablePoint::class.java))
+                .map { method ->
+
+                    val startableAnnotation = method.annotations.mapNotNull { it as? EmgComponentStartablePoint }.firstOrNull()
+                    if (startableAnnotation != null) {
+                        val viewPropertyName = startableAnnotation.viewProperty
+                        val concreteViewClass = reflections.getSubTypesOf(startableAnnotation.viewClass.java)
+                                .firstOrNull { !it.isInterface }
+                        Workflow.StartableMethod(method, viewPropertyName, concreteViewClass)
+                    } else {
+                        null
+                    }
+                }.firstOrNull()
+    }
 
     fun setProperty(instance: Any, fieldName: String, value: String, type: String) {
         instance.javaClass.getField(fieldName)?.set(instance, convertValueToType(value, type))

@@ -9,7 +9,6 @@ class FftFrequencyAnalysisMethod(override var view: FrequencyAnalysisView? = nul
                                  override var fs: Double = 100.0) : FrequencyAnalysisMethod {
 
     override val name = "FFT"
-    override val hasDisplay = true
 
     @EmgComponentInputPort(DoubleArray::class)
     override fun calculate(input: DoubleArray) {

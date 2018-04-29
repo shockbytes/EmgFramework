@@ -25,7 +25,7 @@ class DesktopWorkflowView : WorkflowView {
             }
         })
 
-        frame?.setBounds(400, 400, 300, 300)
+        frame?.setBounds(400, 400, 200, 200)
         frame?.defaultCloseOperation = WindowConstants.HIDE_ON_CLOSE
 
         val panel = JPanel(GridLayout(4, 1, 4, 4))

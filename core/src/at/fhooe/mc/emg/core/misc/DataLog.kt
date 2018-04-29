@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.misc
 
-interface RawDataLog<T> {
+interface DataLog<T> {
 
     val view: T
 

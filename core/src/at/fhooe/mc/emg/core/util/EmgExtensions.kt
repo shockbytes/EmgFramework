@@ -32,26 +32,10 @@ fun List<Double>.medianFrequency(): Double {
     return toDoubleArray().medianFrequency()
 }
 
-fun List<Double>.modifiedMeanFrequency(): Double {
-    return toDoubleArray().modifiedMeanFrequency()
-}
-
-fun List<Double>.modifiedMedianFrequency(): Double {
-    return toDoubleArray().modifiedMedianFrequency()
-}
-
 fun DoubleArray.meanFrequency(): Double {
     TODO("Calculate frequency")
 }
 
 fun DoubleArray.medianFrequency(): Double {
-    TODO("Calculate frequency")
-}
-
-fun DoubleArray.modifiedMeanFrequency(): Double {
-    TODO("Calculate frequency")
-}
-
-fun DoubleArray.modifiedMedianFrequency(): Double {
     TODO("Calculate frequency")
 }
