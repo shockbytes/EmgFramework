@@ -33,18 +33,16 @@ object ComponentInspection {
      *
      * @return a Triple of format (consumes, produces, isRelayPort)
      */
-    fun getPortConnectivityInformation(c: EmgBaseComponent): Triple<KClass<*>?, KClass<*>?, Boolean> {
+    fun getPortConnectivityInformation(c: EmgBaseComponent): Pair<KClass<*>?, KClass<*>?> {
 
         val clazz = Class.forName(c.qualifiedName)
         val inputPort = ReflectionUtils.getMethods(clazz,
                 ReflectionUtils.withAnnotation(EmgComponentInputPort::class.java)).firstOrNull()
         var outputPort = ReflectionUtils.getFields(clazz,
                 ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java)).firstOrNull()
-        val relayPort = ReflectionUtils.getMethods(clazz,
-                ReflectionUtils.withAnnotation(EmgComponentRelayPort::class.java)).firstOrNull()
 
         // Check in super class if in concrete class no output port is defined
-        if (outputPort == null && relayPort == null) {
+        if (outputPort == null) {
             outputPort = ReflectionUtils.getSuperTypes(Class.forName(c.qualifiedName))
                     .mapNotNull { cls ->
                         ReflectionUtils
@@ -62,51 +60,32 @@ object ComponentInspection {
 
         val consumes: KClass<*>?
         val produces: KClass<*>?
-        if (relayPort != null) {
-            val relay = relayPort.annotations
-                    ?.find { a -> a.annotationClass == EmgComponentRelayPort::class }
-                    .let { (it as? EmgComponentRelayPort) }
-            consumes = relay?.consumes
-            produces = relay?.produces
-        } else {
-            consumes = inputPort?.annotations
-                    ?.find { a -> a.annotationClass == EmgComponentInputPort::class }
-                    .let { (it as? EmgComponentInputPort)?.consumes }
-            produces = outputPort?.annotations
-                    ?.find { a -> a.annotationClass == EmgComponentOutputPort::class }
-                    .let { (it as? EmgComponentOutputPort)?.produces }
-        }
-        return Triple(consumes, produces, relayPort != null)
+        consumes = inputPort?.annotations
+                ?.find { a -> a.annotationClass == EmgComponentInputPort::class }
+                .let { (it as? EmgComponentInputPort)?.consumes }
+        produces = outputPort?.annotations
+                ?.find { a -> a.annotationClass == EmgComponentOutputPort::class }
+                .let { (it as? EmgComponentOutputPort)?.produces }
+
+        return Pair(consumes, produces)
     }
 
     fun getOutputPort(c: EmgBaseComponent): Field {
-
-        val (_, _, isRelayPort) = getPortConnectivityInformation(c)
-        return if (!isRelayPort) {
-            // Check in super class if in concrete class no output port is defined
-            ReflectionUtils.getFields(Class.forName(c.qualifiedName),
-                    ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java)).firstOrNull()
-                    ?: ReflectionUtils.getSuperTypes(Class.forName(c.qualifiedName))
-                            .mapNotNull { cls ->
-                                ReflectionUtils
-                                        .getFields(cls, ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java))
-                                        .firstOrNull()
-                            }.first()
-        } else {
-            throw IllegalAccessException("Relay port as output port is not supported, must be squashed inside next consumer")
-        }
+        // Check in super class if in concrete class no output port is defined
+        return ReflectionUtils.getFields(Class.forName(c.qualifiedName),
+                ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java)).firstOrNull()
+                ?: ReflectionUtils.getSuperTypes(Class.forName(c.qualifiedName))
+                        .mapNotNull { cls ->
+                            ReflectionUtils
+                                    .getFields(cls, ReflectionUtils.withAnnotation(EmgComponentOutputPort::class.java))
+                                    .firstOrNull()
+                        }.firstOrNull() ?: throw IllegalStateException("No output port defined in ${c.qualifiedName}")
     }
 
     fun getInputPort(c: EmgBaseComponent): Method {
-
-        val (_, _, isRelayPort) = getPortConnectivityInformation(c)
-        return if (isRelayPort) {
-            ReflectionUtils.getMethods(Class.forName(c.qualifiedName),
-                    ReflectionUtils.withAnnotation(EmgComponentRelayPort::class.java)).first()
-        } else {
-            ReflectionUtils.getMethods(Class.forName(c.qualifiedName),
-                    ReflectionUtils.withAnnotation(EmgComponentInputPort::class.java)).first()
-        }
+        return ReflectionUtils.getMethods(Class.forName(c.qualifiedName),
+                ReflectionUtils.withAnnotation(EmgComponentInputPort::class.java)).firstOrNull()
+                ?: throw IllegalStateException("No input port defined in ${c.qualifiedName}")
     }
 
     fun getDeviceEntryPoint(c: EmgBaseComponent): Method {

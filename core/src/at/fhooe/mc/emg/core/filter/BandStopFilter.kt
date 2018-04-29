@@ -1,8 +1,10 @@
 package at.fhooe.mc.emg.core.filter
 
-import at.fhooe.mc.emg.designer.annotation.EmgComponent
-import at.fhooe.mc.emg.designer.annotation.EmgComponentRelayPort
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
+import io.reactivex.subjects.PublishSubject
 
 
 //Band pass butterworth filter order=1 alpha1=50 alpha2=50.05
@@ -14,14 +16,20 @@ class BandStopFilter : Filter() {
     override val name = "50Hz Butterworth band stop"
     override val shortName = "BS"
 
-    @EmgComponentRelayPort(Double::class, Double::class)
+    @JvmField
+    @EmgComponentOutputPort(Double::class)
+    var outputPort: PublishSubject<Double> = PublishSubject.create()
+
+    @EmgComponentInputPort(Double::class)
     override fun step(x: Double): Double {
         v[0] = v[1]
         v[1] = v[2]
         v[2] = (9.291239228448944232e-1 * x
                 + -0.72654252800537055812 * v[0]
                 + 1.72654252800536989199 * v[1])
-        return v[0] + v[2] - 2.000000 * v[1]
+        val data = v[0] + v[2] - 2.000000 * v[1]
+        outputPort.onNext(data)
+        return data
     }
 
     override fun reset() {

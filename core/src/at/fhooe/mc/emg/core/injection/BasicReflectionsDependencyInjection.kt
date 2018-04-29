@@ -5,6 +5,9 @@ import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisView
 import at.fhooe.mc.emg.core.filter.Filter
+import at.fhooe.mc.emg.core.filter.RunningAverageFilter
+import at.fhooe.mc.emg.core.filter.SavitzkyGolayFilter
+import at.fhooe.mc.emg.core.filter.ThresholdFilter
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
@@ -143,16 +146,19 @@ open class BasicReflectionsDependencyInjection(private val platformConfig: Platf
     private fun filterByClass(fc: Class<out Filter>): Filter {
         return when {
             fc.name.contains("SavitzkyGolay") -> {
-                val constructor = fc.getConstructor(Int::class.java)
-                constructor.newInstance(configStorage.emgConfig.savitzkyGolayFilterWidth)
+                val sg = fc.newInstance() as SavitzkyGolayFilter
+                sg.sgFilterWidth = configStorage.emgConfig.savitzkyGolayFilterWidth
+                sg
             }
             fc.name.contains("RunningAverage") -> {
-                val constructor = fc.getConstructor(Int::class.java)
-                constructor.newInstance(configStorage.emgConfig.runningAverageWindowSize)
+                val rAvg = fc.newInstance() as RunningAverageFilter
+                rAvg.size = configStorage.emgConfig.runningAverageWindowSize
+                rAvg
             }
             fc.name.contains("Threshold") -> {
-                val constructor = fc.getConstructor(Int::class.java)
-                constructor.newInstance(configStorage.emgConfig.thresholdFilterValue)
+                val threshold = fc.newInstance() as ThresholdFilter
+                threshold.threshold = configStorage.emgConfig.thresholdFilterValue
+                threshold
             }
             else -> fc.newInstance()
         }

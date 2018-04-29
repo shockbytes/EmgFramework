@@ -7,7 +7,6 @@ import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.model.Workflow
 import at.fhooe.mc.emg.designer.model.WorkflowConfiguration
-import at.fhooe.mc.emg.designer.util.ComponentInspection
 import at.fhooe.mc.emg.designer.util.ComponentInspection.getPortConnectivityInformation
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -74,8 +73,8 @@ object ComponentLogic {
                 .mapNotNull { it as? ConnectorComponent }
                 .forEach {
 
-                    val (consumes, _, _) = getPortConnectivityInformation(it.end)
-                    val (_, produces, _) = getPortConnectivityInformation(it.start)
+                    val (consumes, _) = getPortConnectivityInformation(it.end)
+                    val (_, produces) = getPortConnectivityInformation(it.start)
 
                     // Find a suiting pipe for the port types,
                     // if nothing found throw an ValidationException
@@ -96,7 +95,7 @@ object ComponentLogic {
                 .forEach { c ->
 
                     val (inputEnabled, outputEnabled) = c.portConfiguration
-                    val (consumes, produces, _) = getPortConnectivityInformation(c)
+                    val (consumes, produces) = getPortConnectivityInformation(c)
 
                     // Check input/output port configuration
                     if (inputEnabled && consumes == null) {
@@ -133,7 +132,7 @@ object ComponentLogic {
         val workflowBuilder = Workflow.Builder(workflowConfig)
         val relayComponentList: MutableList<Workflow.Consumer> = mutableListOf()
 
-        // TODO Squash relay ports into adjacent consumer
+        // Create the workflow object
         connectors
                 .groupBy { it.start } // Group output components by same input component
                 .forEach { map ->
@@ -146,7 +145,7 @@ object ComponentLogic {
                     val reusedConsumer = relayComponentList.find { it.qualifiedName == start.qualifiedName }
                     val producer = workflowBuilder.producerOf(start, reusedConsumer)
 
-                    val (_, _, hasRelayPort) = ComponentInspection.getPortConnectivityInformation(start)
+                    // 1 producer can have multiple consumer
                     val consumer = endpoints.map {
                         val (pipe, hasOutput) = findSuitablePipe(start, it.end, pipes)
                         val consumer = workflowBuilder.consumerOf(it.end, pipe)
@@ -168,8 +167,8 @@ object ComponentLogic {
                                  end: EmgBaseComponent,
                                  pipes: List<EmgComponentPipe<Any, Any>>): Pair<EmgComponentPipe<Any, Any>, Boolean> {
 
-        val (_, startProduces, _) = getPortConnectivityInformation(start)
-        val (endConsumes, endProduces, _) = getPortConnectivityInformation(end)
+        val (_, startProduces) = getPortConnectivityInformation(start)
+        val (endConsumes, endProduces) = getPortConnectivityInformation(end)
         val hasOutput = endProduces != null
 
         val pipe = pipes.find {

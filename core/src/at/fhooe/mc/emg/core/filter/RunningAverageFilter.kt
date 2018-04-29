@@ -1,21 +1,32 @@
 package at.fhooe.mc.emg.core.filter
 
-import at.fhooe.mc.emg.designer.annotation.EmgComponent
-import at.fhooe.mc.emg.designer.annotation.EmgComponentRelayPort
 import at.fhooe.mc.emg.designer.EmgComponentType
+import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 
 @EmgComponent(type = EmgComponentType.FILTER)
-class RunningAverageFilter(private val size: Int = 30) : Filter() {
+class RunningAverageFilter : Filter() {
 
     private var sum: Double = 0.0
     private var rAvg: Double = 0.0
     private var buffer: LinkedList<Double> = LinkedList()
 
+    @JvmField
+    @EmgComponentProperty("30")
+    var size: Int = 30
+
+    @JvmField
+    @EmgComponentOutputPort(Double::class)
+    var outputPort: PublishSubject<Double> = PublishSubject.create()
+
     override val name = "Running average"
     override val shortName = "rAvg"
 
-    @EmgComponentRelayPort(Double::class, Double::class)
+    @EmgComponentInputPort(Double::class)
     override fun step(x: Double): Double {
 
         if (buffer.size == size) {
@@ -25,6 +36,7 @@ class RunningAverageFilter(private val size: Int = 30) : Filter() {
         sum += x
         buffer.addLast(x)
         rAvg = sum / buffer.size
+        outputPort.onNext(rAvg)
         return rAvg
     }
 

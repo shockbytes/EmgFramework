@@ -4,7 +4,9 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.draw.DrawCommand
 import at.fhooe.mc.emg.designer.draw.LineDrawCommand
 
-open class ConnectorComponent(val start: EmgBaseComponent, val end: EmgBaseComponent) : EmgBaseComponent() {
+class RelayConnectorComponent(start: EmgBaseComponent,
+                              end: EmgBaseComponent,
+                              val relays: List<EmgBaseComponent>) : ConnectorComponent(start, end) {
 
     override val portConfiguration: Pair<Boolean, Boolean> = Pair(false, false)
 
