@@ -23,19 +23,3 @@ fun DoubleArray.rmse(approx: List<Double>): Double {
 fun Double.round(): Int {
     return Math.round(this).toInt()
 }
-
-fun List<Double>.meanFrequency(): Double {
-    return toDoubleArray().meanFrequency()
-}
-
-fun List<Double>.medianFrequency(): Double {
-    return toDoubleArray().medianFrequency()
-}
-
-fun DoubleArray.meanFrequency(): Double {
-    TODO("Calculate frequency")
-}
-
-fun DoubleArray.medianFrequency(): Double {
-    TODO("Calculate frequency")
-}

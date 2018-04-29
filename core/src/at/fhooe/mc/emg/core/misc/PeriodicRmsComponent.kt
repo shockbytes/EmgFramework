@@ -20,8 +20,8 @@ import io.reactivex.subjects.PublishSubject
 class PeriodicRmsComponent {
 
     @JvmField
-    @EmgComponentProperty("100")
-    var capacity: Int = 100
+    @EmgComponentProperty("512")
+    var capacity: Int = 512
 
     @JvmField
     @EmgComponentOutputPort(Double::class)
