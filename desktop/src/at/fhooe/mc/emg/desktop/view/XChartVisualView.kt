@@ -4,8 +4,8 @@ import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.filter.NoFilter
 import at.fhooe.mc.emg.core.view.VisualView
+import at.fhooe.mc.emg.designer.ComponentViewType
 import at.fhooe.mc.emg.designer.EmgComponentType
-import at.fhooe.mc.emg.designer.ViewType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
 import at.fhooe.mc.emg.designer.annotation.EmgComponentPlatformView
@@ -13,6 +13,7 @@ import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import org.knowm.xchart.XChartPanel
+import org.knowm.xchart.XYChart
 import org.knowm.xchart.XYChartBuilder
 import org.knowm.xchart.XYSeries
 import org.knowm.xchart.style.Styler
@@ -27,8 +28,8 @@ import javax.swing.JComponent
 @EmgComponent(type = EmgComponentType.SINK)
 class XChartVisualView : VisualView<JComponent> {
 
-    private lateinit var realtimeChart: org.knowm.xchart.XYChart
-    private lateinit var chartWrapper: XChartPanel<org.knowm.xchart.XYChart>
+    private val realtimeChart: XYChart = initializeRealtimeChart()
+    private val chartWrapper: XChartPanel<XYChart> = XChartPanel(realtimeChart)
 
     override val dataForFrequencyAnalysis: DoubleArray
         get() {
@@ -40,9 +41,8 @@ class XChartVisualView : VisualView<JComponent> {
             }
         }
 
-    @EmgComponentPlatformView(ViewType.DESKTOP)
-    override val view: JComponent
-        get() = chartWrapper
+    @EmgComponentPlatformView(viewType = ComponentViewType.DESKTOP, requestedWidth = 400)
+    override val view: JComponent = chartWrapper
 
     override val scheduler: Scheduler? = null
     override val bufferSpan: Long = -1
@@ -54,16 +54,20 @@ class XChartVisualView : VisualView<JComponent> {
     }
 
     override fun initialize() {
+        // Do nothing here...
+    }
 
-        realtimeChart = XYChartBuilder().width(800).height(600).theme(Styler.ChartTheme.GGPlot2).build()
+    private fun initializeRealtimeChart(): XYChart {
+        val chart = XYChartBuilder().width(800).height(600).theme(Styler.ChartTheme.GGPlot2).build()
 
-        realtimeChart.styler.legendPosition = Styler.LegendPosition.OutsideE
-        realtimeChart.styler.isPlotGridLinesVisible = false
-        realtimeChart.styler.plotBackgroundColor = Color.WHITE
-        realtimeChart.styler.seriesColors = arrayOf(Color.decode("#1976D2"), Color.decode("#607D8B"),
+        chart.styler.legendPosition = Styler.LegendPosition.OutsideE
+        chart.styler.isPlotGridLinesVisible = false
+        chart.styler.plotBackgroundColor = Color.WHITE
+        chart.styler.seriesColors = arrayOf(Color.decode("#1976D2"), Color.decode("#607D8B"),
                 Color.decode("#009688"), Color.decode("#4CAF50"), Color.decode("#F44336"),
                 Color.decode("#FF9800"), Color.decode("#FFEB3B"), Color.decode("#FF6F00"))
-        chartWrapper = XChartPanel(realtimeChart)
+
+        return chart
     }
 
     @EmgComponentInputPort(EmgData::class)

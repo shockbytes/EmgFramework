@@ -2,6 +2,7 @@ package at.fhooe.mc.emg.desktop.designer
 
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.SimpleFileStorage
+import at.fhooe.mc.emg.designer.ComponentViewType
 import at.fhooe.mc.emg.designer.DesignerPresenter
 import at.fhooe.mc.emg.designer.WorkflowPresenter
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
@@ -11,6 +12,7 @@ import at.fhooe.mc.emg.designer.model.WorkflowConfiguration
 import at.fhooe.mc.emg.designer.view.ComponentPropertyView
 import at.fhooe.mc.emg.designer.view.DesignerView
 import at.fhooe.mc.emg.desktop.core.DesktopPlatformConfiguration
+import at.fhooe.mc.emg.desktop.designer.view.DesktopWorkflowItemViewManager
 import at.fhooe.mc.emg.desktop.view.DesktopComponentPropertyView
 import at.fhooe.mc.emg.desktop.view.DesktopWorkflowView
 import io.reactivex.Completable
@@ -24,7 +26,10 @@ class DesktopDesignerPresenter(view: DesignerView,
 
     private val fileStorage: FileStorage = SimpleFileStorage()
 
-    override val workflowConfig = WorkflowConfiguration(DesktopPlatformConfiguration().simulationFolder)
+    override val workflowConfig = WorkflowConfiguration(
+            DesktopPlatformConfiguration().simulationFolder,
+            DesktopWorkflowItemViewManager(),
+            ComponentViewType.DESKTOP)
 
     override val componentPropertyView: ComponentPropertyView = DesktopComponentPropertyView()
 

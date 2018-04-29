@@ -19,7 +19,8 @@ import java.lang.reflect.Method
  * holds the components and the corresponding pipes, which will be used to execute the actual code.
  *
  */
-class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
+class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf(),
+               private val flowConfig: WorkflowConfiguration) {
 
     private val startPoint: StartableProducer
         get() = flow.mapNotNull { it.producer as? StartableProducer }.first()
@@ -35,8 +36,11 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
                         throwable.printStackTrace()
                         isStarted = false
                     })
-            // TODO Start tools
-            
+
+            flow.mapNotNull { it.producer as? StartableProducer }
+                    .filter { it.startableType == StartableType.TOOL }
+                    .forEach { flowConfig.itemViewManager.startProducer(it) }
+
             isStarted = true
         }
     }
@@ -49,6 +53,7 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
     }
 
     fun release() {
+        flowConfig.itemViewManager.releaseViews()
         flow.clear()
     }
 
@@ -66,7 +71,7 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
                            instance: Any,
                            method: Method,
                            pipe: EmgComponentPipe<Any, Any>,
-                           view: Method): Consumer(qualifiedName, instance, method, pipe)
+                           val view: Pair<Field, Int>): Consumer(qualifiedName, instance, method, pipe)
 
     open class Producer(val instance: Any,
                         val field: Field)
@@ -113,7 +118,7 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
 
         fun producerOf(c: EmgBaseComponent, reused: Consumer? = null): Producer {
 
-            // TODO Somehow check for ToolViews and EmgComponentPlatformViews and display them
+            // TODO Somehow check for ToolViews and display them
             val field = ComponentInspection.getOutputPort(c)
             val instance: Any
             val producer =  if (c is EmgDeviceComponent) {
@@ -139,16 +144,16 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf()) {
             setComponentProperties(instance, c.parameter)
             val method = ComponentInspection.getInputPort(c)
 
-            val viewMethod = ComponentInspection.getPlatformView(c)
-            return if (viewMethod != null) {
-                ViewableConsumer(c.qualifiedName, instance, method, pipe, viewMethod)
+            val viewField = ComponentInspection.getPlatformViewField(c, flowConfig.viewType)
+            return if (viewField != null) {
+                ViewableConsumer(c.qualifiedName, instance, method, pipe, viewField)
             } else {
                 Consumer(c.qualifiedName, instance, method, pipe)
             }
         }
 
         fun build(): Workflow {
-            return Workflow(builderItems)
+            return Workflow(builderItems, flowConfig)
         }
 
         private fun setComponentProperties(instance: Any, properties: List<EmgComponentParameter>) {

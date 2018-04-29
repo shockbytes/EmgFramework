@@ -7,4 +7,6 @@ interface WorkflowItemViewManager {
     fun startProducer(item: Workflow.StartableProducer)
 
     fun showPlatformView(item: Workflow.ViewableConsumer)
+
+    fun releaseViews()
 }

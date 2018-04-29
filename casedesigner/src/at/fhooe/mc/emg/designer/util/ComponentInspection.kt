@@ -1,6 +1,7 @@
 package at.fhooe.mc.emg.designer.util
 
 import at.fhooe.mc.emg.designer.ComponentLogic
+import at.fhooe.mc.emg.designer.ComponentViewType
 import at.fhooe.mc.emg.designer.annotation.*
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import io.reactivex.subjects.PublishSubject
@@ -10,6 +11,10 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 
+/**
+ * This object class handles all the heavy reflection stuff in order to create a single source of truth for
+ * reflection related tasks.
+ */
 object ComponentInspection {
 
     /**
@@ -106,8 +111,22 @@ object ComponentInspection {
                 ReflectionUtils.withAnnotation(EmgComponentExitPoint::class.java)).first()
     }
 
-    fun getPlatformView(c: EmgBaseComponent): Method? {
-        TODO("Get platform view")
+    /**
+     *
+     * @return A pair containing a field and the requested width
+     */
+    fun getPlatformViewField(c: EmgBaseComponent, viewType: ComponentViewType): Pair<Field, Int>? {
+        return ReflectionUtils.getFields(Class.forName(c.qualifiedName),
+                ReflectionUtils.withAnnotation(EmgComponentPlatformView::class.java))
+                .map { field ->
+                    val viewAnnotation = field.annotations.mapNotNull { it as? EmgComponentPlatformView }.firstOrNull()
+                    if (viewAnnotation?.viewType == viewType) {
+                        field.isAccessible = true
+                        Pair(field, viewAnnotation.requestedWidth)
+                    } else {
+                        null
+                    }
+                }.firstOrNull()
     }
 
 

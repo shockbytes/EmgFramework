@@ -60,7 +60,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
 
     private lateinit var visualView: VisualView<JComponent>
 
-    private val rawLogView: RawDataLog<JScrollPane> = DesktopRawDataLog()
+    private val rawLogView: RawDataLog<JComponent> = DesktopRawDataLog()
 
     init {
         iconImage = Toolkit.getDefaultToolkit()

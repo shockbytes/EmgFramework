@@ -14,6 +14,6 @@ enum class EmgComponentType {
     FILTER, SINK, RELAY_SINK, TOOL, DEVICE, RELAY
 }
 
-enum class ViewType {
+enum class ComponentViewType {
     DESKTOP, MOBILE
 }
