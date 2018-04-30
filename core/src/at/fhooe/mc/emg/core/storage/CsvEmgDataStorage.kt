@@ -6,7 +6,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.io.PrintWriter
 
-class CsvDataStorage : DataStorage {
+class CsvEmgDataStorage : EmgDataStorage {
 
     override fun store(path: String, data: EmgData): Boolean {
         return try {

@@ -44,10 +44,6 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
         // No further cleanup necessary
     }
 
-    override fun update(value: Double) {
-        // Not needed here...
-    }
-
     @EmgComponentStartablePoint("toolView", PeakDetectionToolView::class)
     override fun externalStart() {
         start(null, true)

@@ -11,7 +11,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 object UiUtils {
 
     fun showCsvSaveDialog(): String? {
-        return showDialog("Save logged data",
+        return showDialog("Save data as CSV",
                 FileNameExtensionFilter("CSV files", "csv", "txt"),
                 ".csv", true)
     }
@@ -68,6 +68,12 @@ object UiUtils {
             }
             path
         } else { null }
+    }
+
+    fun showCsvOpenDialog(): String? {
+        return showDialog("Open CSV file",
+                FileNameExtensionFilter("CSV files", "csv", "txt"),
+                ".csv", false)
     }
 
 }

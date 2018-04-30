@@ -16,5 +16,4 @@ interface Tool {
 
     fun externalStart()
 
-    fun update(value: Double)
 }

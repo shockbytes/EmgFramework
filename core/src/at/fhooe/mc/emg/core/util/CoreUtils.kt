@@ -1,5 +1,7 @@
 package at.fhooe.mc.emg.core.util
 
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import java.io.*
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -36,6 +38,18 @@ object CoreUtils {
         } else {
             false
         }
+    }
+
+    fun readFile(file: File): Single<String> {
+        return Single.fromCallable {
+            file.bufferedReader().useLines { it.joinToString("\n") }
+        }.subscribeOn(Schedulers.io())
+    }
+
+    fun readFileLines(file: File): Single<Sequence<String>> {
+        return Single.fromCallable {
+            file.bufferedReader().lineSequence()
+        }.subscribeOn(Schedulers.io())
     }
 
     @Throws(Exception::class)

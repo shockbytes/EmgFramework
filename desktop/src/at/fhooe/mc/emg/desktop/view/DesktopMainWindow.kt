@@ -5,7 +5,7 @@ import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.misc.DataLog
-import at.fhooe.mc.emg.core.storage.CsvDataStorage
+import at.fhooe.mc.emg.core.storage.CsvEmgDataStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgViewCallback
@@ -272,7 +272,7 @@ class DesktopMainWindow : JFrame(), DesktopEmgView<JComponent>, ActionListener {
             e.source === menuItemExport -> {
                 val fileName = UiUtils.showCsvSaveDialog()
                 if (fileName != null) {
-                    viewCallback.exportData(fileName, CsvDataStorage())
+                    viewCallback.exportData(fileName, CsvEmgDataStorage())
                 }
             }
         }

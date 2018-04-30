@@ -2,7 +2,7 @@ package at.fhooe.mc.emg.core.tool.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.Toolable
-import at.fhooe.mc.emg.core.storage.CsvDataStorage
+import at.fhooe.mc.emg.core.storage.CsvEmgDataStorage
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.peaks.PeakDetector
@@ -10,6 +10,7 @@ import at.fhooe.mc.emg.core.util.CoreUtils
 import at.fhooe.mc.emg.core.util.rms
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
+import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
 import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -24,6 +25,9 @@ import java.util.concurrent.TimeUnit
 /**
  * Author:  Martin Macheiner
  * Date:    04.07.2017
+ *
+ * TODO Refactor for ACD usage
+ *
  */
 @EmgComponent(type = EmgComponentType.TOOL)
 class ConconiTool(override var toolView: ConconiToolView? = null,
@@ -33,6 +37,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     private var data: ConconiData = ConconiData()
 
+    private var dataDisposable: Disposable? = null
     private var timerDisposable: Disposable? = null
     private var toolable: Toolable? = null
 
@@ -41,8 +46,9 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         this.toolable = toolable
-
         toolView?.setup(this, showViewImmediate)
+
+        dataDisposable = toolable?.registerToolForUpdates()?.subscribe { update(it) }
 
         data = ConconiData()
         dataStartPointer = 0
@@ -75,7 +81,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
             // No action required if everything works fine
             fileStorage?.storeFileAsObject(data, fileNameConconi)?.subscribe(Action {}, errorHandler)
-            toolable?.exportData(fileNameRaw, CsvDataStorage())
+            toolable?.exportData(fileNameRaw, CsvEmgDataStorage())
         } else {
             errorHandler.accept(NullPointerException("Filename must not be null!"))
         }
@@ -112,10 +118,14 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     override fun onViewClosed() {
         timerDisposable?.dispose()
+        dataDisposable?.dispose()
     }
 
-    override fun update(value: Double) {
-        // Not needed in this tool...
+    // --------------------------------------------------------------------------------
+
+    @EmgComponentInputPort(EmgData::class)
+    fun update(emgData: EmgData) {
+
     }
 
     // --------------------------------------------------------------------------------

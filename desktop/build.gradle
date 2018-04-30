@@ -41,7 +41,7 @@ dependencies {
     implementation group: 'org.rxtx', name: 'rxtxcomm', version: '2.2pre2'
 
     implementation 'com.google.code.gson:gson:2.8.2'
-    implementation group: 'org.knowm.xchart', name: 'xchart', version: '3.5.0'
+    implementation group: 'org.knowm.xchart', name: 'xchart', version: '3.5.1'
     implementation group: 'com.github.wendykierp', name: 'JTransforms', version: '3.1'
     implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.6'
 

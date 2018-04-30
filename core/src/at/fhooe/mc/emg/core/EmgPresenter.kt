@@ -6,8 +6,8 @@ import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.core.filter.Filter
-import at.fhooe.mc.emg.core.storage.CsvDataStorage
-import at.fhooe.mc.emg.core.storage.DataStorage
+import at.fhooe.mc.emg.core.storage.CsvEmgDataStorage
+import at.fhooe.mc.emg.core.storage.EmgDataStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
@@ -17,6 +17,7 @@ import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.messaging.MessageParser
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -59,7 +60,6 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
     private var client: EmgClientDriver
     private var config: EmgConfig
 
-    private val connectedTools: MutableList<Tool> = mutableListOf()
 
     init {
         // Load configuration
@@ -83,7 +83,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
     private fun storeData(writeOnDisconnectFileName: String?) {
         if (config.isWriteToLogEnabled && client.isDataStorageEnabled && writeOnDisconnectFileName != null) {
-            exportData(writeOnDisconnectFileName, CsvDataStorage())
+            exportData(writeOnDisconnectFileName, CsvEmgDataStorage())
         }
     }
 
@@ -137,7 +137,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
     // -------------------------------- EmgViewCallback & Toolable methods --------------------------------
 
-    override fun exportData(filename: String, dataStorage: DataStorage) {
+    override fun exportData(filename: String, dataStorage: EmgDataStorage) {
         val success = dataStorage.store(filename, client.data)
         if (success) {
             tryCopySimulationData(filename, client.samplingFrequency)
@@ -170,16 +170,9 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         return client.data.section(start, stop, channel)
     }
 
-    override fun registerToolForUpdates(t: Tool) {
-        if (!connectedTools.contains(t)) {
-            connectedTools.add(t)
-        }
+    override fun registerToolForUpdates(): Observable<EmgData> {
+        return client.channeledCallbackSubject.subscribeOn(Schedulers.io())
     }
-
-    override fun unregisterToolUpdates(t: Tool) {
-        connectedTools.remove(t)
-    }
-
 
     override fun connectToClient(successHandler: Action?) {
 
@@ -251,20 +244,12 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         data.forEach {
             // Update visual view
             visualView.update(it)
-
-            // Update connected tools
-            val value = it.lastOfChannel(0).y
-            connectedTools.forEach { t -> t.update(value) }
         }
     }
 
     private fun notifyChanneledCallbacks(data: EmgData) {
         // Update visual view
         visualView.update(data)
-
-        // Update connected tools
-        val value = data.lastOfChannel(0).y
-        connectedTools.forEach { t -> t.update(value) }
     }
 
 }

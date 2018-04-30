@@ -56,7 +56,9 @@ object AnalysisUtils {
                 }
                 mnf /= pSum
 
-                val mdf = pSum * 0.5
+                // TODO Fix Fix calculations
+
+                val mdf = pSum / 2
 
                 MeanMedianFrequency(mnf, mdf, fs)
             }.subscribeOn(Schedulers.computation())
