@@ -19,7 +19,7 @@ class SavitzkyGolayFilter : Filter() {
 
 
     @JvmField
-    @EmgComponentProperty("10")
+    @EmgComponentProperty("10", "Savitzky-Golay filter width")
     var sgFilterWidth: Int = 10
 
     @JvmField

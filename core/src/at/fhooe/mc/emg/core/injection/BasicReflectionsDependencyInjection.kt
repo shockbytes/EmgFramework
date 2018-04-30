@@ -100,7 +100,8 @@ open class BasicReflectionsDependencyInjection(private val platformConfig: Platf
         val params = reflections.getFieldsAnnotatedWith(EmgComponentProperty::class.java)
                 .map {
                     val propAnnotation = it.annotations.find { it is EmgComponentProperty } as EmgComponentProperty
-                    EmgComponentParameter(it.declaringClass.name, it.type.name, it.name, propAnnotation.defaultValue)
+                    EmgComponentParameter(it.declaringClass.name, it.type.name, it.name,
+                            propAnnotation.defaultValue, propAnnotation.displayName)
                 }
 
         reflections.getTypesAnnotatedWith(EmgComponent::class.java)

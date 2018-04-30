@@ -38,11 +38,11 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
     override val isDataStorageEnabled: Boolean = true
 
     @JvmField
-    @EmgComponentProperty("localhost")
+    @EmgComponentProperty("localhost", "Ip address of remote device")
     var ip: String = "localhost"
 
     @JvmField
-    @EmgComponentProperty("5673")
+    @EmgComponentProperty("5673", "Port of remote device")
     var port: Int = 5673
 
     private val buffer = ByteArray(64)

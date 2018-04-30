@@ -26,11 +26,11 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
     override val name = "Muscle Fatigue Detection"
 
     @JvmField
-    @EmgComponentProperty("5.12")
+    @EmgComponentProperty("5.12", "Calculation window in seconds")
     var windowWithInSeconds: Double = 5.12
 
     @JvmField
-    @EmgComponentProperty("100")
+    @EmgComponentProperty("100", "Sampling frequency")
     var fs: Int = 100
 
     private var periodCapacity: Int = (windowWithInSeconds * fs).toInt()

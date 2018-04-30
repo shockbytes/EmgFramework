@@ -22,14 +22,14 @@ class DesktopComponentPropertyView : ComponentPropertyView {
         val labelStatus = JLabel("")
 
         component.parameter.forEach { property ->
-            panel.add(JLabel(property.name))
+            panel.add(JLabel(property.displayName))
             val textField = JTextField(property.value)
             textField.addActionListener {
                 val isValid = callback.invoke(component, property, textField.text)
                 if (isValid) {
-                    labelStatus.text = "${property.name} changed to ${textField.text}"
+                    labelStatus.text = "${property.displayName} changed to ${textField.text}"
                 } else {
-                    labelStatus.text = "Invalid input for ${property.name}!"
+                    labelStatus.text = "Invalid input for ${property.displayName}!"
                 }
             }
             panel.add(textField)

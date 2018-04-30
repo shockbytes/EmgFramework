@@ -51,11 +51,11 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     // These properties can be changed in the ConfigView, therefore they aren't private
 
     @JvmField
-    @EmgComponentProperty("22:22:20:E8:93:47")
+    @EmgComponentProperty("22:22:20:E8:93:47", "Remote MAC address")
     var remoteDeviceMacAddress: String = "22:22:20:E8:93:47"
 
     @JvmField
-    @EmgComponentProperty("22:22:20:E8:93:47")
+    @EmgComponentProperty("2", "Bluetooth Channel")
     var channel: String = "2"
 
     var uuid: UUID = UUID("5f77cdab8f4847849958d2736f4727c5", false)

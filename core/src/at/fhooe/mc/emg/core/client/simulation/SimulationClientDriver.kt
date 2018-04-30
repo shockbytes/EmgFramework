@@ -43,7 +43,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
         private set
 
     @JvmField
-    @EmgComponentProperty("false")
+    @EmgComponentProperty("false", "Enable playback loop")
     var isEndlessLoopEnabled = false
 
     override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V2)

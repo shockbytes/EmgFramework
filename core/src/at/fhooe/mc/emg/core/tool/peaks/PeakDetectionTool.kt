@@ -6,6 +6,7 @@ import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
 
 /**
@@ -20,10 +21,21 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
 
     private var toolable: Toolable? = null
 
-    private var width: Int = PeakDetector.defaultWidth
-    private var threshold: Double = PeakDetector.defaultThreshold
-    private var decayRate: Double = PeakDetector.defaultDecayRate
-    private var isRelative: Boolean = PeakDetector.defaultIsRelative
+    @JvmField
+    @EmgComponentProperty(PeakDetector.defaultWidth.toString(), "Width")
+    var width: Int = PeakDetector.defaultWidth
+
+    @JvmField
+    @EmgComponentProperty(PeakDetector.defaultThreshold.toString(), "Threshold")
+    var threshold: Double = PeakDetector.defaultThreshold
+
+    @JvmField
+    @EmgComponentProperty(PeakDetector.defaultDecayRate.toString(), "Decay rate [0, 1]")
+    var decayRate: Double = PeakDetector.defaultDecayRate
+
+    @JvmField
+    @EmgComponentProperty(PeakDetector.defaultIsRelative.toString(), "Use relative peaks")
+    var isRelative: Boolean = PeakDetector.defaultIsRelative
 
     override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)

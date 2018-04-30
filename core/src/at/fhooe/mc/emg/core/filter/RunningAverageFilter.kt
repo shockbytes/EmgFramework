@@ -16,7 +16,7 @@ class RunningAverageFilter : Filter() {
     private var buffer: LinkedList<Double> = LinkedList()
 
     @JvmField
-    @EmgComponentProperty("30")
+    @EmgComponentProperty("30", "Window size")
     var size: Int = 30
 
     @JvmField

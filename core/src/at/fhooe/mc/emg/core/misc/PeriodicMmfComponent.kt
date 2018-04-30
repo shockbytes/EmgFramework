@@ -17,11 +17,11 @@ import io.reactivex.subjects.PublishSubject
 class PeriodicMmfComponent {
 
     @JvmField
-    @EmgComponentProperty("512")
+    @EmgComponentProperty("512", "Values for calculation")
     var capacity = 512
 
     @JvmField
-    @EmgComponentProperty("100")
+    @EmgComponentProperty("100", "Sampling frequency")
     var samplingFrequency = 100.0
 
     @JvmField

@@ -15,7 +15,7 @@ class ThresholdFilter: Filter() {
     override val shortName = "TH"
 
     @JvmField
-    @EmgComponentProperty("128")
+    @EmgComponentProperty("128", "Threshold")
     var threshold: Int = 128
 
     @JvmField
