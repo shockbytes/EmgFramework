@@ -4,7 +4,7 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgDeviceComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
-import at.fhooe.mc.emg.designer.util.ComponentInspection
+import at.fhooe.mc.emg.designer.ComponentInspection
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer

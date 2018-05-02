@@ -23,6 +23,9 @@ class EmgData(private val windowWidth: Int = DEFAULT_WINDOW_WITH,
     val channelCount: Int
         get() = channels.size
 
+    val emgSize: Int
+        get() = channels[0].size
+
     /**
      * Creates a new EmgData instance for the desired section. This method is mainly used for external tool, which
      * are only interested in some parts of the captured data.

@@ -4,6 +4,7 @@ import at.fhooe.mc.emg.messaging.model.EmgPacket
 import at.fhooe.mc.emg.messaging.model.ServerMessage
 import at.fhooe.mc.emg.messaging.model.protobuf.ProtocolBuffers
 import java.io.ByteArrayOutputStream
+import java.util.*
 
 /**
  * Author:  Martin Macheiner
@@ -16,7 +17,8 @@ import java.io.ByteArrayOutputStream
 class ProtoBufMessageParser(override val protocolVersion: MessageParser.ProtocolVersion) : MessageParser<EmgPacket> {
 
     override fun parseClientMessage(msg: String): EmgPacket? {
-        val protoPacket = ProtocolBuffers.EmgPacket.parseFrom(msg.toByteArray())
+        val decoded = Base64.getDecoder().decode(msg)
+        val protoPacket = ProtocolBuffers.EmgPacket.parseFrom(decoded)
         return EmgPacket(protoPacket.channelsList, protoPacket.timestamp, protoPacket.heartRate)
     }
 
@@ -28,7 +30,7 @@ class ProtoBufMessageParser(override val protocolVersion: MessageParser.Protocol
                 .setDelay(millis)
                 .build()
                 .writeTo(outStream)
-        return outStream.toString()
+        return String(Base64.getEncoder().encode(outStream.toByteArray()))
     }
 
     override fun buildClientMessage(packet: EmgPacket): String {
@@ -39,15 +41,17 @@ class ProtoBufMessageParser(override val protocolVersion: MessageParser.Protocol
                 .setHeartRate(packet.heartRate)
                 .build()
                 .writeTo(outStream)
-        return outStream.toString()
+        return String(Base64.getEncoder().encode(outStream.toByteArray()))
     }
 
     override fun parseServerMessage(msg: String): ServerMessage? {
-        val protoMsg = ProtocolBuffers.ServerMessage.parseFrom(msg.toByteArray())
+        val decoded = Base64.getDecoder().decode(msg)
+        val protoMsg = ProtocolBuffers.ServerMessage.parseFrom(decoded)
         return ServerMessage(ServerMessage.MessageType.values()[protoMsg.type], protoMsg.data)
     }
 
     override fun parseFrequencyMessage(msg: String): Long {
-        return ProtocolBuffers.FrequencyMessage.parseFrom(msg.toByteArray()).delay.toLong()
+        val decoded = Base64.getDecoder().decode(msg)
+        return ProtocolBuffers.FrequencyMessage.parseFrom(decoded).delay.toLong()
     }
 }

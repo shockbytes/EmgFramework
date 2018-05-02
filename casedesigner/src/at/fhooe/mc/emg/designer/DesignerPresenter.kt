@@ -7,7 +7,6 @@ import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
 import at.fhooe.mc.emg.designer.model.Workflow
 import at.fhooe.mc.emg.designer.model.WorkflowConfiguration
-import at.fhooe.mc.emg.designer.util.ComponentInspection
 import at.fhooe.mc.emg.designer.util.GsonComponentDeserializer
 import at.fhooe.mc.emg.designer.util.GsonComponentSerializer
 import at.fhooe.mc.emg.designer.util.GsonSingleComponentSerializer

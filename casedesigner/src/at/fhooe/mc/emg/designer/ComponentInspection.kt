@@ -1,7 +1,5 @@
-package at.fhooe.mc.emg.designer.util
+package at.fhooe.mc.emg.designer
 
-import at.fhooe.mc.emg.designer.ComponentLogic
-import at.fhooe.mc.emg.designer.ComponentViewType
 import at.fhooe.mc.emg.designer.annotation.*
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.model.Workflow

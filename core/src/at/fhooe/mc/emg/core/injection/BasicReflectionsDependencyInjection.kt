@@ -18,7 +18,7 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgComponentFactory
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
-import at.fhooe.mc.emg.designer.util.ComponentInspection
+import at.fhooe.mc.emg.designer.ComponentInspection
 
 open class BasicReflectionsDependencyInjection(private val platformConfig: PlatformConfiguration) : DependencyInjection {
 

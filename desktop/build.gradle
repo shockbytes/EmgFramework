@@ -49,12 +49,19 @@ dependencies {
     implementation name: 'bluecove-2.1.1'
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.11'
 
+    testImplementation 'junit:junit:4.12'
 }
 
 sourceSets {
     main {
         java {
             srcDirs = ['src/']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['test/']
         }
     }
 }

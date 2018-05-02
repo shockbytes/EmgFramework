@@ -273,12 +273,3 @@ object PeakDetector {
     } // imax()
 
 }
-/**
- * General peak picking method for finding local maxima in an array
- *
- * @param data      input data
- * @param width     minimum distance between peaks
- * @param threshold minimum value of peaks
- * @return list of peak indexes
- */// findPeaks()
-// class PeakDetector

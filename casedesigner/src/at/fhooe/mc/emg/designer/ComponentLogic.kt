@@ -7,7 +7,7 @@ import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.model.Workflow
 import at.fhooe.mc.emg.designer.model.WorkflowConfiguration
-import at.fhooe.mc.emg.designer.util.ComponentInspection.getPortConnectivityInformation
+import at.fhooe.mc.emg.designer.ComponentInspection.getPortConnectivityInformation
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.reflections.ReflectionUtils

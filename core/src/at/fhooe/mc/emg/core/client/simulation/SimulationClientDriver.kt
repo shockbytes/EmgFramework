@@ -70,7 +70,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
 
         // Select the default simulation source
         if (simulationSources.isNotEmpty()) {
-            simulationSource = simulationSources[simulationSources.size / 2 + 1]
+            simulationSource = simulationSources[simulationSources.size / 2]
         }
     }
 
