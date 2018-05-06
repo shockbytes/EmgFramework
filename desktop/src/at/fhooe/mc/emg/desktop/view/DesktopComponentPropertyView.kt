@@ -13,7 +13,7 @@ class DesktopComponentPropertyView : ComponentPropertyView {
                                   point: Pair<Int, Int>,
                                   callback: ((EmgBaseComponent, EmgComponentParameter, String) -> Boolean)) {
 
-        val frame = JFrame(component.name)
+        val frame = JFrame(component.displayTitle)
         frame.setBounds(point.first, point.second, 300, 300)
         frame.defaultCloseOperation = WindowConstants.HIDE_ON_CLOSE
 

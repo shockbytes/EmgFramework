@@ -10,7 +10,7 @@ import javax.swing.JComponent
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
 
-@EmgComponent(type = EmgComponentType.SINK)
+@EmgComponent(type = EmgComponentType.SINK, displayTitle = "Data Logging View")
 class DesktopDataLog : DataLog<JComponent> {
 
     private val textAreaConsole = JTextArea()

@@ -19,7 +19,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.*
 import java.util.*
 
-@EmgComponent(type = EmgComponentType.DEVICE)
+@EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "Serial device")
 class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv), SerialPortEventListener {
 
     override val name: String

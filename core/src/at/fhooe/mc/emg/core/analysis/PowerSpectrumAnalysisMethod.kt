@@ -4,7 +4,7 @@ import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
 
-@EmgComponent(type = EmgComponentType.SINK)
+@EmgComponent(type = EmgComponentType.SINK, displayTitle = "Power spectrum View")
 class PowerSpectrumAnalysisMethod(override var view: FrequencyAnalysisView? = null,
                                   override var fs: Double = 100.0) : FrequencyAnalysisMethod {
 

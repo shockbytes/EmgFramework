@@ -18,7 +18,7 @@ import org.fusesource.hawtbuf.UTF8Buffer
 import org.fusesource.mqtt.client.*
 
 
-@EmgComponent(type = EmgComponentType.DEVICE)
+@EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "MQTT device")
 class MqttClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
     override val name: String

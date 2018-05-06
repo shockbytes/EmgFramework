@@ -16,7 +16,7 @@ import io.reactivex.subjects.PublishSubject
  * the RMS value of the signal in a fixed interval
  *
  */
-@EmgComponent(type = EmgComponentType.RELAY)
+@EmgComponent(type = EmgComponentType.RELAY, displayTitle = "RMS calculator")
 class PeriodicRmsComponent {
 
     @JvmField

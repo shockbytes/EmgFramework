@@ -6,11 +6,12 @@ import at.fhooe.mc.emg.designer.component.model.Origin
 class EmgFilterComponent(name: String = "",
                          qualifiedName: String = "",
                          parameter: List<EmgComponentParameter> = listOf(),
-                         origin: Origin = Origin(0, 0)) : EmgBaseComponent(name, qualifiedName, parameter, origin) {
+                         displayTitle: String = "",
+                         origin: Origin = Origin(0, 0)) : EmgBaseComponent(name, qualifiedName, parameter, displayTitle, origin) {
 
     override val portConfiguration: Pair<Boolean, Boolean> = Pair(true, true)
 
     override fun copyWithOrigin(x: Int, y: Int): EmgBaseComponent {
-        return EmgFilterComponent(name, qualifiedName, parameter, Origin(x, y))
+        return EmgFilterComponent(name, qualifiedName, parameter, displayTitle, Origin(x, y))
     }
 }

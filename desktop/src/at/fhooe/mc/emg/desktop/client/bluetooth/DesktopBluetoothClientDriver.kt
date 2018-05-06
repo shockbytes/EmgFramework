@@ -30,7 +30,7 @@ import javax.microedition.io.StreamConnection
  *
  */
 
-@EmgComponent(type = EmgComponentType.DEVICE)
+@EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "Bluetooth device")
 class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
     override val name: String
@@ -46,7 +46,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     // Debug Mac address
     // Moto G5(s):      D4:63:C6:39:DD:23
-    // Rasperry Pi 3:   22:22:20:E8:93:4
+    // Rasperry Pi 3:   22:22:20:E8:93:47
 
     // These properties can be changed in the ConfigView, therefore they aren't private
 

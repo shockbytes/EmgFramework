@@ -25,7 +25,7 @@ import java.io.IOException
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
-@EmgComponent(type = EmgComponentType.DEVICE)
+@EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "Simulation device")
 class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                              private val simulationFolder: String) : EmgClientDriver(cv) {
 

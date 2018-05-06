@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
  * TODO Refactor for ACD usage
  *
  */
-@EmgComponent(type = EmgComponentType.TOOL)
+@EmgComponent(type = EmgComponentType.TOOL, displayTitle = "Conconi Test")
 class ConconiTool(override var toolView: ConconiToolView? = null,
                   private var fileStorage: FileStorage? = null) : Tool, ConconiToolViewCallback {
 

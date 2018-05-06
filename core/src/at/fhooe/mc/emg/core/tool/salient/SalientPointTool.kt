@@ -20,7 +20,7 @@ import io.reactivex.subjects.PublishSubject
  * Detects salient points of a calculated metric during time
  *
  */
-@EmgComponent(EmgComponentType.RELAY_SINK)
+@EmgComponent(type = EmgComponentType.RELAY_SINK, displayTitle = "Salient point detector")
 class SalientPointTool(override var toolView: SalientPointToolView? = null) : Tool, SalientPointToolViewCallback {
 
     override val name = "Salient Point Detection"

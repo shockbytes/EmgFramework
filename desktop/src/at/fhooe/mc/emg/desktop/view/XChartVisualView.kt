@@ -25,7 +25,7 @@ import javax.swing.JComponent
  * Date:    03.07.2017
  */
 
-@EmgComponent(type = EmgComponentType.SINK)
+@EmgComponent(type = EmgComponentType.SINK, displayTitle = "Visual View")
 class XChartVisualView : VisualView<JComponent> {
 
     private val realtimeChart: XYChart = initializeRealtimeChart()

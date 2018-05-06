@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.designer
 
+import at.fhooe.mc.emg.designer.ComponentInspection.getPortConnectivityInformation
 import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgDeviceComponent
@@ -7,7 +8,6 @@ import at.fhooe.mc.emg.designer.component.internal.ConnectorComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.model.Workflow
 import at.fhooe.mc.emg.designer.model.WorkflowConfiguration
-import at.fhooe.mc.emg.designer.ComponentInspection.getPortConnectivityInformation
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.reflections.ReflectionUtils
@@ -15,14 +15,15 @@ import org.reflections.ReflectionUtils
 object ComponentLogic {
 
     enum class ConnectionResult {
-        NO_INPUT, NO_OUTPUT, SAME_ELEMENT, INPUT_ALREADY_CONNECTED, GRANT
+        NO_INPUT, NO_OUTPUT, SAME_ELEMENT, INPUT_ALREADY_CONNECTED, NO_SUITABLE_CONNECTION, GRANT
     }
 
     class ValidationException(message: String) : Exception(message)
 
     fun connect(component1: EmgBaseComponent,
                 component2: EmgBaseComponent,
-                connectors: List<ConnectorComponent>): ConnectionResult {
+                connectors: List<ConnectorComponent>,
+                pipes: List<EmgComponentPipe<Any, Any>>): ConnectionResult {
 
         // Components are the same
         if (component1 == component2) {
@@ -40,6 +41,13 @@ object ComponentLogic {
         if (connectors.find { it.end == component2 } != null) {
             return ConnectionResult.INPUT_ALREADY_CONNECTED
         }
+        // There is no suitable pipe between both components
+        try {
+            findSuitablePipe(component1, component2, pipes)
+        } catch(e: IllegalArgumentException) {
+            return ConnectionResult.NO_SUITABLE_CONNECTION
+        }
+
         return ConnectionResult.GRANT
     }
 
@@ -82,7 +90,7 @@ object ComponentLogic {
                         val (input, output) = it.ports
                         (input == produces) && (output == consumes)
                     } ?: throw ValidationException("No suitable pipe for connecting $consumes with " +
-                            "$produces (cause by ${it.start.name} and ${it.end.name})")
+                            "$produces (cause by ${it.start.displayTitle} and ${it.end.displayTitle})")
 
                 }
     }
@@ -121,7 +129,7 @@ object ComponentLogic {
                     ReflectionUtils
                             .getMethods(Class.forName(c.qualifiedName), ReflectionUtils.withAnnotation(EmgComponentEntryPoint::class.java))
                             .firstOrNull()
-                            ?: throw ValidationException("Device component ${c.name} does not provide a valid entry point")
+                            ?: throw ValidationException("Device component ${c.displayTitle} does not provide a valid entry point")
                 }
     }
 
@@ -174,7 +182,7 @@ object ComponentLogic {
         val pipe = pipes.find {
             val (pipeConsumes, pipeProduces) = it.ports
             (startProduces == pipeConsumes) && (pipeProduces == endConsumes)
-        } ?: throw IllegalArgumentException("There is no valid pipe for ${start.name} / ${end.name} ")
+        } ?: throw IllegalArgumentException("There is no valid pipe for ${start.displayTitle} / ${end.displayTitle} ")
 
         return Pair(pipe, hasOutput)
     }

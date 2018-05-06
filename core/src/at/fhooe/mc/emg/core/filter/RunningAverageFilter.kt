@@ -8,7 +8,7 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import io.reactivex.subjects.PublishSubject
 import java.util.*
 
-@EmgComponent(type = EmgComponentType.FILTER)
+@EmgComponent(type = EmgComponentType.FILTER, displayTitle = "Running average filter")
 class RunningAverageFilter : Filter() {
 
     private var sum: Double = 0.0

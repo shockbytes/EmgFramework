@@ -6,7 +6,7 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
 import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
 import io.reactivex.subjects.PublishSubject
 
-@EmgComponent(type = EmgComponentType.FILTER)
+@EmgComponent(type = EmgComponentType.FILTER, displayTitle = "10 Hz low pass filter")
 class LowPassFilter : Filter() {
 
     private var v: DoubleArray = DoubleArray(2)

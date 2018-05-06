@@ -7,7 +7,7 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import io.reactivex.subjects.PublishSubject
 
-@EmgComponent(type = EmgComponentType.FILTER)
+@EmgComponent(type = EmgComponentType.FILTER, displayTitle = "Threshold filter")
 class ThresholdFilter: Filter() {
 
     override val name = "Threshold filter"

@@ -209,7 +209,7 @@ class DesktopDesignerView : DesignerView {
     }
 
     private fun labelFromComponent(component: EmgBaseComponent): JLabel {
-        val label = JLabel(component.name, DesktopDesignerHelper.componentIcon(component), SwingConstants.LEFT)
+        val label = JLabel(component.displayTitle, DesktopDesignerHelper.componentIcon(component), SwingConstants.LEFT)
         label.border = EmptyBorder(8, 4, 8, 4)
         label.foreground = Color.WHITE
         label.transferHandler = DragDropTransferHandler(component)

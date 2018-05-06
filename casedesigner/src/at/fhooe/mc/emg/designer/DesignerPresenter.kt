@@ -147,16 +147,18 @@ abstract class DesignerPresenter(private val view: DesignerView,
     override fun connectComponents(component1: EmgBaseComponent, component2: EmgBaseComponent) {
 
         when (ComponentLogic.connect(component1, component2,
-                interactionComponents.mapNotNull { it as? ConnectorComponent })) {
+                interactionComponents.mapNotNull { it as? ConnectorComponent }, designerPipes)) {
 
             ComponentLogic.ConnectionResult.NO_INPUT ->
-                view.showStatusMessage("Component ${component2.name} has no input port!")
+                view.showStatusMessage("Component ${component2.displayTitle} has no input port!")
             ComponentLogic.ConnectionResult.NO_OUTPUT ->
-                view.showStatusMessage("Component ${component1.name} has no output port!")
+                view.showStatusMessage("Component ${component1.displayTitle} has no output port!")
             ComponentLogic.ConnectionResult.SAME_ELEMENT ->
-                view.showStatusMessage("Cannot connect same component -> ${component1.name}")
+                view.showStatusMessage("Cannot connect same component -> ${component1.displayTitle}")
             ComponentLogic.ConnectionResult.INPUT_ALREADY_CONNECTED ->
-                view.showStatusMessage("Component ${component2.name} is already connected!")
+                view.showStatusMessage("Component ${component2.displayTitle} is already connected!")
+            ComponentLogic.ConnectionResult.NO_SUITABLE_CONNECTION ->
+                view.showStatusMessage("Cannot connect components! There is no valid pipe available!")
             ComponentLogic.ConnectionResult.GRANT -> { // Connect the components with a connector component
                 interactionComponents.add(ConnectorComponent(component1, component2))
                 updateView()

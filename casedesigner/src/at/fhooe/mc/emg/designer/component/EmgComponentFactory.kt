@@ -11,14 +11,15 @@ class EmgComponentFactory {
         fun byType(name: String,
                    qualifiedName: String,
                    parameter: List<EmgComponentParameter>,
-                   type: EmgComponentType): EmgBaseComponent {
+                   type: EmgComponentType,
+                   displayTitle: String): EmgBaseComponent {
             return when (type) {
-                EmgComponentType.FILTER -> EmgFilterComponent(name, qualifiedName, parameter)
-                EmgComponentType.SINK -> EmgSinkComponent(name, qualifiedName, parameter)
-                EmgComponentType.RELAY_SINK -> EmgRelaySinkComponent(name, qualifiedName, parameter)
-                EmgComponentType.TOOL -> EmgToolComponent(name, qualifiedName, parameter)
-                EmgComponentType.DEVICE -> EmgDeviceComponent(name, qualifiedName, parameter)
-                EmgComponentType.RELAY -> EmgRelayComponent(name, qualifiedName, parameter)
+                EmgComponentType.FILTER -> EmgFilterComponent(name, qualifiedName, parameter, displayTitle)
+                EmgComponentType.SINK -> EmgSinkComponent(name, qualifiedName, parameter, displayTitle)
+                EmgComponentType.RELAY_SINK -> EmgRelaySinkComponent(name, qualifiedName, parameter, displayTitle)
+                EmgComponentType.TOOL -> EmgToolComponent(name, qualifiedName, parameter, displayTitle)
+                EmgComponentType.DEVICE -> EmgDeviceComponent(name, qualifiedName, parameter, displayTitle)
+                EmgComponentType.RELAY -> EmgRelayComponent(name, qualifiedName, parameter, displayTitle)
             }
         }
     }

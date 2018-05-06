@@ -12,13 +12,13 @@ import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.ToolView
+import at.fhooe.mc.emg.designer.ComponentInspection
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgComponentFactory
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
-import at.fhooe.mc.emg.designer.ComponentInspection
 
 open class BasicReflectionsDependencyInjection(private val platformConfig: PlatformConfiguration) : DependencyInjection {
 
@@ -110,9 +110,9 @@ open class BasicReflectionsDependencyInjection(private val platformConfig: Platf
                     val component = cls.annotations.find { it.annotationClass == EmgComponent::class } as EmgComponent
                     EmgComponentFactory.byType(cls.simpleName, cls.name,
                             params.filter { it.declaringClass == cls.name },
-                            component.type)
+                            component.type, component.displayTitle)
                 }
-                .sortedBy { it.name }
+                .sortedBy { it.type }
     }
 
     override val componentPipes: List<EmgComponentPipe<Any, Any>> by lazy {

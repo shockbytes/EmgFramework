@@ -20,7 +20,7 @@ import java.io.File
  * Author:  Martin Macheiner
  * Date:    07.01.2018
  */
-@EmgComponent(EmgComponentType.SINK)
+@EmgComponent(type = EmgComponentType.SINK, displayTitle = "Muscle Fatigue detection")
 open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = null) : Tool, MuscleFatigueToolViewCallback {
 
     override val name = "Muscle Fatigue Detection"

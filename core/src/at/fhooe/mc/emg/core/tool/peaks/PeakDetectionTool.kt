@@ -14,7 +14,7 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
  * Date:    04.07.2017
  */
 
-@EmgComponent(type = EmgComponentType.RELAY_SINK)
+@EmgComponent(type = EmgComponentType.RELAY_SINK, displayTitle = "Peak detector")
 class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : Tool, PeakDetectionToolViewCallback {
 
     override val name = "Peak Detection"

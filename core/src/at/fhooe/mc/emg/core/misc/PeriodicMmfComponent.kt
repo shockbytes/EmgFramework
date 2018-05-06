@@ -13,7 +13,7 @@ import io.reactivex.subjects.PublishSubject
 /**
  * Periodic Mean Median Frequency computation component
  */
-@EmgComponent(type = EmgComponentType.RELAY)
+@EmgComponent(type = EmgComponentType.RELAY, displayTitle = "Mean/Median frequency")
 class PeriodicMmfComponent {
 
     @JvmField

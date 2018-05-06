@@ -23,7 +23,7 @@ import java.net.InetAddress
  * Author:  Martin Macheiner
  * Date:    20.11.2017
  */
-@EmgComponent(type = EmgComponentType.DEVICE)
+@EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "Network device")
 class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
     override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)

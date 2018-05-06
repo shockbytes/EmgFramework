@@ -9,7 +9,7 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import io.reactivex.subjects.PublishSubject
 import java.util.*
 
-@EmgComponent(type = EmgComponentType.FILTER)
+@EmgComponent(type = EmgComponentType.FILTER, displayTitle = "Savitzky-Golay filter")
 class SavitzkyGolayFilter : Filter() {
 
     private var buffer: LinkedList<Double> = LinkedList()

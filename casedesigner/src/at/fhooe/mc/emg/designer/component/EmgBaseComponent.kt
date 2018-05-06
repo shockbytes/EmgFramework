@@ -13,6 +13,7 @@ import at.fhooe.mc.emg.designer.draw.*
 abstract class EmgBaseComponent(val name: String = "",
                                 val qualifiedName: String = "",
                                 val parameter: List<EmgComponentParameter> = listOf(),
+                                val displayTitle: String = "",
                                 origin: Origin = Origin(0, 0)) {
 
     /**
@@ -45,6 +46,7 @@ abstract class EmgBaseComponent(val name: String = "",
         var result = name.hashCode()
         result = 31 * result + qualifiedName.hashCode()
         result = 31 * result + box.hashCode()
+        result = 31 * result + displayTitle.hashCode()
         return result
     }
 
@@ -62,7 +64,7 @@ abstract class EmgBaseComponent(val name: String = "",
                         origin.x,
                         origin.y + LINE_HEIGHT,
                         box.width,
-                        name),
+                        displayTitle),
                 CenteredComponentImageDrawCommand(
                         origin.x,
                         origin.y + NAME_COMPARTMENT_HEIGHT,

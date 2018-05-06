@@ -8,7 +8,7 @@ import io.reactivex.subjects.PublishSubject
 
 
 //Band pass butterworth filter order=1 alpha1=50 alpha2=50.05
-@EmgComponent(type = EmgComponentType.FILTER)
+@EmgComponent(type = EmgComponentType.FILTER, displayTitle = "50 Hz Bandstop filter")
 class BandStopFilter : Filter() {
 
     private var v: DoubleArray = DoubleArray(3)
