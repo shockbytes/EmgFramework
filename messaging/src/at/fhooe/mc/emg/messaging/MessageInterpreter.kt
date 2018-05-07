@@ -12,15 +12,15 @@ import at.fhooe.mc.emg.messaging.model.ServerMessage
  * The message parser implementation and the {@link ProtocolVersion} must match on client and driver side.
  *
  */
-interface MessageParser<T> {
+interface MessageInterpreter<T> {
 
     /**
      * Different clients can provide a different degree of information. In order to make them somehow
-     * backwards compatible it is necessary to introduce some kind of versioning. The {@link MessageParser} provides
+     * backwards compatible it is necessary to introduce some kind of versioning. The {@link MessageInterpreter} provides
      * there the enum {@link ProtocolVersion}, which exactly defines the data format of the transmission.
      * <p>
      * NOTE: When talking about a usual EMG transmission, then the data format below is the best choice, but it is
-     * legitimate for every implementation of MessageParser to define their own versioning format.
+     * legitimate for every implementation of MessageInterpreter to define their own versioning format.
      */
     enum class ProtocolVersion {
         // Easiest protocol, just multiple channel values divided by the channel delimiter.

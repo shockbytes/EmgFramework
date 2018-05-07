@@ -4,7 +4,7 @@ package at.fhooe.mc.emg.client.sensing.heart
  * @author  Martin Macheiner
  * Date:    06.02.2018
  *
- * In order to stay compatible with the V3 protocol standard of {@link at.fhooe.mc.emg.messaging.MessageParser } the
+ * In order to stay compatible with the V3 protocol standard of {@link at.fhooe.mc.emg.messaging.MessageInterpreter } the
  * framework needs a way to incorporate heart rate data acquisition. Usually heart rate monitoring can't be done on
  * device (except the unlikely if the target client runs with on Android Wear), therefore it's assumed, that the
  * monitoring device is an external entity (SmartWatch, chest belt, ...). Therefore the interface must also provide

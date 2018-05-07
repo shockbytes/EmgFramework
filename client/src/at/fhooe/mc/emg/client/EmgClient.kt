@@ -3,7 +3,7 @@ package at.fhooe.mc.emg.client
 import at.fhooe.mc.emg.client.connection.EmgConnection
 import at.fhooe.mc.emg.client.sensing.EmgSensor
 import at.fhooe.mc.emg.client.sensing.heart.HeartRateProvider
-import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import at.fhooe.mc.emg.messaging.model.ServerMessage
 import io.reactivex.Observable
@@ -28,7 +28,7 @@ abstract class EmgClient {
      * NOTE: Each subtype of EmgClient must agree to utilize the EmgPacket as the common data type. On the other
      * hand this revokes the advantages of a generic implementation, but on the other hand it eases the development.
      */
-    abstract val msgParser: MessageParser<EmgPacket>
+    abstract val msgInterpreter: MessageInterpreter<EmgPacket>
 
     /**
      * The component which makes the actual sensing of the hardware beneath. Depends on the target platform.
@@ -134,7 +134,7 @@ abstract class EmgClient {
                 .subscribeOn(Schedulers.computation())
                 .subscribe {
                     val packet = EmgPacket(provideData(), System.currentTimeMillis(), currentHeartRate)
-                    send(msgParser.buildClientMessage(packet))
+                    send(msgInterpreter.buildClientMessage(packet))
                     debugDataListener?.invoke(packet)
                 }
     }
@@ -188,8 +188,8 @@ abstract class EmgClient {
      * @param data String representation of ServerMessage
      */
     private fun handleMessage(data: String) {
-        when (msgParser.parseServerMessage(data)?.type) {
-            ServerMessage.MessageType.FREQUENCY -> updateDelay(msgParser.parseFrequencyMessage(data))
+        when (msgInterpreter.parseServerMessage(data)?.type) {
+            ServerMessage.MessageType.FREQUENCY -> updateDelay(msgInterpreter.parseFrequencyMessage(data))
             ServerMessage.MessageType.NA -> println("Cannot identify server message type!")
         }
     }

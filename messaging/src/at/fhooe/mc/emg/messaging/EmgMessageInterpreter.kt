@@ -8,17 +8,17 @@ import at.fhooe.mc.emg.messaging.model.ServerMessage
  * @author  Martin Macheiner
  * Date:    24.01.2018
  * <p>
- * Concrete implementation of {@link MessageParser} for the data class {@link EmgPacket}, which adhere to a really
+ * Concrete implementation of {@link MessageInterpreter} for the data class {@link EmgPacket}, which adhere to a really
  * lightweight protocol scheme.
  *
  */
 
 /**
- * Primary constructor of EmgMessageParser
+ * Primary constructor of EmgMessageInterpreter
  *
  * @param protocolVersion abstract member implementation of super class, indicating the highest supported protocol version
  */
-class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersion) : MessageParser<EmgPacket> {
+class EmgMessageInterpreter(override val protocolVersion: MessageInterpreter.ProtocolVersion) : MessageInterpreter<EmgPacket> {
 
     // Delimiters of supported protocol
     private val paramDelimiter = ":"
@@ -28,9 +28,9 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
 
     override fun buildClientMessage(packet: EmgPacket): String {
         return when (protocolVersion) {
-            MessageParser.ProtocolVersion.V1 -> buildV1(packet)
-            MessageParser.ProtocolVersion.V2 -> buildV2(packet)
-            MessageParser.ProtocolVersion.V3 -> buildV3(packet)
+            MessageInterpreter.ProtocolVersion.V1 -> buildV1(packet)
+            MessageInterpreter.ProtocolVersion.V2 -> buildV2(packet)
+            MessageInterpreter.ProtocolVersion.V3 -> buildV3(packet)
         }
     }
 
@@ -58,9 +58,9 @@ class EmgMessageParser(override val protocolVersion: MessageParser.ProtocolVersi
     override fun parseClientMessage(msg: String): EmgPacket? {
         val params = msg.split(paramDelimiter).dropWhile { it.isBlank() }
         return when (protocolVersion) {
-            MessageParser.ProtocolVersion.V1 -> parseV1(params[0])
-            MessageParser.ProtocolVersion.V2 -> parseV2(params)
-            MessageParser.ProtocolVersion.V3 -> parseV3(params)
+            MessageInterpreter.ProtocolVersion.V1 -> parseV1(params[0])
+            MessageInterpreter.ProtocolVersion.V2 -> parseV2(params)
+            MessageInterpreter.ProtocolVersion.V3 -> parseV3(params)
         }
     }
 

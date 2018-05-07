@@ -6,99 +6,98 @@ import at.fhooe.mc.emg.core.client.network.NetworkClientDriver
 import at.fhooe.mc.emg.core.client.simulation.SimulationClientDriver
 import at.fhooe.mc.emg.desktop.client.bluetooth.DesktopBluetoothClientDriver
 import at.fhooe.mc.emg.desktop.client.serial.DesktopSerialClientDriver
-import at.fhooe.mc.emg.messaging.EmgMessageParser
-import at.fhooe.mc.emg.messaging.JsonMessageParser
-import at.fhooe.mc.emg.messaging.MessageParser
-import at.fhooe.mc.emg.messaging.ProtoBufMessageParser
+import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
+import at.fhooe.mc.emg.messaging.JsonMessageInterpreter
+import at.fhooe.mc.emg.messaging.MessageInterpreter
+import at.fhooe.mc.emg.messaging.ProtoBufMessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.Test
 import java.text.DecimalFormat
 
 class DriverComparisonTest {
 
-    @Test
+    //@Test
     fun testSimulationDriver() {
 
         val name = "simulation"
         for (round in 0 until ROUNDS) {
             // Json
             simulationDriver.simulationSource = simulationDriver.simulationSources.find { it.name.contains("-json") }
-            testDriver(simulationDriver, JsonMessageParser(), name, Type.JSON, round)
+            testDriver(simulationDriver, JsonMessageInterpreter(), name, Type.JSON, round)
 
             // Emg
             simulationDriver.simulationSource = simulationDriver.simulationSources.find { it.name.contains("-emg") }
-            testDriver(simulationDriver, EmgMessageParser(MessageParser.ProtocolVersion.V3), name, Type.SELF, round)
+            testDriver(simulationDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
 
             // ProtoBuf
             simulationDriver.simulationSource = simulationDriver.simulationSources.find { it.name.contains("-proto") }
-            testDriver(simulationDriver, ProtoBufMessageParser(MessageParser.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(simulationDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
         }
     }
 
-    @Test
+    //@Test
     fun testNetworkDriver() {
 
         val name = "network"
         for (round in 0 until ROUNDS) {
             // Json
-            testDriver(networkDriver, JsonMessageParser(), name, Type.JSON, round)
+            testDriver(networkDriver, JsonMessageInterpreter(), name, Type.JSON, round)
             // Emg
-            testDriver(networkDriver, EmgMessageParser(MessageParser.ProtocolVersion.V3), name, Type.SELF, round)
+            testDriver(networkDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
             // ProtoBuf
-            testDriver(networkDriver, ProtoBufMessageParser(MessageParser.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(networkDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
         }
     }
 
-    @Test
+    //@Test
     fun testMqttDriver() {
 
         val name = "mqtt_com"
         for (round in 0 until ROUNDS) {
             // Json
-            testDriver(mqttDriver, JsonMessageParser(), name, Type.JSON, round)
+            testDriver(mqttDriver, JsonMessageInterpreter(), name, Type.JSON, round)
             // Emg
-            testDriver(mqttDriver, EmgMessageParser(MessageParser.ProtocolVersion.V3), name, Type.SELF, round)
+            testDriver(mqttDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
             // ProtoBuf
-            testDriver(mqttDriver, ProtoBufMessageParser(MessageParser.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(mqttDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
         }
     }
 
-    @Test
+    //@Test
     fun testSerialDriver() {
 
         val name = "serial_com"
         for (round in 0 until ROUNDS) {
             // Json
-            testDriver(serialDriver, JsonMessageParser(), name, Type.JSON, round)
+            testDriver(serialDriver, JsonMessageInterpreter(), name, Type.JSON, round)
             // Emg
-            testDriver(serialDriver, EmgMessageParser(MessageParser.ProtocolVersion.V3), name, Type.SELF, round)
+            testDriver(serialDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
             // ProtoBuf
-            testDriver(serialDriver, ProtoBufMessageParser(MessageParser.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(serialDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
         }
     }
 
-    @Test
+    //@Test
     fun testBluetoothDriver() {
 
         val name = "bluetooth"
         for (round in 0 until ROUNDS) {
             // Json
-            testDriver(bluetoothDriver, JsonMessageParser(), name, Type.JSON, round)
+            testDriver(bluetoothDriver, JsonMessageInterpreter(), name, Type.JSON, round)
             // Emg
-            testDriver(bluetoothDriver, EmgMessageParser(MessageParser.ProtocolVersion.V3), name, Type.SELF, round)
+            testDriver(bluetoothDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
             // ProtoBuf
-            testDriver(bluetoothDriver, ProtoBufMessageParser(MessageParser.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(bluetoothDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
         }
     }
 
-    private fun testDriver(driver: EmgClientDriver, parser: MessageParser<EmgPacket>,
+    private fun testDriver(driver: EmgClientDriver, interpreter: MessageInterpreter<EmgPacket>,
                            name: String, type: Type, round: Int) {
 
-        driver.msgParser = parser
+        driver.msgInterpreter = interpreter
         val action = Action {
             println("$name#$type started round $round")
             val start = System.currentTimeMillis()

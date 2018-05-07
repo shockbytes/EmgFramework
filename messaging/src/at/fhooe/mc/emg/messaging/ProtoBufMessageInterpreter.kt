@@ -10,11 +10,11 @@ import java.util.*
  * Author:  Martin Macheiner
  * Date:    23.04.2018
  *
- * A binary protocol implementation, which should replace the standard #EmgMessageParser due to its performance
+ * A binary protocol implementation, which should replace the standard #EmgMessageInterpreter due to its performance
  * drawbacks. Protobuf was used as the binary protocol.
  *
  */
-class ProtoBufMessageParser(override val protocolVersion: MessageParser.ProtocolVersion) : MessageParser<EmgPacket> {
+class ProtoBufMessageInterpreter(override val protocolVersion: MessageInterpreter.ProtocolVersion) : MessageInterpreter<EmgPacket> {
 
     override fun parseClientMessage(msg: String): EmgPacket? {
         val decoded = Base64.getDecoder().decode(msg)

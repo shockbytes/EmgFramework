@@ -8,8 +8,8 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
-import at.fhooe.mc.emg.messaging.EmgMessageParser
-import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
+import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -30,7 +30,7 @@ class MqttClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(
 
     override val category: ClientCategory = ClientCategory.NETWORK
 
-    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V3)
+    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3)
 
     @JvmField
     @EmgComponentProperty("localhost", "IP address of server")
@@ -87,7 +87,7 @@ class MqttClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(
     }
 
     override fun sendSamplingFrequencyToClient() {
-        val payload = msgParser.buildFrequencyMessage(samplingFrequency).toByteArray()
+        val payload = msgInterpreter.buildFrequencyMessage(samplingFrequency).toByteArray()
         connection?.publish("EMG", payload, QoS.EXACTLY_ONCE, true, null)
     }
 

@@ -4,7 +4,7 @@ package at.fhooe.mc.emg.messaging.model
  * @author  Martin Macheiner
  * Date:    24.01.2018
  *
- * This class holds all the information, which is parsed and packed with the @see at.fhooe.mc.emg.messaging.EmgMessageParser.
+ * This class holds all the information, which is parsed and packed with the @see at.fhooe.mc.emg.messaging.EmgMessageInterpreter.
  * The class EmgPacket is the class which is used for transferring data with this message parser.
  *
  */

@@ -8,8 +8,8 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
-import at.fhooe.mc.emg.messaging.EmgMessageParser
-import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
+import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.Completable
 import io.reactivex.functions.Action
@@ -26,7 +26,7 @@ import java.net.InetAddress
 @EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "Network device")
 class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
-    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
+    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V1)
 
     override val category: ClientCategory = ClientCategory.NETWORK
 
@@ -89,7 +89,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     override fun sendSamplingFrequencyToClient() {
         Completable.fromAction {
-            sendMessage(msgParser.buildFrequencyMessage(samplingFrequency))
+            sendMessage(msgInterpreter.buildFrequencyMessage(samplingFrequency))
         }.subscribeOn(Schedulers.io()).subscribe()
     }
 

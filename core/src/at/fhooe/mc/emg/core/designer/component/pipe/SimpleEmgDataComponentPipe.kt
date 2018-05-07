@@ -4,7 +4,7 @@ import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import kotlin.reflect.KClass
 
-class SimpleEmgDataComponentPipe: EmgComponentPipe<EmgData, EmgData> {
+class SimpleEmgDataComponentPipe : EmgComponentPipe<EmgData, EmgData> {
 
     override val ports: Pair<KClass<*>, KClass<*>> = Pair(EmgData::class, EmgData::class)
     override val name: String = "Simple EmgData"

@@ -14,7 +14,7 @@ import io.reactivex.functions.Consumer
 interface EmgConnection {
 
     /**
-     * Send the string representation of the message (composed by the {@link at.fhooe.mc.emg.messaging.MessageParser}
+     * Send the string representation of the message (composed by the {@link at.fhooe.mc.emg.messaging.MessageInterpreter}
      * interface). The connection does not care if it is a valid string representation.
      *
      * @param msg String representation of EMG data object (mainly EmgPacket).

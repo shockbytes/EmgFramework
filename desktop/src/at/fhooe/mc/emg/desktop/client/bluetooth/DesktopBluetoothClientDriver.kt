@@ -8,8 +8,8 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
-import at.fhooe.mc.emg.messaging.EmgMessageParser
-import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
+import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import com.intel.bluetooth.MicroeditionConnector
 import io.reactivex.Completable
@@ -42,7 +42,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     override val category = ClientCategory.BLUETOOTH
 
-    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V3)
+    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3)
 
     // Debug Mac address
     // Moto G5(s):      D4:63:C6:39:DD:23
@@ -88,7 +88,7 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     }
 
     override fun sendSamplingFrequencyToClient() {
-        writer?.print(msgParser.buildFrequencyMessage(samplingFrequency))
+        writer?.print(msgInterpreter.buildFrequencyMessage(samplingFrequency))
         writer?.flush()
     }
 

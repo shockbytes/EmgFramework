@@ -4,7 +4,7 @@ import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import kotlin.reflect.KClass
 
-class EmgDataHeartRateComponentPipe: EmgComponentPipe<EmgData, Int> {
+class EmgDataHeartRateComponentPipe : EmgComponentPipe<EmgData, Int> {
 
     override val ports: Pair<KClass<*>, KClass<*>> = Pair(EmgData::class, Int::class)
 

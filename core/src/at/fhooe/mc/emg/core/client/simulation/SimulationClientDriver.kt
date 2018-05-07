@@ -9,8 +9,8 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
-import at.fhooe.mc.emg.messaging.EmgMessageParser
-import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
+import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -46,7 +46,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     @EmgComponentProperty("false", "Enable playback loop")
     var isEndlessLoopEnabled = false
 
-    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V2)
+    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V2)
 
     override val category: ClientCategory = ClientCategory.SIMULATION
 

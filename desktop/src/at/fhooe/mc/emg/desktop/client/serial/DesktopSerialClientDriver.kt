@@ -8,8 +8,8 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentEntryPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentExitPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
-import at.fhooe.mc.emg.messaging.EmgMessageParser
-import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
+import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import gnu.io.*
 import io.reactivex.Completable
@@ -29,7 +29,7 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
 
     override val isDataStorageEnabled: Boolean = true
 
-    override var msgParser: MessageParser<EmgPacket> = EmgMessageParser(MessageParser.ProtocolVersion.V1)
+    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V1)
 
     override val category: ClientCategory = ClientCategory.SERIAL
 
@@ -95,7 +95,7 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
 
     override fun sendSamplingFrequencyToClient() {
         try {
-            outputWriter?.write(msgParser.buildFrequencyMessage(samplingFrequency))
+            outputWriter?.write(msgInterpreter.buildFrequencyMessage(samplingFrequency))
             outputWriter?.flush()
         } catch (e: IOException) {
             e.printStackTrace()

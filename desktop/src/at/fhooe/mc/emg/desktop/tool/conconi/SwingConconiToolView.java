@@ -123,9 +123,9 @@ public class SwingConconiToolView implements ConconiToolView {
     private void updateCharts(double avg, double speed, int heartRate) {
 
         if (xVals == null) {
-            xVals = new ArrayList<>();
-            yAvg = new ArrayList<>();
-            yHr = new ArrayList<>();
+            xVals = new ArrayList<Double>();
+            yAvg = new ArrayList<Double>();
+            yHr = new ArrayList<Integer>();
         }
 
         xVals.add(speed);
@@ -150,7 +150,7 @@ public class SwingConconiToolView implements ConconiToolView {
         chartAverage.getStyler().setPlotBackgroundColor(Color.WHITE);
         chartAverage.setXAxisTitle("km/h | Heart rate");
 
-        chartAverageWrapper = new XChartPanel<>(chartAverage);
+        chartAverageWrapper = new XChartPanel<XYChart>(chartAverage);
         panelAverageVisual.add(chartAverageWrapper);
     }
 

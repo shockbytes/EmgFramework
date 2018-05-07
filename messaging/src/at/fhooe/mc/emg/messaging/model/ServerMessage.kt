@@ -5,7 +5,7 @@ package at.fhooe.mc.emg.messaging.model
  * Date:    24.01.2018
  *
  * ServerMessage is a simple data class for wrapping the incoming message payload and the
- * incoming message type. It is mostly used in the class @see at.fhooe.mc.emg.messaging.EmgMessageParser
+ * incoming message type. It is mostly used in the class @see at.fhooe.mc.emg.messaging.EmgMessageInterpreter
  * and in the client implementation at.fhooe.mc.emg.client.EmgClient to distinguish between the types and chosse the right
  * action accordingly.
  *

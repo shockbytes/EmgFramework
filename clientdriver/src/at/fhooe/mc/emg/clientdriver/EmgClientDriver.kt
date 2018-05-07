@@ -3,7 +3,7 @@ package at.fhooe.mc.emg.clientdriver
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.clientdriver.model.EmgPoint
 import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
-import at.fhooe.mc.emg.messaging.MessageParser
+import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -15,7 +15,7 @@ import io.reactivex.subjects.PublishSubject
  *
  * EmgClientDriver are the driver software which are necessary in order to communicate with the different
  * EmgClients. They are kind of symmetric in the capabilities they offer and they are loosely coupled together
- * via the messaging module. Usually client and driver has to utilize the same MessageParser implementation with the
+ * via the messaging module. Usually client and driver has to utilize the same MessageInterpreter implementation with the
  * same protocol version. As the protocol versioning is backwards compatible it is no problem if the client sends in a
  * V3 format and the driver is only capable to handle V1 messages (but it wouldn't work the other way around). This
  * class comes with a lot of abstract members, but most of them are used for UI and other framework functionality.
@@ -75,7 +75,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
      * NOTE: Each subtype of EmgClientDriver must agree to utilize the EmgPacket as the common data type. On the one
      * hand this revokes the advantages of a generic implementation, but on the other hand it eases the development pain.
      */
-    abstract var msgParser: MessageParser<EmgPacket>
+    abstract var msgInterpreter: MessageInterpreter<EmgPacket>
 
     /**
      * Tries to connect to the client. This action can take up to some seconds, depending on the ClientCategory.
@@ -119,7 +119,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
         // Always increment x counter value
         currentDataPointer++
 
-        val packet = msgParser.parseClientMessage(msg)
+        val packet = msgInterpreter.parseClientMessage(msg)
         packet?.let {
 
             // Update the data object

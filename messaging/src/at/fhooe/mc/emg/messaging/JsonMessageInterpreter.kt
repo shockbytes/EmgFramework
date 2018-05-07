@@ -5,11 +5,11 @@ import at.fhooe.mc.emg.messaging.model.ServerMessage
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
-class JsonMessageParser : MessageParser<EmgPacket> {
+class JsonMessageInterpreter : MessageInterpreter<EmgPacket> {
 
     private val gson = Gson()
 
-    override val protocolVersion: MessageParser.ProtocolVersion = MessageParser.ProtocolVersion.V3
+    override val protocolVersion: MessageInterpreter.ProtocolVersion = MessageInterpreter.ProtocolVersion.V3
 
     override fun parseClientMessage(msg: String): EmgPacket? {
         return gson.fromJson(msg, EmgPacket::class.java)
