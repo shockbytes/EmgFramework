@@ -116,12 +116,12 @@ abstract class EmgBaseComponent(val name: String = "",
     }
 
     companion object {
-        const val DEFAULT_HEIGHT = 90
-        const val DEFAULT_WIDTH = DEFAULT_HEIGHT
-        const val NAME_COMPARTMENT_HEIGHT = 20
-        const val PORT_HEIGHT = 20
-        const val PORT_WIDTH = 5
-        const val LINE_HEIGHT = 12
+        private const val DEFAULT_HEIGHT = 90
+        private const val DEFAULT_WIDTH = DEFAULT_HEIGHT
+        private const val NAME_COMPARTMENT_HEIGHT = 20
+        private const val PORT_HEIGHT = 20
+        private const val PORT_WIDTH = 5
+        private const val LINE_HEIGHT = 12
     }
 
 }

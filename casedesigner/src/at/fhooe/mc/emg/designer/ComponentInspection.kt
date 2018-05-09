@@ -21,7 +21,8 @@ import kotlin.reflect.KClass
 object ComponentInspection {
 
     @JvmField
-    val reflections = Reflections(FieldAnnotationsScanner(), SubTypesScanner(), TypeAnnotationsScanner())
+    val reflections = Reflections("at.fhooe.mc.emg",
+            FieldAnnotationsScanner(), SubTypesScanner(), TypeAnnotationsScanner())
 
     /**
      *
