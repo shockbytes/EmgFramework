@@ -1,6 +1,5 @@
 package at.fhooe.mc.emg.core
 
-import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
@@ -87,11 +86,11 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
         }
     }
 
-    private fun getClient(category: ClientCategory): EmgClientDriver? {
+    private fun getClient(category: EmgClientDriver.ClientCategory): EmgClientDriver? {
         return clients.find { it.category == category }
     }
 
-    private fun hasClient(category: ClientCategory): Boolean {
+    private fun hasClient(category: EmgClientDriver.ClientCategory): Boolean {
         return clients.find { (it.category === category) } != null
     }
 
@@ -101,11 +100,11 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
      */
     private fun tryCopySimulationData(filename: String, fsOfRecording: Double) {
 
-        if (hasClient(ClientCategory.SIMULATION)
+        if (hasClient(EmgClientDriver.ClientCategory.SIMULATION)
                 && config.isCopyToSimulationEnabled
-                && client.category !== ClientCategory.SIMULATION
+                && client.category !== EmgClientDriver.ClientCategory.SIMULATION
                 && client.isDataStorageEnabled) {
-            val simulationClient: SimulationClientDriver? = getClient(ClientCategory.SIMULATION) as? SimulationClientDriver
+            val simulationClient: SimulationClientDriver? = getClient(EmgClientDriver.ClientCategory.SIMULATION) as? SimulationClientDriver
             if (simulationClient != null) {
                 simulationClient.addFileAsSimulationSource(filename, fsOfRecording)
                 simulationClient.reloadSources()
@@ -160,8 +159,8 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
 
     override fun setSimulationPlaybackLoopEnabled(isEnabled: Boolean) {
         config.isSimulationEndlessLoopEnabled = isEnabled
-        if (hasClient(ClientCategory.SIMULATION)) {
-            val simClient = getClient(ClientCategory.SIMULATION) as SimulationClientDriver
+        if (hasClient(EmgClientDriver.ClientCategory.SIMULATION)) {
+            val simClient = getClient(EmgClientDriver.ClientCategory.SIMULATION) as SimulationClientDriver
             simClient.isEndlessLoopEnabled = isEnabled
         }
     }

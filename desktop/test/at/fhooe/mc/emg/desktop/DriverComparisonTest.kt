@@ -15,11 +15,21 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.Test
 import java.text.DecimalFormat
 
+/**
+ *
+ * Setup:
+ *
+ * Protocol Version = v3
+ * Sampling frequency = 1000 Hz
+ * Number of channels = 1
+ *
+ */
 class DriverComparisonTest {
 
-    //@Test
+    @Test
     fun testSimulationDriver() {
 
         val name = "simulation"
@@ -38,7 +48,7 @@ class DriverComparisonTest {
         }
     }
 
-    //@Test
+    @Test
     fun testNetworkDriver() {
 
         val name = "network"
@@ -52,7 +62,7 @@ class DriverComparisonTest {
         }
     }
 
-    //@Test
+    @Test
     fun testMqttDriver() {
 
         val name = "mqtt_com"
@@ -66,21 +76,27 @@ class DriverComparisonTest {
         }
     }
 
-    //@Test
-    fun testSerialDriver() {
+    @Test
+    fun testSerialDriverJson() {
 
         val name = "serial_com"
         for (round in 0 until ROUNDS) {
             // Json
             testDriver(serialDriver, JsonMessageInterpreter(), name, Type.JSON, round)
-            // Emg
-            testDriver(serialDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
-            // ProtoBuf
-            testDriver(serialDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
         }
     }
 
-    //@Test
+    @Test
+    fun testSerialDriverSelf() {
+
+        val name = "serial_com"
+        for (round in 0 until ROUNDS) {
+            // Emg
+            testDriver(serialDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
+        }
+    }
+
+    @Test
     fun testBluetoothDriver() {
 
         val name = "bluetooth"

@@ -1,6 +1,5 @@
 package at.fhooe.mc.emg.core.client.simulation
 
-import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.core.util.CoreUtils

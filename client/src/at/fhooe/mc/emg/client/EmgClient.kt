@@ -53,7 +53,7 @@ abstract class EmgClient {
     private var currentHeartRate: Int = -1
 
     /**
-     * protected open to get overriden by subclasses,
+     * protected open to get overridden by subclasses,
      * in order to adapt the period during initialization
      */
     protected open var period: Long = 10

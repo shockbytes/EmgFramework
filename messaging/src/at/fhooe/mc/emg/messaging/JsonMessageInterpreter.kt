@@ -12,7 +12,11 @@ class JsonMessageInterpreter : MessageInterpreter<EmgPacket> {
     override val protocolVersion: MessageInterpreter.ProtocolVersion = MessageInterpreter.ProtocolVersion.V3
 
     override fun parseClientMessage(msg: String): EmgPacket? {
-        return gson.fromJson(msg, EmgPacket::class.java)
+        return try {
+            gson.fromJson(msg, EmgPacket::class.java)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override fun buildFrequencyMessage(fs: Double): String {

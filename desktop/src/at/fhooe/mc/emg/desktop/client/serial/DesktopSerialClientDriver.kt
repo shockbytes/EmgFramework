@@ -1,6 +1,5 @@
 package at.fhooe.mc.emg.desktop.client.serial
 
-import at.fhooe.mc.emg.clientdriver.ClientCategory
 import at.fhooe.mc.emg.clientdriver.EmgClientDriver
 import at.fhooe.mc.emg.clientdriver.EmgClientDriverConfigView
 import at.fhooe.mc.emg.designer.EmgComponentType
@@ -35,7 +34,7 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
 
     @JvmField
     @EmgComponentProperty(defaultDataRate.toString(), "Baud rate")
-    var dataRate: Int = 0
+    var dataRate: Int = defaultDataRate
 
     @JvmField
     @EmgComponentProperty("COM3", "Serial port")
@@ -55,7 +54,6 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
         Completable.fromAction {
 
             connectionPort = getPortByName(portName).open(javaClass.name, timeout) as SerialPort
-            dataRate = defaultDataRate
             setupConnectionParams()
 
             inputReader = BufferedReader(InputStreamReader(connectionPort?.inputStream))
@@ -74,8 +72,6 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
 
         inputReader?.close()
         outputWriter?.close()
-
-        connectionPort = null
     }
 
     override fun serialEvent(event: SerialPortEvent) {
@@ -113,7 +109,7 @@ class DesktopSerialClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClie
     private fun initializePorts() {
         @Suppress("UNCHECKED_CAST")
         ports = Collections.list<CommPortIdentifier>(CommPortIdentifier.getPortIdentifiers()
-                as Enumeration<CommPortIdentifier>?)
+                as Enumeration<CommPortIdentifier>)
 
         if (ports?.isNotEmpty() == true) {
             portName = ports?.get(0)?.name

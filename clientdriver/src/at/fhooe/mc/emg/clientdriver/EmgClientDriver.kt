@@ -24,6 +24,17 @@ import io.reactivex.subjects.PublishSubject
  */
 abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
+    /**
+     * Author:  Martin Macheiner
+     * Date:    22.11.2017
+     *
+     * Enum class for identifying each client category of the driver software.
+     */
+    enum class ClientCategory {
+        SERIAL, SIMULATION, NETWORK, BLUETOOTH
+    }
+
+
     open var samplingFrequency: Double = 100.toDouble()
         set(fs) {
             if (fs > 0) {
