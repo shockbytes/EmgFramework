@@ -5,7 +5,6 @@ import at.fhooe.mc.emg.client.sensing.EmgSensor
 import at.fhooe.mc.emg.client.sensing.heart.HeartRateProvider
 import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
-import at.fhooe.mc.emg.messaging.model.ServerMessage
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
@@ -189,8 +188,8 @@ abstract class EmgClient {
      */
     private fun handleMessage(data: String) {
         when (msgInterpreter.parseServerMessage(data)?.type) {
-            ServerMessage.MessageType.FREQUENCY -> updateDelay(msgInterpreter.parseFrequencyMessage(data))
-            ServerMessage.MessageType.NA -> println("Cannot identify server message type!")
+            MessageInterpreter.ServerMessage.MessageType.FREQUENCY -> updateDelay(msgInterpreter.parseFrequencyMessage(data))
+            MessageInterpreter.ServerMessage.MessageType.NA -> println("Cannot identify server message type!")
         }
     }
 

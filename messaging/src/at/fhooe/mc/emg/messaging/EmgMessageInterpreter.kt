@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.messaging
 
 import at.fhooe.mc.emg.messaging.model.EmgPacket
-import at.fhooe.mc.emg.messaging.model.ServerMessage
 
 
 /**
@@ -97,7 +96,7 @@ class EmgMessageInterpreter(override val protocolVersion: MessageInterpreter.Pro
 
     // ----------------------------------------------------------------------------------------------------
 
-    override fun parseServerMessage(msg: String): ServerMessage? {
+    override fun parseServerMessage(msg: String): MessageInterpreter.ServerMessage? {
         val params = msg.split(serverMessageDelimiter)
         return if (params.size == 2) {
             getServerMessageForTypeType(params[0], params[1])
@@ -106,10 +105,10 @@ class EmgMessageInterpreter(override val protocolVersion: MessageInterpreter.Pro
 
     override fun parseFrequencyMessage(msg: String): Long = msg.trim().split(serverMessageDelimiter)[1].toLong()
 
-    private fun getServerMessageForTypeType(type: String, data: String): ServerMessage {
+    private fun getServerMessageForTypeType(type: String, data: String): MessageInterpreter.ServerMessage {
         return when (type) {
-            "delay" -> ServerMessage(ServerMessage.MessageType.FREQUENCY, data)
-            else -> ServerMessage(ServerMessage.MessageType.NA, data)
+            "delay" -> MessageInterpreter.ServerMessage(MessageInterpreter.ServerMessage.MessageType.FREQUENCY, data)
+            else -> MessageInterpreter.ServerMessage(MessageInterpreter.ServerMessage.MessageType.NA, data)
         }
     }
 

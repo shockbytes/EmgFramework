@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.messaging
 
 import at.fhooe.mc.emg.messaging.model.EmgPacket
-import at.fhooe.mc.emg.messaging.model.ServerMessage
 import at.fhooe.mc.emg.messaging.model.protobuf.ProtocolBuffers
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -44,10 +43,10 @@ class ProtoBufMessageInterpreter(override val protocolVersion: MessageInterprete
         return String(Base64.getEncoder().encode(outStream.toByteArray()))
     }
 
-    override fun parseServerMessage(msg: String): ServerMessage? {
+    override fun parseServerMessage(msg: String): MessageInterpreter.ServerMessage? {
         val decoded = Base64.getDecoder().decode(msg)
         val protoMsg = ProtocolBuffers.ServerMessage.parseFrom(decoded)
-        return ServerMessage(ServerMessage.MessageType.values()[protoMsg.type], protoMsg.data)
+        return MessageInterpreter.ServerMessage(MessageInterpreter.ServerMessage.MessageType.values()[protoMsg.type], protoMsg.data)
     }
 
     override fun parseFrequencyMessage(msg: String): Long {

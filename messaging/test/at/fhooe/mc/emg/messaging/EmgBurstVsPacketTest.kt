@@ -1,7 +1,7 @@
 package at.fhooe.mc.emg.messaging
 
 import at.fhooe.mc.emg.messaging.model.EmgPacket
-import at.fhooe.mc.emg.messaging.model.experimental.EmgBurst
+import at.fhooe.mc.emg.messaging.expiremental.EmgBurst
 import org.junit.Test
 
 

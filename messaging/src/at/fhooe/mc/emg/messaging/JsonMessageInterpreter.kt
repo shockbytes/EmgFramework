@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.messaging
 
 import at.fhooe.mc.emg.messaging.model.EmgPacket
-import at.fhooe.mc.emg.messaging.model.ServerMessage
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -28,8 +27,8 @@ class JsonMessageInterpreter : MessageInterpreter<EmgPacket> {
         return gson.toJson(packet)
     }
 
-    override fun parseServerMessage(msg: String): ServerMessage? {
-        return gson.fromJson(msg, ServerMessage::class.java)
+    override fun parseServerMessage(msg: String): MessageInterpreter.ServerMessage? {
+        return gson.fromJson(msg, MessageInterpreter.ServerMessage::class.java)
     }
 
     override fun parseFrequencyMessage(msg: String): Long {
