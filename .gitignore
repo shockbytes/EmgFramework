@@ -28,3 +28,5 @@ captures/
 *.jks
 
 /protocol_buffer
+
+/plugin_test

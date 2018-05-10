@@ -21,7 +21,7 @@ class PluginReflectionsDependencyInjection(platformConfiguration: PlatformConfig
      */
     init {
         pluginDirectory.listFiles()
-                .filter { it.isFile && it.extension == ".jar" }
+                .filter { it.isFile && it.extension == "jar" }
                 .forEach { jar -> loadLibrary(jar) }
     }
 
