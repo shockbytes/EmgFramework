@@ -150,7 +150,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
                     .filter { it.isNotEmpty() }
         } catch (e: IOException) {
             e.printStackTrace()
-            arrayListOf()
+            listOf()
         }
     }
 

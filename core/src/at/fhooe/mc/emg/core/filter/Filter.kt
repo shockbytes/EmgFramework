@@ -1,6 +1,6 @@
 package at.fhooe.mc.emg.core.filter
 
-abstract class Filter internal constructor() {
+abstract class Filter {
 
     var isEnabled: Boolean = false
 

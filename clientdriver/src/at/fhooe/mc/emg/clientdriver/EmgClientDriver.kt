@@ -58,6 +58,9 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
     val hasConfigView: Boolean
         get() = configView != null
 
+    val isHeartRateSupported: Boolean
+        get() = msgInterpreter.protocolVersion == MessageInterpreter.ProtocolVersion.V3
+
     // ---------------------------------------------------------------
 
     /**

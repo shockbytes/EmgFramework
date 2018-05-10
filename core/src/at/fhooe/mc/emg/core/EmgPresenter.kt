@@ -15,7 +15,6 @@ import at.fhooe.mc.emg.core.view.EmgViewCallback
 import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
-import at.fhooe.mc.emg.messaging.MessageInterpreter
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
@@ -234,7 +233,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
     override fun isDataStorageEnabled() = client.isDataStorageEnabled
 
     override fun isHeartRateSensingSupported(): Boolean {
-        return clients.any { it.msgInterpreter.protocolVersion == MessageInterpreter.ProtocolVersion.V3 }
+        return clients.any { it.isHeartRateSupported }
     }
 
     // ----------------------------------------------------------------------------------------------------

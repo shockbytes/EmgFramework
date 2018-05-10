@@ -1,11 +1,12 @@
 package at.fhooe.mc.emg.desktop
 
 
-import at.fhooe.mc.emg.core.injection.BasicReflectionsDependencyInjection
+import at.fhooe.mc.emg.core.injection.PluginReflectionsDependencyInjection
 import at.fhooe.mc.emg.desktop.core.DesktopEmgPresenter
 import at.fhooe.mc.emg.desktop.core.DesktopPlatformConfiguration
 import at.fhooe.mc.emg.desktop.view.DesktopMainWindow
 import java.awt.EventQueue
+import java.io.File
 import javax.swing.UIManager
 
 object Main {
@@ -16,7 +17,8 @@ object Main {
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
-            val injector = BasicReflectionsDependencyInjection(DesktopPlatformConfiguration())
+            val injector = PluginReflectionsDependencyInjection(DesktopPlatformConfiguration(),
+                    File("${System.getProperty("user.dir")}/plugin_test/"))
             DesktopEmgPresenter(injector.driver,
                     injector.tools,
                     injector.filter,
