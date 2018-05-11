@@ -12,9 +12,8 @@ import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import org.fusesource.hawtbuf.Buffer
-import org.fusesource.hawtbuf.UTF8Buffer
-import org.fusesource.mqtt.client.*
+import org.eclipse.paho.client.mqttv3.*
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 
 @EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "MQTT device")
@@ -36,63 +35,74 @@ class MqttClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(
     var ip: String = "localhost"
 
     @JvmField
-    @EmgComponentProperty("5673", "Port of server")
-    var port: Int = 5673
+    @EmgComponentProperty("6706", "Port of server")
+    var port: Int = 6706
 
-    private var mqtt: MQTT = MQTT()
+    private var client: MqttClient? = null
 
-    private var connection: CallbackConnection? = null
+    private var qos = 2
 
     @EmgComponentEntryPoint
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
 
-        mqtt.setHost(ip, port)
+        val brokerUrl = "tcp://$ip:$port"
 
-        connection = mqtt.callbackConnection()
-        connection?.connect(object : Callback<Void> {
-            override fun onSuccess(value: Void?) {
-                // Initialize by sending sampling frequency
-                sendSamplingFrequencyToClient()
-            }
+        try {
 
-            override fun onFailure(value: Throwable?) {
-                errorHandler.accept(value)
-            }
-        })
-        connection?.listener(object : Listener {
-            override fun onFailure(value: Throwable?) {
-                errorHandler.accept(value)
-            }
-
-            override fun onPublish(topic: UTF8Buffer?, body: Buffer?, ack: Runnable?) {
-                if (body != null) {
-                    processMessage(String(body.data))
+            client = MqttClient(brokerUrl, "emg_consumer", MemoryPersistence())
+            client?.setCallback(object : MqttCallbackExtended {
+                override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+                    println("Connected!")
+                    successHandler.run()
+                    sendSamplingFrequencyToClient()
                 }
-            }
 
-            override fun onConnected() {
-                successHandler.run()
-            }
+                override fun messageArrived(topic: String?, message: MqttMessage?) {
+                    if (message != null) {
+                        //println(String(message.payload))
+                        processMessage(String(message.payload))
+                    }
+                }
 
-            override fun onDisconnected() {
-                errorHandler.accept(IllegalAccessException("Client disconnected!"))
-            }
-        })
+                override fun connectionLost(cause: Throwable?) {
+                    errorHandler.accept(cause)
+                }
+
+                override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                    // Not needed
+                }
+
+            })
+            client?.connect(MqttConnectOptions())
+            client?.subscribe(topicProducerMessages)
+
+        } catch (e: MqttException) {
+            e.printStackTrace()
+            errorHandler.accept(e)
+        }
+
     }
 
     @EmgComponentExitPoint
     override fun disconnect() {
-        connection?.disconnect(null)
+        client?.unsubscribe(topicProducerMessages)
+        client?.disconnectForcibly(1000, 1000, true)
     }
 
     override fun sendSamplingFrequencyToClient() {
         val payload = msgInterpreter.buildFrequencyMessage(samplingFrequency).toByteArray()
-        connection?.publish("EMG", payload, QoS.EXACTLY_ONCE, true, null)
+        client?.publish(topicConsumerMessages, payload, qos, false)
     }
 
     fun setSocketOptions(ip: String, port: Int) {
         this.ip = ip
         this.port = port
+    }
+
+    companion object {
+
+        private const val topicProducerMessages = "emg_p"
+        private const val topicConsumerMessages = "emg_c"
     }
 
 }

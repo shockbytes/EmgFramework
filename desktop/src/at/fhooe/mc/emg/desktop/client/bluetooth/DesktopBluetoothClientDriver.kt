@@ -44,7 +44,6 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
     override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3)
 
     // Debug Mac address
-    // Moto G5(s):      D4:63:C6:39:DD:23
     // Rasperry Pi 3:   22:22:20:E8:93:47
 
     // These properties can be changed in the ConfigView, therefore they aren't private

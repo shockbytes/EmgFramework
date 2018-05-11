@@ -242,6 +242,7 @@ class DriverComparisonTest {
 
         private fun setupMqttDriver() {
             mqttDriver = MqttClientDriver()
+            networkDriver.setSocketOptions("localhost", 6706)
             mqttDriver.samplingFrequency = SAMPLING_FREQUENCY
         }
 
@@ -254,17 +255,17 @@ class DriverComparisonTest {
 
         private fun setupBluetoothDriver() {
             bluetoothDriver = DesktopBluetoothClientDriver()
-            bluetoothDriver.channel = "SET CHANNEL ACCORDING TO ANDROID DEVICE"
-            bluetoothDriver.remoteDeviceMacAddress = "SET ACCORDING TO ANDROID DEVICE"
+            bluetoothDriver.channel = "7"
+            bluetoothDriver.remoteDeviceMacAddress = "CC:FA:00:70:D1:E8"
             bluetoothDriver.samplingFrequency = SAMPLING_FREQUENCY
         }
 
         private fun setupOutputMap() {
-            map["simulation"] = mutableListOf(mutableListOf(0.0), mutableListOf(0.0), mutableListOf(0.0))
-            map["network"] = mutableListOf(mutableListOf(0.0), mutableListOf(0.0), mutableListOf(0.0))
-            map["mqtt_com"] = mutableListOf(mutableListOf(0.0), mutableListOf(0.0), mutableListOf(0.0))
-            map["serial_com"] = mutableListOf(mutableListOf(0.0), mutableListOf(0.0), mutableListOf(0.0))
-            map["bluetooth"] = mutableListOf(mutableListOf(0.0), mutableListOf(0.0), mutableListOf(0.0))
+            map["simulation"] = mutableListOf(mutableListOf(), mutableListOf(), mutableListOf())
+            map["network"] = mutableListOf(mutableListOf(), mutableListOf(), mutableListOf())
+            map["mqtt_com"] = mutableListOf(mutableListOf(), mutableListOf(), mutableListOf())
+            map["serial_com"] = mutableListOf(mutableListOf(), mutableListOf(), mutableListOf())
+            map["bluetooth"] = mutableListOf(mutableListOf(), mutableListOf(), mutableListOf())
         }
 
     }

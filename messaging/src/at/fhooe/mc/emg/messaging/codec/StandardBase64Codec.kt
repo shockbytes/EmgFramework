@@ -9,7 +9,7 @@ class StandardBase64Codec: MessageCodec {
     }
 
     override fun decode(msg: String): ByteArray {
-        return Base64.getDecoder().decode(msg)
+        return Base64.getDecoder().decode(msg.trim())
     }
 
 }
