@@ -41,8 +41,9 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
     implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.6'
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.11'
-    implementation 'org.fusesource.mqtt-client:mqtt-client:1.12'
 
+    implementation 'org.fusesource.mqtt-client:mqtt-client:1.12'
+    implementation 'com.esotericsoftware:kryonet:2.22.0-RC1'
 }
 
 sourceSets {

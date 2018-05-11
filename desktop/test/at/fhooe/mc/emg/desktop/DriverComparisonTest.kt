@@ -10,6 +10,7 @@ import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
 import at.fhooe.mc.emg.messaging.JsonMessageInterpreter
 import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.ProtoBufMessageInterpreter
+import at.fhooe.mc.emg.messaging.codec.StandardBase64Codec
 import at.fhooe.mc.emg.messaging.model.EmgPacket
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -44,35 +45,67 @@ class DriverComparisonTest {
 
             // ProtoBuf
             simulationDriver.simulationSource = simulationDriver.simulationSources.find { it.name.contains("-proto") }
-            testDriver(simulationDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(simulationDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3, StandardBase64Codec()), name, Type.PROTO, round)
         }
     }
 
     @Test
-    fun testNetworkDriver() {
+    fun testNetworkDriverJson() {
 
         val name = "network"
         for (round in 0 until ROUNDS) {
             // Json
             testDriver(networkDriver, JsonMessageInterpreter(), name, Type.JSON, round)
-            // Emg
-            testDriver(networkDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
-            // ProtoBuf
-            testDriver(networkDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
         }
     }
 
     @Test
-    fun testMqttDriver() {
+    fun testNetworkDriverSelf() {
+
+        val name = "network"
+        for (round in 0 until ROUNDS) {
+            // Emg
+            testDriver(networkDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
+        }
+    }
+
+    @Test
+    fun testNetworkDriverProto() {
+
+        val name = "network"
+        for (round in 0 until ROUNDS) {
+            // ProtoBuf
+            testDriver(networkDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3, StandardBase64Codec()), name, Type.PROTO, round)
+        }
+    }
+
+    @Test
+    fun testMqttDriverJson() {
 
         val name = "mqtt_com"
         for (round in 0 until ROUNDS) {
             // Json
             testDriver(mqttDriver, JsonMessageInterpreter(), name, Type.JSON, round)
+        }
+    }
+
+    @Test
+    fun testMqttDriverSelf() {
+
+        val name = "mqtt_com"
+        for (round in 0 until ROUNDS) {
             // Emg
             testDriver(mqttDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
+        }
+    }
+
+    @Test
+    fun testMqttDriverProto() {
+
+        val name = "mqtt_com"
+        for (round in 0 until ROUNDS) {
             // ProtoBuf
-            testDriver(mqttDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(mqttDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3, StandardBase64Codec()), name, Type.PROTO, round)
         }
     }
 
@@ -97,16 +130,32 @@ class DriverComparisonTest {
     }
 
     @Test
-    fun testBluetoothDriver() {
+    fun testBluetoothDriverJson() {
 
         val name = "bluetooth"
         for (round in 0 until ROUNDS) {
             // Json
             testDriver(bluetoothDriver, JsonMessageInterpreter(), name, Type.JSON, round)
+        }
+    }
+
+    @Test
+    fun testBluetoothDriverSelf() {
+
+        val name = "bluetooth"
+        for (round in 0 until ROUNDS) {
             // Emg
             testDriver(bluetoothDriver, EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.SELF, round)
+        }
+    }
+
+    @Test
+    fun testBluetoothDriverProto() {
+
+        val name = "bluetooth"
+        for (round in 0 until ROUNDS) {
             // ProtoBuf
-            testDriver(bluetoothDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3), name, Type.PROTO, round)
+            testDriver(bluetoothDriver, ProtoBufMessageInterpreter(MessageInterpreter.ProtocolVersion.V3, StandardBase64Codec()), name, Type.PROTO, round)
         }
     }
 
@@ -117,9 +166,11 @@ class DriverComparisonTest {
         val action = Action {
             println("$name#$type started round $round")
             val start = System.currentTimeMillis()
-            driver.channeledCallbackSubject.takeWhile { it.emgSize <= THRESHOLD }.subscribe({ }, { }, {
+            driver.channeledCallbackSubject.takeWhile { it.emgSize <= THRESHOLD }.subscribe({}, {
+                it.printStackTrace()
+            }, {
                 val metric = (System.currentTimeMillis() - start) / 1000.0
-                println("$name#$type finished round $round")
+                println("$name#$type finished round $round in $metric seconds")
                 driver.disconnect()
                 driver.clearData()
 
@@ -185,7 +236,7 @@ class DriverComparisonTest {
 
         private fun setupNetworkDriver() {
             networkDriver = NetworkClientDriver()
-            networkDriver.setSocketOptions("SET IP TO ANDROID DEVICE", 5684)
+            networkDriver.setSocketOptions("192.168.43.1", 5674)
             networkDriver.samplingFrequency = SAMPLING_FREQUENCY
         }
 

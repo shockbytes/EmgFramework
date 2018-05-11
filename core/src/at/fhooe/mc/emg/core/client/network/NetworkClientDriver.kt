@@ -10,13 +10,13 @@ import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
 import at.fhooe.mc.emg.messaging.EmgMessageInterpreter
 import at.fhooe.mc.emg.messaging.MessageInterpreter
 import at.fhooe.mc.emg.messaging.model.EmgPacket
+import com.esotericsoftware.kryonet.Client
+import com.esotericsoftware.kryonet.Connection
+import com.esotericsoftware.kryonet.Listener
 import io.reactivex.Completable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
 
 /**
  * Author:  Martin Macheiner
@@ -25,7 +25,7 @@ import java.net.InetAddress
 @EmgComponent(type = EmgComponentType.DEVICE, displayTitle = "Network device")
 class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(cv) {
 
-    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V1)
+    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3)
 
     override val category: ClientCategory = ClientCategory.NETWORK
 
@@ -38,36 +38,37 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     @JvmField
     @EmgComponentProperty("localhost", "Ip address of remote device")
-    var ip: String = "localhost"
+    var ip: String = "192.168.8.102"
 
     @JvmField
     @EmgComponentProperty("5673", "Port of remote device")
     var port: Int = 5673
 
-    private val buffer = ByteArray(64)
-    private var datagramSocket: DatagramSocket? = null
-
-    private var isRunning = false
+    private var client: Client? = null
 
     @EmgComponentEntryPoint
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
+
         Completable.fromAction {
 
-            isRunning = true
-            datagramSocket = DatagramSocket()
-            datagramSocket?.connect(InetAddress.getByName(ip), port)
+            client = Client()
+            client?.kryo?.register(String::class.java)
+            client?.start()
+            client?.connect(5000, ip, 54557, port)
 
             // Initialize by sending sampling frequency
             sendSamplingFrequencyToClient()
 
-            // Everything should be working here
-            successHandler.run()
+            client?.addListener(object: Listener() {
 
-            while (isRunning) {
-                val packet = DatagramPacket(buffer, buffer.size)
-                datagramSocket?.receive(packet)
-                processMessage(String(packet.data))
-            }
+                override fun received(connection: Connection?, data: Any?) {
+                    super.received(connection, data)
+
+                    if (data != null && data is String) {
+                        processMessage(data)
+                    }
+                }
+            })
 
         }.subscribeOn(Schedulers.io()).subscribe(successHandler, errorHandler)
     }
@@ -78,10 +79,8 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
             // Send disconnect message before closing socket
             sendMessage("disconnect")
-
-            isRunning = false
-            datagramSocket?.disconnect()
-            datagramSocket?.close()
+            client?.dispose()
+            client = null
 
         }.subscribeOn(Schedulers.io()).subscribe()
     }
@@ -98,9 +97,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
     }
 
     private fun sendMessage(msg: String) {
-        val bytes = msg.toByteArray()
-        val packet = DatagramPacket(bytes, bytes.size)
-        datagramSocket?.send(packet)
+        client?.sendUDP(msg)
     }
 
 }

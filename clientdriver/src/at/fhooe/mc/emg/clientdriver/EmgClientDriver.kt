@@ -35,7 +35,10 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
     }
 
 
-    open var samplingFrequency: Double = 100.toDouble()
+    /**
+     * Set sampling frequency to 1000 Hz, as this is industry standard
+     */
+    open var samplingFrequency: Double = 1000.toDouble()
         set(fs) {
             if (fs > 0) {
                 field = fs

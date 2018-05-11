@@ -27,7 +27,7 @@ abstract class EmgClient {
      * NOTE: Each subtype of EmgClient must agree to utilize the EmgPacket as the common data type. On the other
      * hand this revokes the advantages of a generic implementation, but on the other hand it eases the development.
      */
-    abstract val msgInterpreter: MessageInterpreter<EmgPacket>
+    abstract var msgInterpreter: MessageInterpreter<EmgPacket>
 
     /**
      * The component which makes the actual sensing of the hardware beneath. Depends on the target platform.
