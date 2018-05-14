@@ -36,7 +36,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
 
     /**
-     * Set sampling frequency to 1000 Hz, as this is industry standard
+     * Set sampling frequency to 500 Hz
      */
     open var samplingFrequency: Double = 1000.toDouble()
         set(fs) {
@@ -114,7 +114,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     // ---------------------------------------------------------------
     init {
-        data = EmgData(channelWindowWidth)
+        data = EmgData()
     }
     /**
      * Resets all stored data
@@ -136,12 +136,13 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
         // Always increment x counter value
         currentDataPointer++
 
-        val packet = msgInterpreter.parseClientMessage(msg)
+        val message = msg.trim()
+        val packet = msgInterpreter.parseClientMessage(message)
         packet?.let {
 
             // Update the data object
             packet.channels.forEachIndexed { idx, value ->
-                data.updateChannel(idx, EmgPoint(currentDataPointer.toDouble(), value))
+                data.updateChannel(idx, EmgPoint(currentDataPointer.toDouble(), value, packet.timestamp))
             }
             data.updateHeartRate(it.heartRate)
 
@@ -151,9 +152,4 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
         rawCallbackSubject.onNext(msg)
     }
-
-    companion object {
-        const val channelWindowWidth = 512
-    }
-
 }

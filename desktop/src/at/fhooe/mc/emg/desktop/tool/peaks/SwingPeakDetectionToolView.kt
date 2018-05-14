@@ -88,7 +88,7 @@ class SwingPeakDetectionToolView : PeakDetectionToolView {
         configPanel.add(JLabel("Width between peaks"))
         val tfWidth = JTextField(PeakDetector.defaultWidth.toString())
         configPanel.add(tfWidth)
-        configPanel.add(JLabel("Min threshold for peak"))
+        configPanel.add(JLabel("Min cacheThreshold for peak"))
         val tfThreshold = JTextField(PeakDetector.defaultThreshold.toString())
         configPanel.add(tfThreshold)
         configPanel.add(JLabel("Decay rate"))

@@ -43,14 +43,9 @@ class DesktopBluetoothClientDriver(cv: EmgClientDriverConfigView? = null) : EmgC
 
     override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3)
 
-    // Debug Mac address
-    // Rasperry Pi 3:   22:22:20:E8:93:47
-
-    // These properties can be changed in the ConfigView, therefore they aren't private
-
     @JvmField
-    @EmgComponentProperty("22:22:20:E8:93:47", "Remote MAC address")
-    var remoteDeviceMacAddress: String = "22:22:20:E8:93:47"
+    @EmgComponentProperty("22:22:F3:CA:80:14", "Remote MAC address")
+    var remoteDeviceMacAddress: String = "22:22:F3:CA:80:14"
 
     @JvmField
     @EmgComponentProperty("2", "Bluetooth Channel")

@@ -46,6 +46,10 @@ abstract class EmgClient {
      */
     abstract val heartRateProvider: HeartRateProvider
 
+    abstract val useTimer: Boolean
+
+    private var isRunning = false
+
     private var timerDisposable: Disposable? = null
     private var msgDisposable: Disposable? = null
 
@@ -129,13 +133,26 @@ abstract class EmgClient {
      * It also exposes the packet through a debug listener interface to the client application.
      */
     private fun startTransmission() {
-        timerDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.computation())
-                .subscribe {
+
+        if (useTimer) {
+            timerDisposable = Observable.interval(period, TimeUnit.MICROSECONDS)
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe {
+                        val packet = EmgPacket(provideData(), System.currentTimeMillis(), currentHeartRate)
+                        send(msgInterpreter.buildClientMessage(packet))
+                        debugDataListener?.invoke(packet)
+                    }
+        } else {
+            isRunning = true
+            Thread {
+                while(isRunning) {
                     val packet = EmgPacket(provideData(), System.currentTimeMillis(), currentHeartRate)
                     send(msgInterpreter.buildClientMessage(packet))
                     debugDataListener?.invoke(packet)
                 }
+            }.start()
+        }
+
     }
 
     /**
@@ -145,6 +162,7 @@ abstract class EmgClient {
      */
     private fun stopTransmission() {
         timerDisposable?.dispose()
+        isRunning = false
     }
 
 

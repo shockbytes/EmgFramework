@@ -119,7 +119,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
         try {
             val modified = FileUtils.readLines(srcFile, Charset.forName("UTF-8"))
                     .filter {!it.isEmpty() && Character.isDigit(it[0]) }
-                    .joinToString("\n") { it.replace(',', ':') }
+                    .joinToString("\n") //{ it.replace(',', ':') }
             CoreUtils.writeFile(destinationFile, modified)
         } catch (e: IOException) {
             e.printStackTrace()

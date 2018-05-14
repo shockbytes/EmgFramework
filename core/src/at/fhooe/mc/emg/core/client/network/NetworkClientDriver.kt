@@ -36,13 +36,14 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
     override val isDataStorageEnabled: Boolean = true
 
+    // TODO Reset values!!!
     @JvmField
-    @EmgComponentProperty("localhost", "Ip address of remote device")
-    var ip: String = "192.168.8.102"
+    @EmgComponentProperty("192.168.43.242", "Ip address of remote device")
+    var ip: String = "192.168.43.242"
 
     @JvmField
-    @EmgComponentProperty("5673", "Port of remote device")
-    var port: Int = 5673
+    @EmgComponentProperty("5674", "Port of remote device")
+    var port: Int = 5674
 
     private var client: Client? = null
 
@@ -53,6 +54,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
             client = Client()
             client?.kryo?.register(String::class.java)
+            client?.stop()
             client?.start()
             client?.connect(5000, ip, 54557, port)
 
@@ -65,6 +67,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
                     super.received(connection, data)
 
                     if (data != null && data is String) {
+                        //println("Receive: $data")
                         processMessage(data)
                     }
                 }
@@ -79,6 +82,7 @@ class NetworkClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriv
 
             // Send disconnect message before closing socket
             sendMessage("disconnect")
+            client?.stop()
             client?.dispose()
             client = null
 

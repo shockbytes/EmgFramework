@@ -130,9 +130,9 @@ class SwingSalientPointToolView : SalientPointToolView {
         textAreaPointInfo = JTextArea()
         textAreaPointInfo.isEditable = false
 
-        panel.add(JLabel("Angle threshold (in degree)"))
+        panel.add(JLabel("Angle cacheThreshold (in degree)"))
         panel.add(tfAngle)
-        panel.add(JLabel("Confidence threshold"))
+        panel.add(JLabel("Confidence cacheThreshold"))
         panel.add(tfConfidence)
         panel.add(btnApply)
         panel.add(textAreaPointInfo)

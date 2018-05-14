@@ -122,21 +122,27 @@ class EmgData(private val windowWidth: Int = DEFAULT_WINDOW_WITH,
         }
     }
 
+    /**
+     * Output format:
+     *      timestamp:channel1,channel2:timestamp
+     */
     override fun asCsv(excelCompat: Boolean): String {
 
         val sb = StringBuilder()
 
+        val sep = ":"
+
         if (excelCompat) {
-            val headerPrefix = "sep=,\n"
+            val headerPrefix = "sep=$sep\n"
             sb.append(headerPrefix)
         }
 
         // ----------- Header line -----------
-        val header = StringBuilder("time,")
+        val header = StringBuilder("time$sep")
         for (i in channels.indices) {
             header.append("ch_").append(i)
             if (i < channels.size - 1) {
-                header.append(",")
+                header.append(sep)
             }
         }
         sb.append(header).append("\n")
@@ -151,14 +157,18 @@ class EmgData(private val windowWidth: Int = DEFAULT_WINDOW_WITH,
         for (i in 0 until minSize) {
             // Assume that the first channel contains
             // all X points for the other channels as well
-            sb.append(channels[0][i].x)
-            sb.append(",")
+            sb.append(channels[0][i].timestamp)
+            sb.append(sep)
             for (j in channels.indices) {
                 sb.append(channels[j][i].y)
                 if (i < channels.size - 1) {
-                    sb.append(", ")
+                    sb.append("$, ")
                 }
             }
+            val hr = heartRateData.getOrNull(i) ?: -1
+            sb.append(sep)
+            sb.append(hr)
+
             sb.append("\n")
         }
 

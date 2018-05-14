@@ -45,21 +45,19 @@ class MqttClientDriver(cv: EmgClientDriverConfigView? = null) : EmgClientDriver(
     @EmgComponentEntryPoint
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
 
-        val brokerUrl = "tcp://$ip:$port"
-
         try {
+
+            val brokerUrl = "tcp://$ip:$port"
 
             client = MqttClient(brokerUrl, "emg_consumer", MemoryPersistence())
             client?.setCallback(object : MqttCallbackExtended {
                 override fun connectComplete(reconnect: Boolean, serverURI: String?) {
-                    println("Connected!")
                     successHandler.run()
                     sendSamplingFrequencyToClient()
                 }
 
                 override fun messageArrived(topic: String?, message: MqttMessage?) {
                     if (message != null) {
-                        //println(String(message.payload))
                         processMessage(String(message.payload))
                     }
                 }
