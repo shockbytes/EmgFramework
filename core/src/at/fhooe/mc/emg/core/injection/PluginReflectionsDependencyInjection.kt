@@ -20,9 +20,11 @@ class PluginReflectionsDependencyInjection(platformConfiguration: PlatformConfig
      * in class path
      */
     init {
-        pluginDirectory.listFiles()
-                .filter { it.isFile && it.extension == "jar" }
-                .forEach { jar -> loadLibrary(jar) }
+        if (pluginDirectory.exists() && pluginDirectory.isDirectory) {
+            pluginDirectory.listFiles()
+                    .filter { it.isFile && it.extension == "jar" }
+                    .forEach { jar -> loadLibrary(jar) }
+        }
     }
 
     /**

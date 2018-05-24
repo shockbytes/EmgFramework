@@ -6,6 +6,11 @@ fun DoubleArray.rms(): Double {
     return Math.sqrt(sum / this.size)
 }
 
+fun List<Double>.rms(): Double {
+    val sum = sumByDouble { it * it }
+    return Math.sqrt(sum / this.size)
+}
+
 fun List<Double>.rmse(approx: List<Double>): Double {
     var sum = 0.0
     for (i in indices) {

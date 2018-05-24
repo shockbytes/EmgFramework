@@ -30,7 +30,7 @@ object ComponentInspection {
      *
      * @param c Component of interest
      *
-     * @return a Triple of format (consumes, produces, isRelayPort)
+     * @return a Pair of format (consumes, produces)
      */
     fun getPortConnectivityInformation(c: EmgBaseComponent): Pair<KClass<*>?, KClass<*>?> {
 

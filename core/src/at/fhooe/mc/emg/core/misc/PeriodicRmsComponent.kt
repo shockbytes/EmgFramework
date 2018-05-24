@@ -33,7 +33,7 @@ class PeriodicRmsComponent {
     fun update(x: Double) {
         data.add(x)
         if (data.size >= capacity) {
-            val rms = data.toDoubleArray().rms()
+            val rms = data.rms()
             outputPort.onNext(rms)
             data.clear()
         }

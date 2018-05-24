@@ -1,6 +1,4 @@
-package at.fhooe.mc.emg.client.things.sensing
-
-import at.fhooe.mc.emg.client.sensing.EmgSensor
+package at.fhooe.mc.emg.client.sensing
 
 /**
  * @author Martin Macheiner
