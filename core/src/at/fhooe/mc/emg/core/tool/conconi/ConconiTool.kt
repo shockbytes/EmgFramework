@@ -176,9 +176,10 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     private fun storeRoundData(index: Int) {
 
-        if (toolable != null) {
-            dataStopPointer = toolable!!.currentDataPointer
-            val roundData = toolable!!.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
+        toolable?.let {t ->
+
+            dataStopPointer = t.currentDataPointer
+            val roundData = t.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
 
             data.addRoundData(roundData)
             val crd = emg2ConconiRoundData(roundData, index)
@@ -191,9 +192,10 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
     private fun emg2ConconiRoundData(roundData: EmgData, round: Int): ConconiRoundData {
 
         val speed = speeds[round]
-        val yData = roundData.plotData(0).map { it.y }.toDoubleArray()
+        val yData = roundData.channel(0).map { it.y }.toDoubleArray()
         val peaks = PeakDetector.detectSimpleThresholdPeaks(yData)
         val rms = CoreUtils.roundDouble(yData.rms(), 2)
+
         val hr = roundData.heartRateData.average().toInt()
         return ConconiRoundData(speed, peaks, rms, hr)
     }

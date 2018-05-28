@@ -114,7 +114,7 @@ abstract class EmgClientDriver(var configView: EmgClientDriverConfigView?) {
 
     // ---------------------------------------------------------------
     init {
-        data = EmgData()
+        data = EmgData(5120) // TODO TEST this
     }
     /**
      * Resets all stored data

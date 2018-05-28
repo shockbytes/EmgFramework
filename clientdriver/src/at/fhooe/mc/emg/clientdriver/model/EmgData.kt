@@ -59,6 +59,16 @@ class EmgData(private val windowWidth: Int = DEFAULT_WINDOW_WITH,
     }
 
     /**
+     * Returns all data of a single channel
+     * @param channel Desired channel, as it is assumed the data provides multiple channels
+     *
+     * @return The whole data of a single channel
+     */
+    fun channel(channel: Int): List<EmgPoint> {
+        return channels[channel]
+    }
+
+    /**
      * Returns the last entry point of all channels of the data
      *
      * @return The last EmgPoint of all channels

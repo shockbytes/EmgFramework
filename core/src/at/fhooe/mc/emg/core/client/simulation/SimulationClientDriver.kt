@@ -45,7 +45,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     @EmgComponentProperty("false", "Enable playback loop")
     var isEndlessLoopEnabled = false
 
-    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V2)
+    override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3)
 
     override val category: ClientCategory = ClientCategory.SIMULATION
 
