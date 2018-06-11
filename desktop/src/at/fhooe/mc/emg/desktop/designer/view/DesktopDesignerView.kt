@@ -8,7 +8,9 @@ import at.fhooe.mc.emg.desktop.designer.util.DragDropTransferHandler
 import at.fhooe.mc.emg.desktop.util.UiUtils
 import java.awt.*
 import java.awt.event.*
+import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
@@ -145,6 +147,12 @@ class DesktopDesignerView : DesignerView {
         mnItemBg.state = false
         mnView.add(mnItemBg)
 
+        val mnItemExportBlueprint = JMenuItem("Export blueprint")
+        mnItemExportBlueprint.addActionListener {
+            exportBlueprint()
+        }
+        mnView.add(mnItemExportBlueprint)
+
         menuBar.add(mnFile)
         menuBar.add(mnBuild)
         menuBar.add(mnView)
@@ -228,6 +236,22 @@ class DesktopDesignerView : DesignerView {
             }
         })
         return label
+    }
+
+    private fun exportBlueprint() {
+
+        val panel = contentPanel
+
+        val image = BufferedImage(panel.size.width, panel.size.height, BufferedImage.TYPE_INT_ARGB)
+        val graphics = image.createGraphics()
+        panel.paint(graphics)
+        graphics.dispose()
+
+        UiUtils.showPngSaveDialog()?.let { path ->
+            ImageIO.write(image, "png", File(path))
+            showStatusMessage("Blueprint exported to $path!")
+        }
+
     }
 
     companion object {

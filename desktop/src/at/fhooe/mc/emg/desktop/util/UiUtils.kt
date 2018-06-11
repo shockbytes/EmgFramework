@@ -34,6 +34,12 @@ object UiUtils {
                 ".acd", true)
     }
 
+    fun showPngSaveDialog(): String? {
+        return showDialog("Save PNG file",
+                FileNameExtensionFilter("Portable Network Graphics", "png"),
+                ".png", true)
+    }
+
     fun showConconiLoadDialog(): String? {
         return showDialog("Load Conconi test data",
                 FileNameExtensionFilter("Conconi files", "ctf"),
