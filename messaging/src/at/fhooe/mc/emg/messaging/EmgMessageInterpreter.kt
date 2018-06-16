@@ -80,6 +80,9 @@ class EmgMessageInterpreter(override val protocolVersion: MessageInterpreter.Pro
         }
     }
 
+    /**
+     * Assume a minimum version of 2, as V1 packages are discouraged. Therefore return null if V2 has invalid packet
+     */
     private fun parseV2(params: List<String>): EmgPacket? {
         return if (params.size >= 2) {
             val timestamp = params[0].toLongOrNull() ?: System.currentTimeMillis()
@@ -87,11 +90,17 @@ class EmgMessageInterpreter(override val protocolVersion: MessageInterpreter.Pro
         } else null
     }
 
+    /**
+     * Just because a MessageInterpreter is capable of parsing V3 messages does not necessarily mean, that
+     * devices will send with at least this version. Therefore make heart rate parsing optional
+     */
     private fun parseV3(params: List<String>): EmgPacket? {
-        return if (params.size >= 3) {
-            val heartRate = params[2].toIntOrNull() ?: -1
-            parseV2(params)?.setHeartRate(heartRate)
-        } else null
+        // Try get heart rate
+        val hr =  if (params.size >= 3) {
+            params[2].toIntOrNull() ?: -1
+        } else -1
+        // Fallback anyway to V2 message parsing
+        return parseV2(params)?.setHeartRate(hr)
     }
 
     // ----------------------------------------------------------------------------------------------------

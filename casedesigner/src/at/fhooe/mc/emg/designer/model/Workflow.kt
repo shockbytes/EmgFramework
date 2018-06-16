@@ -1,11 +1,11 @@
 package at.fhooe.mc.emg.designer.model
 
+import at.fhooe.mc.emg.designer.ComponentInspection
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgDeviceComponent
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
-import at.fhooe.mc.emg.designer.ComponentInspection
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
@@ -24,7 +24,7 @@ import java.lang.reflect.Method
  **/
 class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf(),
                private val flowConfig: WorkflowConfiguration,
-               private val disposableList: MutableList<Disposable>) {
+               private val disposableList: CompositeDisposable) {
 
     private val startPoint: StartableProducer
         get() = flow.mapNotNull { it.producer as? StartableProducer }.first()
@@ -69,8 +69,7 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf(),
     fun release() {
         flowConfig.itemViewManager.releaseViews()
 
-        disposableList.forEach { it.dispose() }
-        disposableList.clear()
+        disposableList.dispose()
 
         flow.clear()
     }
@@ -113,7 +112,7 @@ class Workflow(private val flow: MutableList<WorkflowItem> = mutableListOf(),
     class Builder(private val flowConfig: WorkflowConfiguration) {
 
         private val builderItems: MutableList<WorkflowItem> = mutableListOf()
-        private val disposableList: MutableList<Disposable> = mutableListOf()
+        private val disposableList: CompositeDisposable = CompositeDisposable()
 
         /**
          * Connect the producer and consumer via the pipe, before adding to list

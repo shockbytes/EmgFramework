@@ -1,4 +1,4 @@
-package at.fhooe.mc.emg.core.misc
+package at.fhooe.mc.emg.core.computation
 
 import at.fhooe.mc.emg.core.util.rms
 import at.fhooe.mc.emg.designer.EmgComponentType

@@ -45,6 +45,10 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     @EmgComponentProperty("false", "Enable playback loop")
     var isEndlessLoopEnabled = false
 
+    @JvmField
+    @EmgComponentProperty("Dummy", "Simulation source name")
+    var simulationSourceName: String? = null
+
     override var msgInterpreter: MessageInterpreter<EmgPacket> = EmgMessageInterpreter(MessageInterpreter.ProtocolVersion.V3)
 
     override val category: ClientCategory = ClientCategory.SIMULATION
@@ -69,7 +73,7 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
 
         // Select the default simulation source
         if (simulationSources.isNotEmpty()) {
-            simulationSource = simulationSources[simulationSources.size / 2]
+            simulationSourceName = simulationSources[simulationSources.size / 2].name
         }
     }
 
@@ -77,11 +81,10 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
     override fun connect(successHandler: Action, errorHandler: Consumer<Throwable>) {
         Completable.fromAction {
 
-            if (simulationSource == null) {
-                throw IllegalStateException("Simulation source cannot be null!")
-            }
-            disconnect() // Reset connection first
+            // Reset connection first
+            disconnect()
 
+            prepareSimulationSource()
             prepareSimulationData()
             prepareSamplingFrequency()
 
@@ -151,6 +154,14 @@ class SimulationClientDriver(cv: EmgClientDriverConfigView? = null,
         } catch (e: IOException) {
             e.printStackTrace()
             listOf()
+        }
+    }
+
+    private fun prepareSimulationSource() {
+
+        simulationSource = simulationSources.find { it.name == simulationSourceName }
+        if (simulationSource == null) {
+            throw IllegalStateException("Simulation source name cannot be null!")
         }
     }
 

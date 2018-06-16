@@ -15,10 +15,7 @@ import org.knowm.xchart.style.Styler;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +34,7 @@ public class SwingConconiToolView implements ConconiToolView {
     private JTable table;
     private JPanel panelAverageVisual;
     private JButton btnLoad;
+    private JCheckBox runningAverageFiterCheckBox;
 
     private XYChart chartAverage;
     private XChartPanel<XYChart> chartAverageWrapper;
@@ -82,6 +80,10 @@ public class SwingConconiToolView implements ConconiToolView {
         btnStop.addActionListener(actionListener);
         btnSave.addActionListener(actionListener);
         btnLoad.addActionListener(actionListener);
+        runningAverageFiterCheckBox.addItemListener(e -> {
+            boolean isSelected = e.getStateChange() == ItemEvent.SELECTED;
+            viewCallback.setUseRunningAverageFilter(isSelected);
+        });
 
         updateButtonStates(true);
 
@@ -114,10 +116,10 @@ public class SwingConconiToolView implements ConconiToolView {
     public void onRoundDataAvailable(@NotNull ConconiRoundData data, int round) {
 
         ((DefaultTableModel) table.getModel()).addRow(
-                new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getRms()),
-                        String.valueOf(data.getHeartRate()), String.valueOf(data.getPeaks())});
+                new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getEmg()),
+                        String.valueOf(data.getHr()), String.valueOf(data.getPeaks())});
 
-        updateCharts(data.getRms(), data.getSpeed(), data.getHeartRate());
+        updateCharts(data.getEmg(), data.getSpeed(), data.getHr());
     }
 
     private void updateCharts(double avg, double speed, int heartRate) {
@@ -161,7 +163,7 @@ public class SwingConconiToolView implements ConconiToolView {
     }
 
     private void createUIComponents() {
-        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "RMS", "Heart rate", "Peaks"}));
+        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "EMG", "HR", "Peaks"}));
     }
 
     @Override

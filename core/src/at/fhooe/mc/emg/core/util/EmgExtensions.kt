@@ -1,5 +1,7 @@
 package at.fhooe.mc.emg.core.util
 
+import at.fhooe.mc.emg.clientdriver.model.EmgData
+
 
 fun DoubleArray.rms(): Double {
     val sum = sumByDouble { it * it }
@@ -27,4 +29,13 @@ fun DoubleArray.rmse(approx: List<Double>): Double {
 
 fun Double.round(): Int {
     return Math.round(this).toInt()
+}
+
+fun EmgData.toLoggingString(): String {
+
+    val ts = lastOfChannel(0).timestamp
+    val emg = lastOfChannels().map { it.y }.joinToString(",")
+    val hr = lastOfHeartRate()
+
+    return "$ts:$emg:$hr"
 }

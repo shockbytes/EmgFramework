@@ -147,12 +147,21 @@ class DesktopDesignerView : DesignerView {
         mnItemBg.state = false
         mnView.add(mnItemBg)
 
-        val mnItemExportBlueprint = JMenuItem("Export blueprint")
-        mnItemExportBlueprint.addActionListener {
-            exportBlueprint()
-        }
-        mnView.add(mnItemExportBlueprint)
+        val mnExportBlueprint = JMenu("Export blueprint")
 
+        val mnItemExportBlueprintAll = JMenuItem("Whole area")
+        mnItemExportBlueprintAll.addActionListener {
+            exportBlueprint(contentPanel)
+        }
+        val mnItemExportBlueprintInteractionArea = JMenuItem("Interaction area")
+        mnItemExportBlueprintInteractionArea.addActionListener {
+            exportBlueprint(componentInteractionView)
+        }
+
+        mnExportBlueprint.add(mnItemExportBlueprintAll)
+        mnExportBlueprint.add(mnItemExportBlueprintInteractionArea)
+
+        mnView.add(mnExportBlueprint)
         menuBar.add(mnFile)
         menuBar.add(mnBuild)
         menuBar.add(mnView)
@@ -177,8 +186,6 @@ class DesktopDesignerView : DesignerView {
 
         val overviewRootPanel = JPanel()
         overviewRootPanel.background = bgColor
-        overviewRootPanel.border = CompoundBorder(null, TitledBorder(UIManager.getBorder("TitledBorder.border"),
-                "MiniMap", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE))
         overviewRootPanel.layout = BorderLayout()
 
         val screen = Toolkit.getDefaultToolkit().screenSize
@@ -238,13 +245,11 @@ class DesktopDesignerView : DesignerView {
         return label
     }
 
-    private fun exportBlueprint() {
+    private fun exportBlueprint(c: JComponent) {
 
-        val panel = contentPanel
-
-        val image = BufferedImage(panel.size.width, panel.size.height, BufferedImage.TYPE_INT_ARGB)
+        val image = BufferedImage(c.size.width, c.size.height, BufferedImage.TYPE_INT_ARGB)
         val graphics = image.createGraphics()
-        panel.paint(graphics)
+        c.paint(graphics)
         graphics.dispose()
 
         UiUtils.showPngSaveDialog()?.let { path ->

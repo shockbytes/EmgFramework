@@ -64,7 +64,9 @@ class DesktopSimulationClientDriverConfigView : EmgClientDriverConfigView {
         btnApply.actionListeners.forEach { btnApply.removeActionListener(it) }
         btnApply.addActionListener {
 
-            client.simulationSource = findSimulationSourceByName(client, comboBoxSources.selectedItem as String)
+            val sourceName = comboBoxSources.selectedItem as String
+            client.simulationSource = findSimulationSourceByName(client, sourceName)
+            client.simulationSourceName = sourceName
             client.isEndlessLoopEnabled = cbPlaybackLoop.isSelected
             frame.dispose()
         }

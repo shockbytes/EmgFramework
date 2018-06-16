@@ -2,12 +2,12 @@ package at.fhooe.mc.emg.desktop.tool.fatigue
 
 import at.fhooe.mc.emg.core.tool.fatigue.MuscleFatigueToolView
 import at.fhooe.mc.emg.core.tool.fatigue.MuscleFatigueToolViewCallback
-import at.fhooe.mc.emg.core.util.round
 import at.fhooe.mc.emg.desktop.misc.DesktopDataLog
 import at.fhooe.mc.emg.desktop.util.UiUtils
 import org.knowm.xchart.XChartPanel
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.XYChartBuilder
+import org.knowm.xchart.XYSeries
 import org.knowm.xchart.style.Styler
 import java.awt.BorderLayout
 import java.awt.Color
@@ -41,7 +41,7 @@ class SwingMuscleFatigueToolView : MuscleFatigueToolView {
         mainPanel.background = Color.WHITE
         mainPanel.add(chart(), BorderLayout.CENTER)
         val logView = dataLog.view
-        logView.preferredSize = Dimension(200,300)
+        logView.preferredSize = Dimension(200, 300)
         mainPanel.add(logView, BorderLayout.EAST)
         labelStatus = JLabel("Status: Working")
         labelStatus.border = EmptyBorder(8, 8, 8, 8)
@@ -96,10 +96,12 @@ class SwingMuscleFatigueToolView : MuscleFatigueToolView {
     override fun update(values: List<Pair<Double, Double>>) {
 
         // RMS values as x values, median frequency as y values
-        updateChart(values.map { it.second.round().toDouble() }, values.map { it.first })
+        updateChart(
+                values.map { (time, _) -> time },
+                values.map { (_, frequency) -> frequency })
 
         // Always update full data log
-        dataLog.update(values.last().let { "MF: ${it.first}\nRMS: ${it.second}" })
+        dataLog.update(values.last().let { (time, frequency) -> "$time, $frequency" })
         dataLog.view.invalidate()
     }
 
@@ -118,10 +120,11 @@ class SwingMuscleFatigueToolView : MuscleFatigueToolView {
     private fun chart(): JComponent {
 
         chart = XYChartBuilder().width(150).height(200).theme(Styler.ChartTheme.GGPlot2).build()
+        chart.styler.defaultSeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Scatter
         chart.styler.isLegendVisible = false
-        chart.styler.isPlotGridLinesVisible = false
+        chart.styler.isPlotGridLinesVisible = true
+        chart.styler.plotGridLinesColor = Color.getColor("#424242")
         chart.styler.plotBackgroundColor = Color.WHITE
-        chart.styler.isLegendVisible = false
         chart.styler.seriesColors = arrayOf(Color.decode("#795548"))
 
         chartWrapper = XChartPanel(chart)

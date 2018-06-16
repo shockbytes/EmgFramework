@@ -10,6 +10,8 @@ import io.reactivex.functions.Consumer
  */
 interface ConconiToolViewCallback : ToolViewCallback {
 
+    var useRunningAverageFilter: Boolean
+
     fun onStartClicked()
 
     fun onStopClicked()

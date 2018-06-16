@@ -2,15 +2,18 @@ package at.fhooe.mc.emg.core.tool.conconi
 
 import at.fhooe.mc.emg.clientdriver.model.EmgData
 import at.fhooe.mc.emg.core.Toolable
+import at.fhooe.mc.emg.core.filter.Filter
+import at.fhooe.mc.emg.core.filter.NoFilter
+import at.fhooe.mc.emg.core.filter.RunningAverageFilter
 import at.fhooe.mc.emg.core.storage.CsvEmgDataStorage
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.peaks.PeakDetector
 import at.fhooe.mc.emg.core.util.CoreUtils
-import at.fhooe.mc.emg.core.util.rms
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.EmgComponent
 import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
+import at.fhooe.mc.emg.designer.annotation.EmgComponentOutputPort
 import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -18,6 +21,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import org.apache.commons.io.FilenameUtils
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -26,10 +30,8 @@ import java.util.concurrent.TimeUnit
  * Author:  Martin Macheiner
  * Date:    04.07.2017
  *
- * TODO Refactor for ACD usage
- *
  */
-@EmgComponent(type = EmgComponentType.TOOL, displayTitle = "Conconi Test")
+@EmgComponent(type = EmgComponentType.RELAY_SINK, displayTitle = "Conconi Test")
 class ConconiTool(override var toolView: ConconiToolView? = null,
                   private var fileStorage: FileStorage? = null) : Tool, ConconiToolViewCallback {
 
@@ -44,15 +46,32 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
     private var dataStartPointer: Int = 0
     private var dataStopPointer: Int = 0
 
+    private var isCaseDesignerUsage: Boolean = false
+    private var caseDesignerData: EmgData? = null
+    private var isCaseDesignerStarted: Boolean = false
+
+    private var filter: Filter = RunningAverageFilter()
+
+
+    @JvmField
+    @EmgComponentOutputPort(ConconiRoundData::class)
+    var outputPort: PublishSubject<ConconiRoundData> = PublishSubject.create()
+
+    override var useRunningAverageFilter: Boolean = true
+        set(value) {
+            field = value
+
+            filter.reset()
+            filter = if (value) RunningAverageFilter() else NoFilter()
+        }
+
     override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         this.toolable = toolable
         toolView?.setup(this, showViewImmediate)
+        isCaseDesignerUsage = (toolable == null) // If toolable is null, this means it was started from the case designer
 
-        dataDisposable = toolable?.registerToolForUpdates()?.subscribe { update(it) }
-
-        data = ConconiData()
-        dataStartPointer = 0
-        dataStopPointer = 0
+        //dataDisposable = toolable?.registerToolForUpdates()?.subscribe { update(it) }
+        resetData()
     }
 
     @EmgComponentStartablePoint("toolView", ConconiToolView::class)
@@ -61,6 +80,7 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
     }
 
     override fun onStartClicked() {
+        resetData() // Reset data on every new start clicked!
         toolView?.onPlayCountdownSound()
         startCountdown() // Start the countdown and then start the actual test
     }
@@ -126,9 +146,23 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
     @EmgComponentInputPort(EmgData::class)
     fun update(emgData: EmgData) {
 
+        // Start algorithm on first data arrival
+        if (!isCaseDesignerStarted) {
+            isCaseDesignerStarted = true
+            resetData()
+            startTimer()
+        }
+
+        caseDesignerData = emgData
     }
 
     // --------------------------------------------------------------------------------
+
+    private fun resetData() {
+        data = ConconiData()
+        dataStartPointer = 0
+        dataStopPointer = 0
+    }
 
     private fun startCountdown() {
 
@@ -176,28 +210,44 @@ class ConconiTool(override var toolView: ConconiToolView? = null,
 
     private fun storeRoundData(index: Int) {
 
-        toolable?.let {t ->
+        // It is safe to use !! here, because boolean evaluates both cases
 
-            dataStopPointer = t.currentDataPointer
-            val roundData = t.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
-
-            data.addRoundData(roundData)
-            val crd = emg2ConconiRoundData(roundData, index)
-            toolView?.onRoundDataAvailable(crd, index)
+        // Single, standalone usage
+        val roundData: EmgData = if (!isCaseDesignerUsage) {
+            dataStopPointer = toolable!!.currentDataPointer
+            toolable!!.getSingleChannelDataSection(dataStartPointer, dataStopPointer, 0)
+        } else {
+            // Data is updated through the #update() method
+            dataStopPointer = caseDesignerData!!.emgSize
+            caseDesignerData!!.section(dataStartPointer, dataStopPointer, 0)
         }
 
-        dataStartPointer = dataStopPointer
+        data.addRoundData(roundData)
+        val crd = emg2ConconiRoundData(roundData, index)
+
+        // Inform view and subscribed components
+        toolView?.onRoundDataAvailable(crd, index)
+        outputPort.onNext(crd)
+
+        dataStartPointer = dataStopPointer // update the pointer accordingly
     }
 
     private fun emg2ConconiRoundData(roundData: EmgData, round: Int): ConconiRoundData {
 
-        val speed = speeds[round]
-        val yData = roundData.channel(0).map { it.y }.toDoubleArray()
-        val peaks = PeakDetector.detectSimpleThresholdPeaks(yData)
-        val rms = CoreUtils.roundDouble(yData.rms(), 2)
+        // Apply the filtering in this step as well
+        val yData = roundData.channel(0).map { filter.step(it.y) }.toDoubleArray()
 
-        val hr = roundData.heartRateData.average().toInt()
-        return ConconiRoundData(speed, peaks, rms, hr)
+        // EMG is filtered with an running average filter, pick now the last EMG value
+        val emg = CoreUtils.roundDouble(yData.last(), 2)
+
+        // Take the last heart rate value
+        val hr = roundData.heartRateData.last()
+
+        // Additional information
+        val peaks = PeakDetector.detectSimpleThresholdPeaks(yData)
+        val speed = speeds[round]
+
+        return ConconiRoundData(speed, peaks, emg, hr)
     }
 
     companion object {

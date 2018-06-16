@@ -2,16 +2,13 @@ package at.fhooe.mc.emg.core.tool.salient
 
 import at.fhooe.mc.emg.core.Toolable
 import at.fhooe.mc.emg.core.tool.Tool
-import at.fhooe.mc.emg.core.util.MathUtility
-import at.fhooe.mc.emg.core.util.PointD
-import at.fhooe.mc.emg.core.util.rmse
-import at.fhooe.mc.emg.core.util.round
 import at.fhooe.mc.emg.designer.EmgComponentType
 import at.fhooe.mc.emg.designer.annotation.*
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import org.apache.commons.math3.stat.regression.SimpleRegression
 
 /**
  * Author:  Martin Macheiner
@@ -41,6 +38,8 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
     @EmgComponentOutputPort(SalientPoint::class)
     var outputPort: PublishSubject<SalientPoint> = PublishSubject.create()
 
+    val testData = listOf(31.14, 37.2, 38.13, 32.49, 30.94, 32.4, 31.68, 34.68, 31.61, 43.75, 115.22, 179.98)
+
     override fun updateParameter(confidence: Double, angle: Int) {
         this.confidenceThreshold = confidence
         this.salientAngleThreshold = angle
@@ -48,6 +47,13 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
 
     override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
+
+        /*
+        Observable.interval(1, TimeUnit.SECONDS).subscribe {
+            if (it < testData.size) {
+                update(testData[it.toInt()])
+            }
+        } */
     }
 
     override fun onViewClosed() {
@@ -69,7 +75,7 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
     private fun calculateSalientPoint() {
 
         // Only calculate if there are at least 5 points in the list
-        if (points.size >= 5) {
+        if (points.size >= 6) {
             Single.fromCallable {
                 val (bestFit, angle, confidence) = findBestFitWithAngle()
                 val yVal = points[bestFit]
@@ -92,60 +98,54 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
     private fun findBestFitWithAngle(): Triple<Int, Int, Double> {
 
         // Contains a pair for each traversed point with both RMSE error values
-        val rmse: MutableList<Pair<Int, Pair<Double, Double>>> = mutableListOf()
+        val rmse: MutableList<ApproximatedLines> = mutableListOf()
 
         // Move the salient point through the array and calculate RMSE values for each
-        for (i in 1 until points.size - 1) {
-            val (first, second) = divideIntoLinesWithApproximation(i, points.size)
-            rmse.add(Pair(i, calculateRmseValues(first.first, first.second, second.first, second.second)))
+        for (i in 3 until points.size - 2) {
+
+            val leftArray = points.subList(0, i)
+            val rightArray = points.subList(i + 1, points.size)
+
+            val leftRegression = SimpleRegression()
+            leftRegression.addData(leftArray.mapIndexed { index, d -> doubleArrayOf(index.toDouble(), d) }.toTypedArray())
+            val leftRmse = Math.pow(leftRegression.meanSquareError, 0.5)
+            val leftSlope = leftRegression.slope
+
+            val rightRegression = SimpleRegression()
+            rightRegression.addData(rightArray.mapIndexed { index, d -> doubleArrayOf(index.toDouble(), d) }.toTypedArray())
+            val rightRmse = Math.pow(rightRegression.meanSquareError, 0.5)
+            val rightSlope = rightRegression.slope
+
+            rmse.add(ApproximatedLines(i, leftRmse, rightRmse, leftSlope, rightSlope))
         }
 
         // Search best fit
-        val (bestFit, confidence) = findBestFitByRmse(rmse)
+        val bestFit = findBestFitByRmse(rmse)
 
         // Calculate angle
-        val angle = calculateAngle(bestFit, points.size)
+        val angle = calculateAngle(bestFit)
 
-        return Triple(bestFit, angle, confidence)
+        return Triple(bestFit.salientPointIdx, angle, bestFit.confidence)
     }
 
-    private fun calculateRmseValues(first: List<Double>, firstApprox: List<Double>,
-                                    second: List<Double>, secondApprox: List<Double>): Pair<Double, Double> {
-        return Pair(first.rmse(firstApprox), second.rmse(secondApprox))
+    private fun calculateAngle(l: ApproximatedLines): Int {
+        val tanAngle = (l.leftSlope - l.rightSlope) / (1 + (l.leftSlope * l.rightSlope))
+        return Math.toDegrees(Math.atan(tanAngle)).toInt()
     }
 
-    private fun calculateAngle(idx: Int, size: Int): Int {
-
-        val div = divideIntoLinesWithApproximation(idx, size)
-        val first = div.first.second
-        val second = div.second.second
-
-        return 180 - MathUtility.angleBetween2Lines(PointD(0.0, first.first()), PointD(idx.toDouble(), first.last()),
-                PointD(idx.toDouble(), second.first()), PointD(size.toDouble(), second.last())).round()
-    }
-
-    private fun findBestFitByRmse(rmse: MutableList<Pair<Int, Pair<Double, Double>>>): Pair<Int, Double> {
-        return rmse.map { (idx, errors) ->
-            val confidence = confidenceGauge.calculateConfidence(idx, errors)
-            Pair(idx, confidence)
-        }.sortedBy { (_, confidence) ->
-            confidence
+    private fun findBestFitByRmse(lines: List<ApproximatedLines>): ApproximatedLines {
+        return lines.map { l ->
+            val confidence = confidenceGauge.calculateConfidence(l.salientPointIdx, Pair(l.leftRmse, l.rightRmse))
+            l.confidence = confidence
+            l
+        }.sortedBy {
+            it.confidence
         }.first()
     }
 
-    private fun getApproximatedLine(first: Double, last: Double, size: Int): List<Double> {
-        val step = (last - first) / size
-        return DoubleArray(size) { it * step + first }.toList()
-    }
-
-    private fun divideIntoLinesWithApproximation(i: Int, size: Int)
-            : Pair<Pair<List<Double>, List<Double>>, Pair<List<Double>, List<Double>>> {
-
-        val first = points.subList(0, i + 1)
-        val firstApprox = getApproximatedLine(first.first(), first.last(), first.size)
-        val second = points.subList(i, size)
-        val secondApprox = getApproximatedLine(second.first(), second.last(), second.size)
-        return Pair(Pair(first, firstApprox), Pair(second, secondApprox))
-    }
+    data class ApproximatedLines(val salientPointIdx: Int,
+                                 val leftRmse: Double, val rightRmse: Double,
+                                 val leftSlope: Double, val rightSlope: Double,
+                                 var confidence: Double = 0.0)
 
 }
