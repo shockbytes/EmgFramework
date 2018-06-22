@@ -25,6 +25,10 @@ class PeriodicMmfComponent {
     var samplingFrequency = 100.0
 
     @JvmField
+    @EmgComponentProperty("true", "Exclude offset in FFT calculation")
+    var excludeOffset = true
+
+    @JvmField
     @EmgComponentOutputPort(MeanMedianFrequency::class)
     var outputPort: PublishSubject<MeanMedianFrequency> = PublishSubject.create()
 
@@ -35,10 +39,14 @@ class PeriodicMmfComponent {
 
         data.add(x)
         if (data.size >= capacity) {
-            AnalysisUtils.meanMedianFrequency(data.toDoubleArray(), samplingFrequency)
+            AnalysisUtils.meanMedianFrequency(data.toDoubleArray(), samplingFrequency, excludeOffset)
                     .subscribe(Consumer { outputPort.onNext(it) })
             data.clear()
         }
+    }
+
+    fun reset() {
+        data.clear()
     }
 
 }

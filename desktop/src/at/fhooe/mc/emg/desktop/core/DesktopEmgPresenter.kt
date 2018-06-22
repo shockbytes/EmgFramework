@@ -5,6 +5,7 @@ import at.fhooe.mc.emg.core.EmgPresenter
 import at.fhooe.mc.emg.core.analysis.FrequencyAnalysisMethod
 import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
+import at.fhooe.mc.emg.core.test.TestSubject
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.view.VisualView
 import at.fhooe.mc.emg.designer.component.EmgBaseComponent
@@ -29,8 +30,9 @@ class DesktopEmgPresenter(c: List<EmgClientDriver>,
                           f: List<Filter>,
                           fam: List<FrequencyAnalysisMethod>,
                           ebc: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<Any, Any>>>,
+                          testSubjects: List<TestSubject>,
                           cs: EmgConfigStorage,
-                          v: DesktopEmgView<JComponent>) : EmgPresenter(c, t, f, fam, ebc, cs, v) {
+                          v: DesktopEmgView<JComponent>) : EmgPresenter(c, t, f, fam, ebc, testSubjects, cs, v) {
 
     override val visualView: VisualView<JComponent> = XChartVisualView()
 
@@ -39,11 +41,11 @@ class DesktopEmgPresenter(c: List<EmgClientDriver>,
     }
 
     override fun openAcquisitionCaseDesigner() {
-        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents.first, designerComponents.second).start()
+        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents.first, designerComponents.second, testSubjects).start()
     }
 
     override fun openAcquisitionCaseDesignerFile(file: File) {
-        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents.first, designerComponents.second).start(file)
+        DesktopDesignerPresenter(DesktopDesignerView(), designerComponents.first, designerComponents.second, testSubjects).start(file)
     }
 
 

@@ -8,6 +8,7 @@ import at.fhooe.mc.emg.core.filter.Filter
 import at.fhooe.mc.emg.core.storage.CsvEmgDataStorage
 import at.fhooe.mc.emg.core.storage.EmgDataStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
+import at.fhooe.mc.emg.core.test.TestSubject
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.util.EmgConfig
 import at.fhooe.mc.emg.core.view.EmgView
@@ -32,6 +33,7 @@ abstract class EmgPresenter(private val clients: List<EmgClientDriver>,
                             private val filter: List<Filter>,
                             private val frequencyAnalysisMethods: List<FrequencyAnalysisMethod>,
                             protected val designerComponents: Pair<List<EmgBaseComponent>, List<EmgComponentPipe<Any, Any>>>,
+                            protected val testSubjects: List<TestSubject>,
                             private val configStorage: EmgConfigStorage,
                             open var emgView: EmgView?) : EmgViewCallback, Toolable {
 

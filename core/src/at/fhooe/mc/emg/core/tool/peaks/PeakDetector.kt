@@ -120,23 +120,34 @@ object PeakDetector {
         val end = data.size
         var av = data[0]
         while (mid < end) {
+            // Decay rate examination
             av = decayRate * av + (1 - decayRate) * data[mid]
             if (av < data[mid])
                 av = data[mid]
+
+            // Lower limit of window
             var i = mid - width
             if (i < 0)
                 i = 0
+
+            // Upper limit of window
             var stop = mid + width + 1
             if (stop > data.size)
                 stop = data.size
             maxp = i
             i++
+
+            // Find maximum of window
             while (i < stop) {
                 if (data[i] > data[maxp])
                     maxp = i
                 i++
             }
+
+            // Check if maximum is window mid
             if (maxp == mid) {
+
+                // Check if threshold value is exceeded
                 if (overThreshold(data, maxp, width, threshold, isRelative, av)) {
                     if (debug)
                         println(" peak")
@@ -162,7 +173,7 @@ object PeakDetector {
         return av
     } // expDecayWithHold()
 
-    fun overThreshold(data: DoubleArray, index: Int, width: Int,
+    private fun overThreshold(data: DoubleArray, index: Int, width: Int,
                       threshold: Double, isRelative: Boolean,
                       av: Double): Boolean {
         if (debug)

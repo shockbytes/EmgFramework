@@ -9,14 +9,17 @@ import java.util.*
 
 object AnalysisUtils {
 
-    fun fft(input: DoubleArray): Single<DoubleArray> {
+    fun fft(input: DoubleArray, excludeOffset: Boolean = false): Single<DoubleArray> {
         return if (input.isNotEmpty()) {
             Single.fromCallable {
                 val fftDo = DoubleFFT_1D(input.size.toLong())
                 val fft = DoubleArray(input.size * 2)
                 System.arraycopy(input, 0, fft, 0, input.size)
                 fftDo.realForwardFull(fft)
-                fft
+
+                if (excludeOffset) {
+                    fft.drop(1).toDoubleArray()
+                } else fft
             }.subscribeOn(Schedulers.computation())
         } else {
             Single.error(IllegalArgumentException("Input for FFT must not be empty!"))
@@ -41,11 +44,11 @@ object AnalysisUtils {
         }
     }
 
-    fun meanMedianFrequency(input: DoubleArray, fs: Double): Single<MeanMedianFrequency> {
+    fun meanMedianFrequency(input: DoubleArray, fs: Double, excludeOffset: Boolean = false): Single<MeanMedianFrequency> {
         return if (input.isNotEmpty()) {
             Single.fromCallable {
 
-                val(_, p) = powerSpectrum(fft(input).blockingGet(), fs).blockingGet()
+                val (_, p) = powerSpectrum(fft(input, excludeOffset).blockingGet(), fs).blockingGet()
                 val pSum = p.sum()
 
                 var mnf = 0.0
@@ -55,9 +58,6 @@ object AnalysisUtils {
                     mnf += element * fj
                 }
                 mnf /= pSum
-
-                // TODO Fix Fix calculations
-
                 val mdf = pSum / 2
 
                 MeanMedianFrequency(mnf, mdf, fs)

@@ -39,4 +39,8 @@ class PeriodicRmsComponent {
         }
     }
 
+    fun reset() {
+        data.clear()
+    }
+
 }

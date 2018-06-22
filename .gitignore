@@ -30,3 +30,5 @@ captures/
 /protocol_buffer
 
 /plugin_test
+
+/data/subjects.json

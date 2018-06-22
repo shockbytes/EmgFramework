@@ -7,6 +7,8 @@ interface PlatformConfiguration {
 
     val simulationFolder: String
 
+    val dataFolder: String
+
     val fileStorage: FileStorage
 
     val configStorage: EmgConfigStorage

@@ -4,10 +4,8 @@ package at.fhooe.mc.emg.core.tool.peaks
 import at.fhooe.mc.emg.core.Toolable
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.designer.EmgComponentType
-import at.fhooe.mc.emg.designer.annotation.EmgComponent
-import at.fhooe.mc.emg.designer.annotation.EmgComponentInputPort
-import at.fhooe.mc.emg.designer.annotation.EmgComponentProperty
-import at.fhooe.mc.emg.designer.annotation.EmgComponentStartablePoint
+import at.fhooe.mc.emg.designer.annotation.*
+import io.reactivex.subjects.PublishSubject
 
 /**
  * Author:  Martin Macheiner
@@ -36,6 +34,10 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
     @JvmField
     @EmgComponentProperty(PeakDetector.defaultIsRelative.toString(), "Use relative peaks")
     var isRelative: Boolean = PeakDetector.defaultIsRelative
+
+    @JvmField
+    @EmgComponentOutputPort(DoubleArray::class)
+    var outputPort: PublishSubject<DoubleArray> = PublishSubject.create()
 
     override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
@@ -82,6 +84,9 @@ class PeakDetectionTool(override var toolView: PeakDetectionToolView? = null) : 
             toolView?.showPlotData(xValues, yValues, xValuesPeaks, yValuesPeaks)
             // Additionally show the peaks in a ListView
             toolView?.showPeaksDetail(xValuesPeaks.mapIndexed { idx, it -> Peak(it, yValuesPeaks[idx]) })
+
+            outputPort.onNext(xValuesPeaks)
+
         }, {
             toolView?.showError(it.localizedMessage, it.javaClass.simpleName)
         })

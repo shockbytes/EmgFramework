@@ -26,7 +26,8 @@ import java.io.File
  */
 abstract class DesignerPresenter(private val view: DesignerView,
                                  private val designerComponents: List<EmgBaseComponent>,
-                                 private val designerPipes: List<EmgComponentPipe<Any, Any>>) : DesignerViewCallback {
+                                 private val designerPipes: List<EmgComponentPipe<Any, Any>>,
+                                 private val testSubjects: List<String>) : DesignerViewCallback {
 
     private val gson: Gson
     private var hasModelChanged = false

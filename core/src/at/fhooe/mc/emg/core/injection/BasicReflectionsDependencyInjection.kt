@@ -10,6 +10,7 @@ import at.fhooe.mc.emg.core.filter.SavitzkyGolayFilter
 import at.fhooe.mc.emg.core.filter.ThresholdFilter
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.config.EmgConfigStorage
+import at.fhooe.mc.emg.core.test.TestSubject
 import at.fhooe.mc.emg.core.tool.Tool
 import at.fhooe.mc.emg.core.tool.ToolView
 import at.fhooe.mc.emg.designer.ComponentInspection
@@ -19,6 +20,8 @@ import at.fhooe.mc.emg.designer.component.EmgBaseComponent
 import at.fhooe.mc.emg.designer.component.EmgComponentFactory
 import at.fhooe.mc.emg.designer.component.pipe.EmgComponentPipe
 import at.fhooe.mc.emg.designer.component.util.EmgComponentParameter
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 
 open class BasicReflectionsDependencyInjection(private val platformConfig: PlatformConfiguration) : DependencyInjection {
 
@@ -131,6 +134,14 @@ open class BasicReflectionsDependencyInjection(private val platformConfig: Platf
     override val configStorage: EmgConfigStorage by lazy {
         platformConfig.configStorage
     }
+
+    override val testSubjects: List<TestSubject>
+        get() {
+            val str = platformConfig.fileStorage.loadFromFileAsString("${platformConfig.dataFolder}/subjects.json").blockingGet()
+            return if (str != null) {
+                Gson().fromJson(str, object : TypeToken<List<TestSubject>>() {}.type)
+            } else listOf()
+        }
 
     // ------------------------------------------------------------------------
 

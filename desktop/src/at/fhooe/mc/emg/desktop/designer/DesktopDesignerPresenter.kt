@@ -2,6 +2,7 @@ package at.fhooe.mc.emg.desktop.designer
 
 import at.fhooe.mc.emg.core.storage.FileStorage
 import at.fhooe.mc.emg.core.storage.SimpleFileStorage
+import at.fhooe.mc.emg.core.test.TestSubject
 import at.fhooe.mc.emg.designer.ComponentViewType
 import at.fhooe.mc.emg.designer.DesignerPresenter
 import at.fhooe.mc.emg.designer.WorkflowPresenter
@@ -21,8 +22,9 @@ import java.io.File
 
 class DesktopDesignerPresenter(view: DesignerView,
                                designerComponents: List<EmgBaseComponent>,
-                               designerPipes: List<EmgComponentPipe<Any, Any>>)
-    : DesignerPresenter(view, designerComponents, designerPipes) {
+                               designerPipes: List<EmgComponentPipe<Any, Any>>,
+                               testSubjects: List<TestSubject>)
+    : DesignerPresenter(view, designerComponents, designerPipes, testSubjects.map { it.lastName }) {
 
     private val fileStorage: FileStorage = SimpleFileStorage()
 

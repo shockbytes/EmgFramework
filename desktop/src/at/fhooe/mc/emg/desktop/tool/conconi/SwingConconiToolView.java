@@ -117,7 +117,7 @@ public class SwingConconiToolView implements ConconiToolView {
 
         ((DefaultTableModel) table.getModel()).addRow(
                 new String[]{String.valueOf(data.getSpeed()), String.valueOf(data.getEmg()),
-                        String.valueOf(data.getHr()), String.valueOf(data.getPeaks())});
+                        String.valueOf(data.getHr())});
 
         updateCharts(data.getEmg(), data.getSpeed(), data.getHr());
     }
@@ -135,22 +135,23 @@ public class SwingConconiToolView implements ConconiToolView {
         yHr.add(heartRate);
 
         if (chartAverage.getSeriesMap().size() == 0) {
-            chartAverage.addSeries("Average", xVals, yAvg);
+            chartAverage.addSeries("EMG", xVals, yAvg);
             chartAverage.addSeries("Heart rate", xVals, yHr);
         } else {
-            chartAverage.updateXYSeries("Average", xVals, yAvg, null);
+            chartAverage.updateXYSeries("EMG", xVals, yAvg, null);
             chartAverage.updateXYSeries("Heart rate", xVals, yHr, null);
         }
         chartAverageWrapper.repaint();
     }
 
     private void setupCharts() {
-
         chartAverage = new XYChartBuilder().width(150).height(200).theme(Styler.ChartTheme.GGPlot2).build();
-        chartAverage.getStyler().setLegendVisible(false);
+        chartAverage.getStyler().setLegendVisible(true);
         chartAverage.getStyler().setPlotGridLinesVisible(false);
         chartAverage.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chartAverage.setXAxisTitle("km/h | Heart rate");
+        chartAverage.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
+        chartAverage.setXAxisTitle("km/h");
+        chartAverage.setYAxisTitle("HR / EMG");
 
         chartAverageWrapper = new XChartPanel<XYChart>(chartAverage);
         panelAverageVisual.add(chartAverageWrapper);
@@ -163,7 +164,7 @@ public class SwingConconiToolView implements ConconiToolView {
     }
 
     private void createUIComponents() {
-        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "EMG", "HR", "Peaks"}));
+        table = new JTable(new DefaultTableModel(new String[0][3], new String[]{"km/h", "EMG", "Heart Rate"}));
     }
 
     @Override

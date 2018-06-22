@@ -1,5 +1,6 @@
 package at.fhooe.mc.emg.desktop.tool.salient
 
+import at.fhooe.mc.emg.core.tool.conconi.ConconiTool
 import at.fhooe.mc.emg.core.tool.salient.SalientPoint
 import at.fhooe.mc.emg.core.tool.salient.SalientPointToolView
 import at.fhooe.mc.emg.core.tool.salient.SalientPointToolViewCallback
@@ -56,7 +57,7 @@ class SwingSalientPointToolView : SalientPointToolView {
     }
 
     override fun updateSalientPointInformation(point: SalientPoint) {
-        textAreaPointInfo.text = "$point"
+        textAreaPointInfo.text = "$point\nConconi equiv.: ${ConconiTool.speeds[point.x]}km/h"
     }
 
     override fun drawSalientPoint(point: SalientPoint) {
@@ -67,9 +68,9 @@ class SwingSalientPointToolView : SalientPointToolView {
 
         synchronized(this) {
             if (chart.seriesMap.size == 1) {
-                chart.addSeries("Salient Point", xSeries, ySeries)
+                chart.addSeries("Deflection Point Approximation", xSeries, ySeries)
             } else if (chart.seriesMap.size > 1) {
-                chart.updateXYSeries("Salient Point", xSeries, ySeries, null)
+                chart.updateXYSeries("Deflection Point Approximation", xSeries, ySeries, null)
             }
             chartWrapper.repaint()
         }
@@ -77,7 +78,7 @@ class SwingSalientPointToolView : SalientPointToolView {
 
     override fun clearSalientPoint() {
         synchronized(this) {
-            chart.removeSeries("Salient Point")
+            chart.removeSeries("Deflection Point Approximation")
             chartWrapper.repaint()
         }
     }
@@ -85,7 +86,7 @@ class SwingSalientPointToolView : SalientPointToolView {
     private fun wrap(): JFrame {
         val frame = JFrame()
         frame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-        frame.title = "Salient Point Detection"
+        frame.title = "Deflection Point Detection"
         frame.iconImage = Toolkit.getDefaultToolkit()
                 .getImage(System.getProperty("user.dir") + "/desktop/icons/ic_tool_salient_point.png")
         frame.setBounds(650, 100, 600, 400)
@@ -114,11 +115,13 @@ class SwingSalientPointToolView : SalientPointToolView {
 
     private fun parameterPanel(): JPanel {
 
-        val panel = JPanel(GridLayout(6, 1, 4, 4))
+        val panel = JPanel(GridLayout(8, 1, 4, 4))
         panel.border = EmptyBorder(4, 4, 4, 4)
 
         val tfAngle = JTextField("0")
+        tfAngle.isEnabled = false
         val tfConfidence = JTextField("50.0")
+        tfConfidence.isEnabled = false
         val btnApply = JButton("Apply")
         btnApply.addActionListener {
             val angle = tfAngle.text.toIntOrNull()
@@ -130,10 +133,12 @@ class SwingSalientPointToolView : SalientPointToolView {
         textAreaPointInfo = JTextArea()
         textAreaPointInfo.isEditable = false
 
-        panel.add(JLabel("Angle cacheThreshold (in degree)"))
+        panel.add(JLabel("Angle threshold (in degree)"))
         panel.add(tfAngle)
-        panel.add(JLabel("Confidence cacheThreshold"))
+        panel.add(JLabel("Confidence threshold"))
         panel.add(tfConfidence)
+        panel.add(JLabel("Always return result"))
+        panel.add(JCheckBox("Always return result", true))
         panel.add(btnApply)
         panel.add(textAreaPointInfo)
 

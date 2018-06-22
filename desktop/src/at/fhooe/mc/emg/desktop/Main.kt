@@ -27,6 +27,7 @@ object Main {
                     injector.filter,
                     injector.frequencyAnalysisMethods,
                     Pair(injector.components, injector.componentPipes),
+                    injector.testSubjects,
                     injector.configStorage,
                     DesktopMainWindow())
                     .start()

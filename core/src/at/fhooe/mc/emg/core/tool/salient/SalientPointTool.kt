@@ -17,10 +17,10 @@ import org.apache.commons.math3.stat.regression.SimpleRegression
  * Detects salient points of a calculated metric during time
  *
  */
-@EmgComponent(type = EmgComponentType.RELAY_SINK, displayTitle = "Salient point detector")
+@EmgComponent(type = EmgComponentType.RELAY_SINK, displayTitle = "Deflection point detector")
 class SalientPointTool(override var toolView: SalientPointToolView? = null) : Tool, SalientPointToolViewCallback {
 
-    override val name = "Salient Point Detection"
+    override val name = "Deflection Point Detection"
 
     private val points: MutableList<Double> = mutableListOf()
 
@@ -38,7 +38,9 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
     @EmgComponentOutputPort(SalientPoint::class)
     var outputPort: PublishSubject<SalientPoint> = PublishSubject.create()
 
-    val testData = listOf(31.14, 37.2, 38.13, 32.49, 30.94, 32.4, 31.68, 34.68, 31.61, 43.75, 115.22, 179.98)
+    @JvmField
+    @EmgComponentProperty("true", "Always return a result")
+    var alwaysReturnResult: Boolean = true
 
     override fun updateParameter(confidence: Double, angle: Int) {
         this.confidenceThreshold = confidence
@@ -47,13 +49,6 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
 
     override fun start(toolable: Toolable?, showViewImmediate: Boolean) {
         toolView?.setup(this, showViewImmediate)
-
-        /*
-        Observable.interval(1, TimeUnit.SECONDS).subscribe {
-            if (it < testData.size) {
-                update(testData[it.toInt()])
-            }
-        } */
     }
 
     override fun onViewClosed() {
@@ -75,14 +70,14 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
     private fun calculateSalientPoint() {
 
         // Only calculate if there are at least 5 points in the list
-        if (points.size >= 6) {
+        if (points.size >= 4) {
             Single.fromCallable {
                 val (bestFit, angle, confidence) = findBestFitWithAngle()
                 val yVal = points[bestFit]
                 SalientPoint(bestFit, yVal, confidence, angle)
             }.subscribeOn(Schedulers.computation()).subscribe(Consumer {
                 toolView?.updateSalientPointInformation(it) // Update point info anyway
-                if ((it.confidence <= confidenceThreshold) && (it.angle >= salientAngleThreshold)) {
+                if (alwaysReturnResult || ((it.confidence <= confidenceThreshold) && (it.angle >= salientAngleThreshold))) {
                     toolView?.drawSalientPoint(it)
                     outputPort.onNext(it)
                 } else {
@@ -101,7 +96,7 @@ class SalientPointTool(override var toolView: SalientPointToolView? = null) : To
         val rmse: MutableList<ApproximatedLines> = mutableListOf()
 
         // Move the salient point through the array and calculate RMSE values for each
-        for (i in 3 until points.size - 2) {
+        for (i in 1 until points.size - 1) {
 
             val leftArray = points.subList(0, i)
             val rightArray = points.subList(i + 1, points.size)

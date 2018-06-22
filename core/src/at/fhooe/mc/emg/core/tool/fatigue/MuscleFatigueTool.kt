@@ -1,7 +1,6 @@
 package at.fhooe.mc.emg.core.tool.fatigue
 
 import at.fhooe.mc.emg.core.Toolable
-import at.fhooe.mc.emg.core.analysis.model.MeanMedianFrequency
 import at.fhooe.mc.emg.core.computation.PeriodicMmfComponent
 import at.fhooe.mc.emg.core.computation.PeriodicRmsComponent
 import at.fhooe.mc.emg.core.computation.RegressionAnalysisBufferedComputation
@@ -16,7 +15,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import java.io.File
-import java.time.LocalDateTime
 
 /**
  * Author:  Martin Macheiner
@@ -29,13 +27,19 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
 
     @JvmField
     @EmgComponentProperty("5.0", "Calculation window in seconds")
-    var windowWithInSeconds: Double = 5.0
+    var windowWithInSecondsLowerLimit: Double = 2.0
 
     @JvmField
     @EmgComponentProperty("100", "Sampling frequency")
-    var fs: Int = 161
+    var fs: Int = 934
 
-    private var periodCapacity: Int = (windowWithInSeconds * fs).toInt()
+    @JvmField
+    @EmgComponentProperty("2", "Window proportion between time and frequency buffer")
+    var proportionFactor: Double = 2.5
+
+    // TODO Change to 60
+    private val regressionBufferSize: Int = (20 / windowWithInSecondsLowerLimit).toInt()
+    private var periodCapacity: Int = (windowWithInSecondsLowerLimit * fs).toInt()
 
     private var rawValues: MutableList<Pair<Double, Double>> = mutableListOf()
     private var temporalValues: MutableList<Pair<Double, Double>> = mutableListOf()
@@ -46,7 +50,8 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
     private val timeRegressionComputation = RegressionAnalysisBufferedComputation()
     private val frequencyRegressionComputation = RegressionAnalysisBufferedComputation()
 
-    private var idxPointer = 0
+    private var idxFreqPointer = 0
+    private var idxTimePointer = 0
 
     private var toolable: Toolable? = null
 
@@ -56,11 +61,14 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
         this.toolable = toolable
 
         // Set capacity of sub components and value storage
-        periodCapacity = (windowWithInSeconds * fs).toInt()
+        periodCapacity = (windowWithInSecondsLowerLimit * fs).toInt()
         frequencyComponent.capacity = periodCapacity
-        timeComponent.capacity = periodCapacity
-        timeRegressionComputation.capacity = (60 / windowWithInSeconds).toInt()
-        frequencyRegressionComputation.capacity = (60 / windowWithInSeconds).toInt()
+        timeComponent.capacity = (periodCapacity * proportionFactor).toInt() // Time components has doubled size
+        timeRegressionComputation.capacity = (regressionBufferSize / proportionFactor).toInt() // Time components has doubled size
+        frequencyRegressionComputation.capacity = regressionBufferSize
+
+        // Set sampling frequency of mmf component
+        frequencyComponent.samplingFrequency = fs.toDouble()
 
         // Setup the ToolView after capacities are set
         toolView?.setup(this, showViewImmediate)
@@ -72,10 +80,17 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
             compositeDisposable.add(disposable)
         }
 
-        // Combine both observables in order to calculate muscle fatigue with the updated rawValues
-        compositeDisposable.add(Observable.zip(frequencyComponent.outputPort, timeComponent.outputPort,
-                BiFunction<MeanMedianFrequency, Double, Pair<MeanMedianFrequency, Double>> { f, t -> Pair(f, t) })
-                .subscribe { (mmf, rms) -> updateCurrentRegression(mmf.median, rms) })
+        compositeDisposable.add(frequencyComponent.outputPort.subscribe { mmf ->
+            println("Update frequency regression!")
+            frequencyRegressionComputation.update(Pair(idxFreqPointer.toDouble(), mmf.median))
+            idxFreqPointer++
+        })
+
+        compositeDisposable.add(timeComponent.outputPort.subscribe { rms ->
+            println("Update time regression!")
+            timeRegressionComputation.update(Pair(idxTimePointer.toDouble(), rms))
+            idxTimePointer++
+        })
 
         // Listen for actual slope data
         compositeDisposable.add(Observable.zip(timeRegressionComputation.outputPort, frequencyRegressionComputation.outputPort,
@@ -93,7 +108,7 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
     }
 
     override fun save(filePath: String) {
-        val contentAsCsv = rawValues.joinToString("\n") { "${it.first},${it.second}" }
+        val contentAsCsv = temporalValues.joinToString("\n") { "${it.first},${it.second}" }
         CoreUtils.writeFile(File(filePath), contentAsCsv)
     }
 
@@ -117,27 +132,18 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
         timeComponent.update(value)
     }
 
-    private fun updateCurrentRegression(mdf: Double, rms: Double) {
-
-        println("${LocalDateTime.now()} - Update current regression!")
-
-        timeRegressionComputation.update(Pair(idxPointer.toDouble(), rms))
-        frequencyRegressionComputation.update(Pair(idxPointer.toDouble(), mdf))
-        idxPointer++
-    }
-
     private fun updateMuscleFatigueAlgorithm(tSlope: Double, fSlope: Double) {
 
-        println("${LocalDateTime.now()} - Update actual algorithm!")
+        val tSlopeCorr = if (tSlope == Double.NaN) 0.0 else tSlope
+        val fSlopeCorr = if (fSlope == Double.NaN) 0.0 else fSlope
 
         // Cannot compute temporal change with only 1 value
         if (rawValues.size > 0) {
 
-            println("Calculate temporal values")
             // Calculate absolute temporal change
             val (lastTSlope, lastFSlope) = rawValues.last()
-            val tmpChangeT = 100 * ((tSlope - lastTSlope) / lastTSlope)
-            val tmpChangeF = 100 * ((fSlope - lastFSlope) / lastFSlope)
+            val tmpChangeT = 100 * ((tSlopeCorr - lastTSlope) / lastTSlope)
+            val tmpChangeF = 100 * ((fSlopeCorr - lastFSlope) / lastFSlope)
 
             // Calculate relative change from last value (increment last value)
             val lastTemporalValues = temporalValues.lastOrNull()
@@ -154,14 +160,24 @@ open class MuscleFatigueTool(override var toolView: MuscleFatigueToolView? = nul
         }
 
         // Add raw values at last, in order to not interfere with .last() method of temporal calculation
-        rawValues.add(Pair(tSlope, fSlope))
+        rawValues.add(Pair(tSlopeCorr, fSlopeCorr))
+
+        // Clear pointer for valid regression lines
+        idxFreqPointer = 0
+        idxTimePointer = 0
     }
 
 
     private fun clear() {
         rawValues.clear()
         toolView?.clear()
-        idxPointer = 0
+        idxTimePointer = 0
+        idxFreqPointer = 0
+
+        timeRegressionComputation.reset()
+        frequencyRegressionComputation.reset()
+        frequencyComponent.reset()
+        timeComponent.reset()
     }
 
 }
